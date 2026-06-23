@@ -1,56 +1,63 @@
 'use server'
 
-import CleanupsTable from '@/src/models/cleanupsTable';
-import ContactsTable from '@/src/models/contactsTable';
-import { insertIntoContactsTable, insertIntoCleanupsTable } from '@/src/lib/data';
+import Cleanup from '@/src/models/cleanup';
+import Contact from '@/src/models/contact';
+import { testConnection, insertCleanupWithContact } from '@/src/lib/sql';
 
-function validateCleanupsTableData(data: CleanupsTable) {
+function validateCleanupsTableData(data: Cleanup): string[] {
+    let errors: string[] = [];
     if (data.date.length > 10) {
         // Implement error handling
     }
     if (data.organization.length > 50) {
         // Implement error handling
     }
+    return errors;
 }
 
-function validateContactsTableData(data: ContactsTable) {
+function validateContactsTableData(contact: Contact): string[] {
+    let errors: string[] = [];
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(data.contactEmail)) {
+    if (!emailRegex.test(contact.email)) {
         // Implement error handling
     }
-    if (data.contactFName.length > 25) {
+    if (contact.fName.length > 25) {
         // Implement error handling
     }
+    return errors;
 }
 
 export const saveVolunteerCleanupToDb = async (formData: FormData) => {
+    testConnection();
     let cid: string = '';
-    let rawContactsData = {
+    let rawContactData = {
         contactFName: formData.get('contactFName'),
         contactLName: formData.get('contactLName'),
         contactEmail: formData.get('contactEmail'),
         contactPhoneNum: formData.get('contactPhoneNum')
     };
     if (
-        !rawContactsData.contactFName || rawContactsData.contactFName === '' ||
-        !rawContactsData.contactLName || rawContactsData.contactLName === '' ||
-        !rawContactsData.contactEmail || rawContactsData.contactEmail === '' ||
-        !rawContactsData.contactPhoneNum || rawContactsData.contactPhoneNum === ''
+        !rawContactData.contactFName || rawContactData.contactFName === '' ||
+        !rawContactData.contactLName || rawContactData.contactLName === '' ||
+        !rawContactData.contactEmail || rawContactData.contactEmail === '' ||
+        !rawContactData.contactPhoneNum || rawContactData.contactPhoneNum === ''
     ) {
         // Implement error handling here
         return;
-    } else {
-        let contactsData: ContactsTable = {
-            contactFName: rawContactsData.contactFName.toString(),
-            contactLName: rawContactsData.contactLName.toString(),
-            contactEmail: rawContactsData.contactEmail.toString(),
-            contactPhoneNum: rawContactsData.contactPhoneNum.toString(),
-        };
-        validateContactsTableData(contactsData);
-        cid = await insertIntoContactsTable(contactsData);
     }
     
-    let rawCleanupsData = {
+    const contactData: Contact = {
+        fName: rawContactData.contactFName.toString(),
+        lName: rawContactData.contactLName.toString(),
+        email: rawContactData.contactEmail.toString(),
+        phoneNum: rawContactData.contactPhoneNum.toString(),
+    };
+    if (validateContactsTableData(contactData).length > 0) {
+        // Implement error handling here
+        return;
+    }
+    
+    let rawCleanupData = {
         date: formData.get('date'),
         organization: formData.get('organization'),
         litter: formData.get('litter'),
@@ -58,24 +65,27 @@ export const saveVolunteerCleanupToDb = async (formData: FormData) => {
         hours: formData.get('hours')
     };
     if (
-        !rawCleanupsData.date || rawCleanupsData.date === '' ||
-        !rawCleanupsData.organization || rawCleanupsData.organization === '' ||
-        !rawCleanupsData.litter || rawCleanupsData.litter === '' ||
-        !rawCleanupsData.volunteerCount || rawCleanupsData.volunteerCount === '' ||
-        !rawCleanupsData.hours || rawCleanupsData.hours === ''
+        !rawCleanupData.date || rawCleanupData.date === '' ||
+        !rawCleanupData.organization || rawCleanupData.organization === '' ||
+        !rawCleanupData.litter || rawCleanupData.litter === '' ||
+        !rawCleanupData.volunteerCount || rawCleanupData.volunteerCount === '' ||
+        !rawCleanupData.hours || rawCleanupData.hours === ''
     ) {
         // Implement error handling here
         return;
-    } else {
-        let cleanupsData: CleanupsTable = {
-            date: rawCleanupsData.date.toString(),
-            organization: rawCleanupsData.organization.toString(),
-            litter: Number(rawCleanupsData.litter.toString()),
-            volunteerCount: Number(rawCleanupsData.volunteerCount.toString()),
-            hours: Number(rawCleanupsData.hours.toString()),
-            cid: cid
-        };
-        validateCleanupsTableData(cleanupsData);
-        insertIntoCleanupsTable(cleanupsData);
     }
+
+    const cleanupData: Cleanup = {
+        date: rawCleanupData.date.toString(),
+        organization: rawCleanupData.organization.toString(),
+        litter: Number(rawCleanupData.litter.toString()),
+        volunteerCount: Number(rawCleanupData.volunteerCount.toString()),
+        hours: Number(rawCleanupData.hours.toString()),
+        cid: cid
+    };
+    if (validateCleanupsTableData(cleanupData).length > 0) {
+        // Implement error handling here
+        return;
+    }
+    insertCleanupWithContact(cleanupData, contactData);
 };

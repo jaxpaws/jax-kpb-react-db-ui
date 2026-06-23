@@ -1,4 +1,4 @@
-export default interface CleanupsTable {
+export default interface Cleanup {
     date: string,
     organization: string,
     litter: number,
