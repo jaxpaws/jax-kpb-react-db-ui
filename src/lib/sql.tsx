@@ -1,24 +1,43 @@
-const sql = require('mssql');
-import CleanupsTable from '../models/cleanupsTable';
+import Cleanup from '../models/cleanup';
 import { retry } from '../utils/retry';
-import ContactsTable from '@/src/models/contactsTable';
+import Contact from '@/src/models/contact';
+import { getConnection, closeConnection } from '@/src/lib/database-connector';
 
+export async function testConnection() {
+    const conn = await getConnection();
+    const [result] = await conn.query(`SELECT 'True' AS connected;`);
+    console.table(result); // prints returned time value from server
+    await conn.release();
+}
 
-const config = {
-    server: process.env['DB_SERVER'],
-    database: process.env['DB_DATABASE'],
-    user: process.env['DB_USER'],
-    password: process.env['DB_PASS'],
-    pool: {
-        max: 5,
-        min: 0
-    },
-    options: {
-        encrypt: true,
-        trustServerCertificate: false
+export async function insertCleanupWithContact(cleanup: Cleanup, contact: Contact) {
+    try {
+        const conn = await getConnection();
+        await retry(async () => {
+            const [result] = await conn.query(
+                'CALL insert_cleanup_with_contact(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                    contact.email, cleanup.date, cleanup.organization, cleanup.litter, cleanup.volunteerCount,
+                    cleanup.hours, contact.fName, '', contact.lName, contact.phoneNum
+                ]
+            );
+            console.log(result);
+        },
+        {
+            attempts: 3,
+            baseDelay: 200,
+            onRetry: ({ attempt, delay }) => {
+                console.log(`Retry ${attempt} in ${Math.round(delay)}ms...`)
+            }
+        });
+        await conn.release();
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
     }
-};
+}
 
+  
+/*
 export async function query() {
     try {
         //const connectionString = `Server=${config.server},1433;Database=${config.database};User Id=${config.user};Password=${config.password};Encrypt=true`
@@ -66,12 +85,9 @@ export async function query() {
         // };
     }
 }
+*/
 
-export async function queryDb() {
-  const result = await sql.query`SELECT * FROM dbo.contacts WHERE email = 'jacksonbare@gmail.com'`;
-  console.log(result);
-}
-
+/*
 export async function insertIntoCleanupsTable(row: CleanupsTable) {
     return retry(
         async () => {
@@ -107,7 +123,9 @@ export async function insertIntoCleanupsTable(row: CleanupsTable) {
         }
     );
 }
+*/
 
+/*
 export async function insertIntoContactsTable(row: ContactsTable) {
     return retry(
         async () => {
@@ -142,3 +160,4 @@ export async function insertIntoContactsTable(row: ContactsTable) {
         }
     );
 }
+*/
