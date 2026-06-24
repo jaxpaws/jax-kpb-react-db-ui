@@ -30,7 +30,7 @@ export async function insertCleanupWithContact(cleanup: Cleanup, contact: Contac
                 console.log(`Retry ${attempt} in ${Math.round(delay)}ms...`)
             }
         });
-        await conn.release();
+        // await conn.release();
     } catch (err) {
         console.error(`Error while executing query: ${err}`);
     }
