@@ -28,7 +28,7 @@ function validateContactsTableData(contact: Contact): string[] {
 }
 
 export const saveVolunteerCleanupToDb = async (formData: FormData) => {
-    testConnection();
+    await testConnection();
     let cid: string = '';
     let rawContactData = {
         contactFName: formData.get('contactFName'),
