@@ -4,67 +4,52 @@ import { useState } from 'react';
 import volunteerCleanupFieldsJson from './volunteerCleanupFields.json';
 import cleanupContactFieldsJson from './cleanupContactFields.json';
 import { saveVolunteerCleanupToDb } from './actions';
+import Textbox from '../components/textbox';
 
 const TAN_YELLOW_HEX = '#F4E2A3';
 const GOLD_HEX = '#E4BA24';
 const ROADSIDE = 'ROADSIDE';
 const VOLUNTEER = 'VOLUNTEER';
 
-function InputAndLabel({id, inputType, inputName, labelTxt, maxlength}:
-        { id: string, inputType: string, inputName: string, labelTxt: string, maxlength: number }) {
-    return (
-        <fieldset>
-            <label htmlFor={inputName}>{labelTxt}</label>
-            <input
-                id={id}
-                type={inputType}
-                name={inputName}
-                className="block p-1 border-2 rounded-sm"
-                required>
-            </input>
-        </fieldset>
-    );
-}
+// function VolunteerDataEntryFields() {
+//     let fieldList = volunteerCleanupFieldsJson.map(field =>
+//         <Textbox
+//             key={field.key}
+//             id={field.id}
+//             inputType={field.inputType}
+//             inputName={field.inputName}
+//             labelTxt={field.labelTxt}
+//             maxlength={field.maxlength}
+//         />
+//     );
+//     return (
+//         <div className="flex flex-col gap-2">
+//             {fieldList}
+//         </div>
+//     );
+// }
 
-function VolunteerDataEntryFields() {
-    let fieldList = volunteerCleanupFieldsJson.map(field =>
-        <InputAndLabel
-            key={field.key}
-            id={field.id}
-            inputType={field.inputType}
-            inputName={field.inputName}
-            labelTxt={field.labelTxt}
-            maxlength={field.maxlength}
-        />
-    );
-    return (
-        <div className="flex flex-col gap-2">
-            {fieldList}
-        </div>
-    );
-}
-
-function CleanupContactDataEntryFields() {
-    let fieldList = cleanupContactFieldsJson.map(field =>
-        <InputAndLabel
-            key={field.key}
-            id={field.id}
-            inputType={field.inputType}
-            inputName={field.inputName}
-            labelTxt={field.labelTxt}
-            maxlength={field.maxlength}
-        />
-    );
-    return (
-        <div>
-            <strong>Cleanup Contact</strong>
-            <div className="flex flex-row gap-2">
-                {fieldList}
-            </div>
-        </div>
-    );
+// function CleanupContactDataEntryFields() {
+//     let fieldList = cleanupContactFieldsJson.map(field =>
+//         <Textbox
+//             key={field.key}
+//             id={field.id}
+//             inputType={field.inputType}
+//             inputName={field.inputName}
+//             labelTxt={field.labelTxt}
+//             maxlength={field.maxlength}
+//         />
+//     );
+//     return (
+//         <div>
+//             <strong>Cleanup Contact</strong>
+//             <div className="flex flex-row gap-2">
+//                 {fieldList}
+//             </div>
+//         </div>
+//     );
     
-}
+// }
 
 function ToggleButton({btnType, label, selectedType, onClickFunction}:
     { btnType: string, label: string, selectedType: string, onClickFunction: Function })
@@ -84,10 +69,6 @@ function ToggleButton({btnType, label, selectedType, onClickFunction}:
 function VolunteerDataEntryForm() {
     return (
         <form action={saveVolunteerCleanupToDb}>
-            <VolunteerDataEntryFields />
-            <div className="mt-4">
-                <CleanupContactDataEntryFields />
-            </div>
             <button className="mt-4">Submit</button>
         </form>
     )

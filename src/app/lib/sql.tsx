@@ -1,7 +1,7 @@
 import Cleanup from '../models/cleanup';
 import { retry } from '../utils/retry';
-import Contact from '@/src/models/contact';
-import { getConnection, closeConnection } from '@/src/lib/database-connector';
+import Contact from '@/src/app/models/contact';
+import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
 
 export async function testConnection() {
     const conn = await getConnection();

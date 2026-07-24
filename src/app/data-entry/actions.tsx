@@ -1,8 +1,8 @@
 'use server'
 
-import Cleanup from '@/src/models/cleanup';
-import Contact from '@/src/models/contact';
-import { testConnection, insertCleanupWithContact } from '@/src/lib/sql';
+import Cleanup from '@/src/app/models/cleanup';
+import Contact from '@/src/app/models/contact';
+import { testConnection, insertCleanupWithContact } from '@/src/app/lib/sql';
 
 function validateCleanupsTableData(data: Cleanup): string[] {
     let errors: string[] = [];
