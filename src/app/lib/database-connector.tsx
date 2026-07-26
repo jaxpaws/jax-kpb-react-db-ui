@@ -1,3 +1,5 @@
+'use server'
+
 import mysql from 'mysql2/promise';
 import { AuthTypes, Connector, IpAddressTypes } from '@google-cloud/cloud-sql-connector';
 

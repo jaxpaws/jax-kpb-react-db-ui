@@ -1,13 +1,14 @@
 import Checkbox from './checkbox';
 import parseJsonStringOptions from '../utils/parseJsonStringOptions';
 import MultiSelectModel from '../models/multiSelect.model';
+import MultiSelectOption from '../models/multiSelectOption.model';
 import isBlank from '../utils/isBlank';
 
 export default function MultiSelect({ label, multiSelectName, options, descriptionText, isRequired, orientation, selectedValuesMap, handleChange }: MultiSelectModel) {
     function Checkboxes({ multiSelectName, optionsString, handleChange }: { multiSelectName: string, optionsString: string, handleChange?: (event: any) => void }) {
         let options: React.JSX.Element[] = [];
         // if (orientation === 'grid') {
-            parseJsonStringOptions(optionsString).map((option: { key: string, label: string, inputId: string, value: string }) => options.push(
+            parseJsonStringOptions(optionsString).map((option: MultiSelectOption) => options.push(
                 <span key={option.key}>
                     <Checkbox
                         inputId={option.inputId}

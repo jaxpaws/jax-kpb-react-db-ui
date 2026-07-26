@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import RadioList from '../../components/radioList';
 import RoadsideLitterFormFields from './roadsideLitterFormFields';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
-import { saveData } from './actions';
+//import { saveData } from './actions';
+import { getBulkyItemsReference } from '../../lib/sql';
+import MultiSelectOption from '../../models/multiSelectOption.model';
 
 const TAN_YELLOW_HEX = '#F4E2A3';
 const GOLD_HEX = '#E4BA24';
@@ -12,6 +14,33 @@ const ROADSIDE = 'roadside';
 
 export default function ServicesForm() {
     const [reportingDataType, setReportingDataType] = useState('');
+    const [bulkyItemsOptions, setBulkyItemOptions] = useState<MultiSelectOption[]>([]);
+
+    useEffect(() => {
+        if (bulkyItemsOptions.length === 0) {
+            let newBulkyItemOptions: MultiSelectOption[] = [];
+            getBulkyItemsReference()
+                .then((result: any) => {
+                    if (result && result.length >= 1) {
+                        let itemWithHyphen: string = '';
+                        result.map((row: any) => {
+                            itemWithHyphen = row?.description.trim().replaceAll(' ', '-');
+                            newBulkyItemOptions.push({
+                                key: `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-${itemWithHyphen}`,
+                                label: row?.description,
+                                inputId: `bulky-item-${itemWithHyphen}`,
+                                value: row?.description
+                            });
+                        });
+                        console.log(newBulkyItemOptions);
+                        setBulkyItemOptions(newBulkyItemOptions);
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error getting bulky items reference values.`)
+                });
+        }
+    }, [bulkyItemsOptions]);
 
     function handleSubmit(e: any) {
         e.preventDefault();
@@ -34,7 +63,7 @@ export default function ServicesForm() {
                 selectedValue={reportingDataType}
                 handleChange={(event) => setReportingDataType(event.target.value)}>
             </RadioList>
-            { reportingDataType === ROADSIDE && <RoadsideLitterFormFields /> }
+            { reportingDataType === ROADSIDE && <RoadsideLitterFormFields bulkyItemsReferenceString={JSON.stringify(bulkyItemsOptions)} /> }
             <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4">Submit</button>
         </form>
     );
