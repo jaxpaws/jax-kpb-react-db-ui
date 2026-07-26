@@ -1,3 +1,5 @@
+'use server'
+
 import Cleanup from '../models/cleanup';
 import { retry } from '../utils/retry';
 import Contact from '@/src/app/models/contact';
@@ -8,6 +10,22 @@ export async function testConnection() {
     const [result] = await conn.query(`SELECT 'True' AS connected;`);
     console.table(result); // prints returned time value from server
     await conn.release();
+}
+
+export async function getBulkyItemsReference() {
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(
+            'SELECT description FROM bulky_items_reference ' +
+            'WHERE start_date <= CURDATE() ' +
+            'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
+            'ORDER BY description ASC'
+        );
+        await conn.release();
+        return result;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+    }
 }
 
 export async function insertCleanupWithContact(cleanup: Cleanup, contact: Contact) {

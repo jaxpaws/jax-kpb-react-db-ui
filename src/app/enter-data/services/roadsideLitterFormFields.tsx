@@ -5,8 +5,9 @@ import Textarea from '../../components/textarea';
 import RadioList from '../../components/radioList';
 import BulkyItems from './bulkyItems';
 import { ROADSIDE_LITTER_FORM_DATA_IDS, DISTRICT_OPTIONS, HAS_BULKY_ITEMS_OPTIONS, ORGANIZATION_OPTIONS } from './servicesJson';
+import MultiSelectOptionModel from '../../models/multiSelectOption.model';
 
-export default function RoadsideLitterFormFields() {
+export default function RoadsideLitterFormFields({ bulkyItemsReferenceString }: { bulkyItemsReferenceString: string }) {
     const [hasBulkyItems, setHasBulkyItems] = useState('');
     const [selectedDistricts, setSelectedDistricts] = useState(new Map());
 
@@ -66,7 +67,13 @@ export default function RoadsideLitterFormFields() {
                 selectedValue={hasBulkyItems}
                 handleChange={(event) => setHasBulkyItems(event.target.value)}>
             </RadioList>
-            {  (hasBulkyItems === 'yes') && <BulkyItems bulkyItemId={ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems} isRequired={true} /> }
+            {  (hasBulkyItems === 'yes') &&
+                <BulkyItems
+                    bulkyItemId={ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}
+                    bulkyItemsReferenceString={bulkyItemsReferenceString}
+                    isRequired={true}>
+                </BulkyItems>
+            }
         </div>
     );
 }

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import MultiSelect from '../../components/multiSelect';
 import Textbox from '../../components/textbox';
-import { BULKY_ITEM_OPTIONS } from './servicesJson';
 
 function QuantityFields({ theFields }: { theFields: Map<string, string> }) {
     let quantityFields: React.JSX.Element[] = [];
@@ -19,7 +18,9 @@ function QuantityFields({ theFields }: { theFields: Map<string, string> }) {
     return quantityFields;
 }
 
-export default function BulkyItems({ bulkyItemId, isRequired }: { bulkyItemId: string, isRequired?: boolean }) {
+export default function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired }:
+    { bulkyItemId: string, bulkyItemsReferenceString: string, isRequired?: boolean }
+) {
     const [bulkyItemQuantityInputs, setBulkyItemQuantityInputs] = useState(new Map());
 
     const BULKY_ITEMS_LABEL: string = 'Bulky Items Collected';
@@ -45,7 +46,7 @@ export default function BulkyItems({ bulkyItemId, isRequired }: { bulkyItemId: s
             <MultiSelect
                 label={BULKY_ITEMS_LABEL}
                 multiSelectName={bulkyItemId}
-                options={JSON.stringify(BULKY_ITEM_OPTIONS)}
+                options={bulkyItemsReferenceString}
                 descriptionText={BULKY_ITEMS_DESCRIPTION}
                 isRequired={isRequired}
                 orientation="grid"
