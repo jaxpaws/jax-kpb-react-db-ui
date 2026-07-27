@@ -1,6 +1,14 @@
 import TextareaModel from '../models/textarea.model';
 import isBlank from '../utils/isBlank';
 
+function Error({ errorText, textareaId }: { errorText: string | undefined, textareaId: string }) {
+    return (isBlank(errorText)) ? '' : <span id={`${textareaId}-error`} role="alert">{errorText}</span>
+}
+
+function Description({ descriptionText, textareaId }: { descriptionText: string | undefined, textareaId: string }) {
+    return (isBlank(descriptionText)) ? '' : <span id={`${textareaId}-description`}>{descriptionText}</span>
+}
+
 /**
  * 
  * @param textareaId required
@@ -12,21 +20,17 @@ import isBlank from '../utils/isBlank';
  * @param errorText optional
  * @returns a <div> with a <label>, a <span> additional description (if provided), a <textarea>, and a <span> error message (if provided)
  */
-export default function Textarea({ textareaId, textareaName, labelText, descriptionText, maxlength, rows, cols, isRequired, errorText }: TextareaModel) {
+export default function Textarea({ textareaId, textareaName, labelText, descriptionText, maxlength, rows, cols, isRequired, labelFontWeight, errorText }: TextareaModel) {
     const DEFAULT_ROWS = 3;
     const DEFAULT_COLS = 100;
     
-    function Error({ errorText, textareaId }: { errorText: string | undefined, textareaId: string }) {
-        return (isBlank(errorText)) ? '' : <span id={`${textareaId}-error`} role="alert">{errorText}</span>
-    }
-
-    function Description({ descriptionText, textareaId }: { descriptionText: string | undefined, textareaId: string }) {
-        return (isBlank(descriptionText)) ? '' : <span id={`${textareaId}-description`}></span>
-    }
-    
     return (
         <div>
-            <label htmlFor={textareaName}><strong className="text-[1.06rem]">{`${labelText}${isRequired ? ' (required)' : ''}`}</strong></label>
+            <label id={`${textareaId}-label`} htmlFor={textareaName}>
+                <p className={`text-[1.06rem] font-[${labelFontWeight ? labelFontWeight : 600}]`}>
+                    {`${labelText}${isRequired ? ' (required)' : ''}`}
+                </p>
+            </label>
             <Description descriptionText={descriptionText} textareaId={textareaId}></Description>
             <textarea
                 id={textareaId}
@@ -37,7 +41,7 @@ export default function Textarea({ textareaId, textareaName, labelText, descript
                 cols={cols ? cols : DEFAULT_COLS}
                 aria-required={isRequired}
                 aria-invalid={!isBlank(errorText)}
-                aria-describedby={`${textareaId}-description ${textareaId}-error`}>
+                aria-describedby={`${textareaId}-label ${descriptionText ? `${textareaId}-description` : ''} ${errorText ? `${textareaId}-error` : ''}`}>
             </textarea>
             <Error errorText={errorText} textareaId={textareaId}></Error>
         </div>

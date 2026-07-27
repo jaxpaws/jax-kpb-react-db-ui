@@ -7,5 +7,6 @@ export default interface TextareaModel {
     rows?: number,
     cols?: number,
     isRequired?: boolean,
+    labelFontWeight?: number,
     errorText?: string
 }
