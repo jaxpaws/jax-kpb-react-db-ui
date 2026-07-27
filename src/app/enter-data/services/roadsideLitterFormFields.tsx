@@ -4,9 +4,11 @@ import MultiSelect from '../../components/multiSelect';
 import Textarea from '../../components/textarea';
 import RadioList from '../../components/radioList';
 import BulkyItems from './bulkyItems';
-import { ROADSIDE_LITTER_FORM_DATA_IDS, DISTRICT_OPTIONS, HAS_BULKY_ITEMS_OPTIONS, ORGANIZATION_OPTIONS } from './servicesJson';
+import { ROADSIDE_LITTER_FORM_DATA_IDS, HAS_BULKY_ITEMS_OPTIONS } from './servicesJson';
 
-export default function RoadsideLitterFormFields({ bulkyItemsReferenceString }: { bulkyItemsReferenceString: string }) {
+export default function RoadsideLitterFormFields({ bulkyItemsReferenceString, districtsReferenceString }:
+    { bulkyItemsReferenceString: string, districtsReferenceString: string }
+) {
     const [hasBulkyItems, setHasBulkyItems] = useState('');
     const [selectedDistricts, setSelectedDistricts] = useState(new Map());
 
@@ -48,7 +50,7 @@ export default function RoadsideLitterFormFields({ bulkyItemsReferenceString }: 
             <MultiSelect
                 label="Districts"
                 multiSelectName={ROADSIDE_LITTER_FORM_DATA_IDS.districts}
-                options={JSON.stringify(DISTRICT_OPTIONS)}
+                options={districtsReferenceString}
                 descriptionText="Please select all districts where litter was collected."
                 isRequired={true}
                 selectedValuesMap={selectedDistricts}

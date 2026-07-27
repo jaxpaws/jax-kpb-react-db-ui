@@ -25,7 +25,7 @@ export default function Textbox({ inputId, inputType, inputName, labelText, desc
     return (
         <div>
             <label id={`${inputId}-label`} htmlFor={inputName ? inputName : inputId}>
-                <p className={`text-[1.06rem] font-[${labelFontWeight ? labelFontWeight : 600}]`}>
+                <p className={`text-[1.06rem] ${labelFontWeight ? labelFontWeight : 'font-semibold'}`}>
                     {`${labelText}${isRequired ? ' (required)' : ''}`}
                 </p>
             </label>
