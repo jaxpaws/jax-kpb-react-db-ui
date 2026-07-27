@@ -4,6 +4,7 @@ export default interface MultiSelectModel {
     options: string,
     descriptionText?: string,
     isRequired?: boolean,
+    hasSearch?: boolean,
     orientation?: 'flex-col' | 'grid',
     selectedValuesMap?: Map<string, any>,
     handleChange?: (event: any) => void

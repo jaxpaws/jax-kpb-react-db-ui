@@ -49,6 +49,7 @@ export default function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isR
                 options={bulkyItemsReferenceString}
                 descriptionText={BULKY_ITEMS_DESCRIPTION}
                 isRequired={isRequired}
+                hasSearch={true}
                 orientation="grid"
                 selectedValuesMap={bulkyItemQuantityInputs}
                 handleChange={handleChange}>

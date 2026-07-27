@@ -5,7 +5,6 @@ import Textarea from '../../components/textarea';
 import RadioList from '../../components/radioList';
 import BulkyItems from './bulkyItems';
 import { ROADSIDE_LITTER_FORM_DATA_IDS, DISTRICT_OPTIONS, HAS_BULKY_ITEMS_OPTIONS, ORGANIZATION_OPTIONS } from './servicesJson';
-import MultiSelectOptionModel from '../../models/multiSelectOption.model';
 
 export default function RoadsideLitterFormFields({ bulkyItemsReferenceString }: { bulkyItemsReferenceString: string }) {
     const [hasBulkyItems, setHasBulkyItems] = useState('');
@@ -36,12 +35,14 @@ export default function RoadsideLitterFormFields({ bulkyItemsReferenceString }: 
                 inputId={ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds}
                 inputType="number"
                 labelText="Pounds of Litter Collected"
+                width="w-24"
                 isRequired={true}>
             </Textbox>
             <Textbox
                 inputId={ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds}
                 inputType="number"
                 labelText="Pounds of Recycling Collected"
+                width="w-24"
                 isRequired={true}>
             </Textbox>
             <MultiSelect
@@ -54,7 +55,7 @@ export default function RoadsideLitterFormFields({ bulkyItemsReferenceString }: 
                 handleChange={handleChangeDistrict}>
             </MultiSelect>
             <Textarea
-                textareaId={ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds}
+                textareaId={ROADSIDE_LITTER_FORM_DATA_IDS.locations}
                 labelText="Locations"
                 descriptionText="Please enter the street locations where litter was collected. Please separate each street with a comma."
                 isRequired={true}>
