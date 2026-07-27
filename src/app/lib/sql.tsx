@@ -28,6 +28,22 @@ export async function getBulkyItemsReference() {
     }
 }
 
+export async function getDistrictReference() {
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(
+            'SELECT description FROM district_reference ' +
+            'WHERE start_date <= CURDATE() ' +
+            'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
+            'ORDER BY description ASC'
+        );
+        await conn.release();
+        return result;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+    }
+}
+
 export async function insertCleanupWithContact(cleanup: Cleanup, contact: Contact) {
     try {
         const conn = await getConnection();

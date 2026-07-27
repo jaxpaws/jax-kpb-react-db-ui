@@ -27,7 +27,7 @@ export default function Textarea({ textareaId, textareaName, labelText, descript
     return (
         <div>
             <label id={`${textareaId}-label`} htmlFor={textareaName}>
-                <p className={`text-[1.06rem] font-[${labelFontWeight ? labelFontWeight : 600}]`}>
+                <p className={`text-[1.06rem] ${labelFontWeight ? labelFontWeight : 'font-semibold'}`}>
                     {`${labelText}${isRequired ? ' (required)' : ''}`}
                 </p>
             </label>
