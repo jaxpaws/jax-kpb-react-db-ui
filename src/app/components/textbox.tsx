@@ -22,6 +22,9 @@ function Description({ descriptionText, inputId }: { descriptionText: string | u
  * @returns a <div> with a <label>, a <span> additional description (if provided), an <input>, and a <span> error message (if provided)
  */
 export default function Textbox({ inputId, inputType, inputName, labelText, descriptionText, maxlength, width, isRequired, labelFontWeight, errorText }: TextboxModel) {
+    const DEFAULT_TEXT_WIDTH: string = 'sm:w-32';
+    const DEFAULT_DATE_WIDTH: string = 'sm:w-[138px]';
+    
     return (
         <div>
             <label id={`${inputId}-label`} htmlFor={inputName ? inputName : inputId}>
@@ -34,7 +37,8 @@ export default function Textbox({ inputId, inputType, inputName, labelText, desc
                 id={inputId}
                 type={inputType}
                 name={inputName ? inputName : inputId}
-                className={`block p-1 border rounded-sm bg-white p-1 ${width ? width : ''}`}
+                className={`block p-1 border rounded-sm bg-white p-1
+                    ${width ? `${width}` : (inputType === 'date' ? DEFAULT_DATE_WIDTH : DEFAULT_TEXT_WIDTH)} w-full`}
                 maxLength={maxlength}
                 aria-required={isRequired}
                 aria-invalid={!isBlank(errorText)}

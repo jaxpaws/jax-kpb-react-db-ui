@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return(
-      <main id="main-content" className="px-8">
-          <h1 id="main-content-header" className="text-2xl" tabIndex={-1}>Enter Data: Services Data</h1>
+      <main id="main-content" className="px-2 sm:px-4 md:px-8">
+          <h1 id="main-content-header" className="text-xl md:text-2xl" tabIndex={-1}>Enter Data: Services Data</h1>
           <ServicesForm></ServicesForm>
       </main>
   );

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main id="main-content" className="px-8">
+    <main id="main-content" className="px-2 sm:px-4 md:px-8">
       <div className="flex flex-row items-center gap-4">
         <img
           src="/logo.png"
@@ -17,7 +17,7 @@ export default function Page() {
           width={80}
           height={80}
         />
-        <h1 id="main-content-header" tabIndex={-1} className="text-3xl">Web Application for Reporting Data (WARD)</h1>
+        <h1 id="main-content-header" tabIndex={-1} className="text-xl md:text-3xl">Web Application for Reporting Data (WARD)</h1>
       </div>
       <p className="mt-2 text-[1.06rem]">
         WARD is your one-stop shop for reporting data.

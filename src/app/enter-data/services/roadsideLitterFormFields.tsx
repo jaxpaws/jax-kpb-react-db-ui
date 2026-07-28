@@ -37,14 +37,14 @@ export default function RoadsideLitterFormFields({ bulkyItemsReferenceString, di
                 inputId={ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds}
                 inputType="number"
                 labelText="Pounds of Litter Collected"
-                width="w-24"
+                width="sm:w-24"
                 isRequired={true}>
             </Textbox>
             <Textbox
                 inputId={ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds}
                 inputType="number"
                 labelText="Pounds of Recycling Collected"
-                width="w-24"
+                width="sm:w-24"
                 isRequired={true}>
             </Textbox>
             <MultiSelect

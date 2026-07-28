@@ -35,7 +35,7 @@ export default function Textarea({ textareaId, textareaName, labelText, descript
             <textarea
                 id={textareaId}
                 name={textareaName ? textareaName : textareaId}
-                className="block p-1 border rounded-sm bg-white"
+                className="block p-1 border rounded-sm bg-white w-full md:w-180"
                 maxLength={maxlength}
                 rows={rows ? rows : DEFAULT_ROWS}
                 cols={cols ? cols : DEFAULT_COLS}
