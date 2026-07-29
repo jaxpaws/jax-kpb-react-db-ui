@@ -2,22 +2,6 @@ import { useState } from 'react';
 import MultiSelect from '../../components/multiSelect';
 import Textbox from '../../components/textbox';
 
-function QuantityFields({ theFields }: { theFields: Map<string, string> }) {
-    let quantityFields: React.JSX.Element[] = [];
-    theFields.forEach((value, key) => quantityFields.push(
-        <Textbox
-            key={`${key}-key`}
-            inputId={`${key}-quantity`}
-            inputType="number"
-            labelText={`${value} Quantity`}
-            isRequired={true}
-            labelFontWeight={400}
-            width="w-24">
-        </Textbox>
-    ));
-    return quantityFields;
-}
-
 export default function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired }:
     { bulkyItemId: string, bulkyItemsReferenceString: string, isRequired?: boolean }
 ) {
@@ -25,7 +9,6 @@ export default function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isR
 
     const BULKY_ITEMS_LABEL: string = 'Bulky Items Collected';
     const BULKY_ITEMS_DESCRIPTION: string = 'Please select each bulky item collected in the multi-select. Use the search bar to filter the bulky item options.';
-
 
     function handleChange(event: any) {
         if (event) {
@@ -39,6 +22,31 @@ export default function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isR
             }
             setBulkyItemQuantityInputs(copyOfQuantityInputs);
         }
+    }
+    function getQuantityFields(theFields: Map<string, string>) {
+        let quantityFields: React.JSX.Element[] = [];
+        theFields.forEach((value, key) => quantityFields.push(
+            <Textbox
+                key={`${key}-key`}
+                inputId={`${key}-quantity`}
+                inputType="number"
+                inputName="bulky-item-quantities"
+                labelText={`${value} Quantity`}
+                isRequired={true}
+                labelFontWeight="font-normal"
+                width="sm:w-24">
+            </Textbox>
+        ));
+        return (
+            <div>
+                <fieldset>
+                    <legend><p className="text-[1.06rem] font-semibold">Bulky Item Quantities</p></legend>
+                    <div className="flex flex-col gap-2">
+                        { quantityFields }
+                    </div>
+                </fieldset>
+            </div>
+        );
     }
 
     return (
@@ -54,7 +62,7 @@ export default function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isR
                 selectedValuesMap={bulkyItemQuantityInputs}
                 handleChange={handleChange}>
             </MultiSelect>
-            <QuantityFields theFields={bulkyItemQuantityInputs}></QuantityFields>
+            { bulkyItemQuantityInputs.size > 0 && getQuantityFields(bulkyItemQuantityInputs) }
         </span>
     );
 }

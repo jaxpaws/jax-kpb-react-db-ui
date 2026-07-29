@@ -1,12 +1,42 @@
+const ROADSIDE_LITTER_CODE: string = 'rd-ltr';
+const CLEAN_TEAM_CODE: string = 'cln-tm';
+const TRASH_ROUTES_CODE: string = 'tr-rts';
+const COUNTY_CLEANUP_CODE: string = 'co-cln';
+
 export const ROADSIDE_LITTER_FORM_DATA_IDS = {
-    date: 'roadside-litter-date',
-    litterPounds: 'roadside-litter-pounds',
-    recyclingPounds: 'roadside-litter-recycling',
-    districts: 'roadside-litter-districts',
-    locations: 'roadside-litter-locations',
-    hasBulkyItems: 'roadside-litter-has-bulky-items',
-    bulkyItems: 'roadside-litter-bulky-items'
-}
+    date: `${ROADSIDE_LITTER_CODE}-date`,
+    litterPounds: `${ROADSIDE_LITTER_CODE}-trash`,
+    recyclingPounds: `${ROADSIDE_LITTER_CODE}-recycling`,
+    districts: `${ROADSIDE_LITTER_CODE}-districts`,
+    locations: `${ROADSIDE_LITTER_CODE}-locations`,
+    hasBulkyItems: `${ROADSIDE_LITTER_CODE}-has-bulky-items`,
+    bulkyItems: `${ROADSIDE_LITTER_CODE}-bulky-items`
+};
+
+export const CLEAN_TEAM_FORM_DATA_IDS = {
+    date: `${CLEAN_TEAM_CODE}-date`,
+    trashPounds: `${CLEAN_TEAM_CODE}-trash`,
+    recyclingPounds: `${CLEAN_TEAM_CODE}-recycling`,
+    description: `${CLEAN_TEAM_CODE}-desc`
+};
+
+export const TRASH_ROUTES_FORM_DATA_IDS = {
+    date: `${TRASH_ROUTES_CODE}-date`,
+    trashPounds: `${TRASH_ROUTES_CODE}-trash`,
+    recyclingPounds: `${TRASH_ROUTES_CODE}-recycling`
+};
+
+/**
+ * County Neighborhood Cleanup
+ */
+export const COUNTY_CLEANUP_FORM_DATA_IDS = {
+    date: `${COUNTY_CLEANUP_CODE}-date`,
+    tiresCollected: `${COUNTY_CLEANUP_CODE}-tires`,
+    cansChemicalsCollected: `${COUNTY_CLEANUP_CODE}-cans-chemicals`,
+    hasBulkyItems: `${COUNTY_CLEANUP_CODE}-has-bulky-items`,
+    bulkyItems: `${COUNTY_CLEANUP_CODE}-bulky-items`,
+    bulkyItemWeight: `${COUNTY_CLEANUP_CODE}-bulky-item-weight`
+};
 
 export const REPORTING_DATA_TYPE_LIST_NAME = 'reporting-data-types';
 

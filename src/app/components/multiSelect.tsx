@@ -3,8 +3,8 @@ import Checkboxes from './checkboxes';
 import MultiSelectModel from '../models/multiSelect.model';
 import isBlank from '../utils/isBlank';
 
-function SearchBar({ hasSearch, multiSelectName, label, currValue, handleChange }:
-    { hasSearch: boolean, multiSelectName: string, label: string, currValue: string, handleChange: (event: any) => void }
+function SearchBar({ hasSearch, multiSelectName, currValue, handleChange }:
+    { hasSearch: boolean, multiSelectName: string, currValue: string, handleChange: (event: any) => void }
 ) {
     if (!hasSearch) {
         return '';
@@ -17,16 +17,12 @@ function SearchBar({ hasSearch, multiSelectName, label, currValue, handleChange 
                 type="text"
                 name={`${multiSelectName}-search`}
                 value={currValue}
-                className={`block p-1 border rounded-sm bg-white p-1 w-64`}
+                className={`block p-1 border rounded-sm bg-white p-1 w-full sm:w-64`}
                 aria-required="false"
                 onChange={handleChange}>
             </input>
         </span>
     );
-}
-
-function Description({ descriptionText, multiSelectName }: { descriptionText: string | undefined, multiSelectName: string }) {
-    return (isBlank(descriptionText)) ? '' : <span id={`${multiSelectName}-description`}></span>
 }
 
 export default function MultiSelect({ label, multiSelectName, options, descriptionText, isRequired, hasSearch, orientation, selectedValuesMap, handleChange }: MultiSelectModel) {
@@ -36,15 +32,18 @@ export default function MultiSelect({ label, multiSelectName, options, descripti
         return (orient === 'grid') ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'flex flex-col w-100 gap-2'
     }
 
+    function getDescription(descriptionText: string | undefined, multiSelectName: string) {
+        return ((isBlank(descriptionText)) ? '' : <span id={`${multiSelectName}-description`}>{ descriptionText }</span>);
+    }
+
     return (
         <fieldset>
             <legend><p className="text-[1.06rem] font-semibold">{`${label}${isRequired ? ' (required)' : ''}`}</p></legend>
 
-            <Description descriptionText={descriptionText} multiSelectName={multiSelectName}></Description>
+            { getDescription(descriptionText, multiSelectName) }
             <SearchBar
                 hasSearch={hasSearch === true}
                 multiSelectName={multiSelectName}
-                label={label}
                 currValue={filter}
                 handleChange={(event) => { event.preventDefault(); setFilter(event?.target?.value); }}>
             </SearchBar>

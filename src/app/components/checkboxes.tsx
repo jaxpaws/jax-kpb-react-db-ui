@@ -22,5 +22,8 @@ export default function Checkboxes({ multiSelectName, optionsString, filter, sel
             );
         }
     });
+    if (options.length === 0) {
+        options.push(<span>loading...</span>);
+    }
     return options;
 }
