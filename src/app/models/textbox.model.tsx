@@ -7,6 +7,6 @@ export default interface TextboxModel {
     maxlength?: number,
     width?: string,
     isRequired?: boolean,
-    labelFontWeight?: number,
+    labelFontWeight?: string,
     errorText?: string
 }

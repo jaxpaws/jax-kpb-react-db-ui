@@ -1,15 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import RadioList from '../../components/radioList';
 import RoadsideLitterFormFields from './roadsideLitterFormFields';
+import CleanTeamFormFields from './cleanTeamFormFields';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
 import { getBulkyItemsReference, getDistrictReference } from '../../lib/sql';
 import MultiSelectOptionModel from '../../models/multiSelectOption.model';
+import TrashRoutesFormFields from './trashRoutesFormFields';
+import CountyCleanupFormFields from './countyCleanupFormFields';
 
 const TAN_YELLOW_HEX = '#F4E2A3';
 const GOLD_HEX = '#E4BA24';
-const ROADSIDE = 'roadside';
+const ROADSIDE: string = 'roadside';
+const CLEAN_TEAM: string = 'clean-team';
+const TRASH_ROUTES: string = 'routes';
+const COUNTY_CLEANUP: string = 'county-cleanup';
+
 
 export default function ServicesForm() {
     const [reportingDataType, setReportingDataType] = useState('');
@@ -77,6 +84,38 @@ export default function ServicesForm() {
         console.log(`Districts: ${formData.getAll(ROADSIDE_LITTER_FORM_DATA_IDS.districts)}`);
     }
 
+    function renderSelectedForm() {
+        switch (reportingDataType) {
+            case (ROADSIDE):
+                return (
+                    <RoadsideLitterFormFields
+                        bulkyItemsReferenceString={JSON.stringify(bulkyItemsOptions)}
+                        districtsReferenceString={JSON.stringify(districtOptions)}>
+                    </RoadsideLitterFormFields>
+                );
+            case (CLEAN_TEAM):
+                return (
+                    <CleanTeamFormFields></CleanTeamFormFields>
+                );
+            case (TRASH_ROUTES):
+                return (
+                    <TrashRoutesFormFields></TrashRoutesFormFields>
+                );
+            case (COUNTY_CLEANUP):
+                return (
+                    <CountyCleanupFormFields
+                        bulkyItemsReferenceString={JSON.stringify(bulkyItemsOptions)}>
+                    </CountyCleanupFormFields>
+                );
+            default:
+                return '';
+        }
+    }
+
+    const handleReportingDataTypeChange: any = useCallback((event: any) => {
+        setReportingDataType(event.target.value);
+    }, []);
+
     return(
         <form className="flex flex-col gap-2 mt-3" onSubmit={handleSubmit}>
             <RadioList
@@ -85,14 +124,14 @@ export default function ServicesForm() {
                 options={JSON.stringify(REPORTING_DATA_TYPE_OPTIONS)}
                 isRequired={true}
                 selectedValue={reportingDataType}
-                handleChange={(event) => setReportingDataType(event.target.value)}>
+                handleChange={handleReportingDataTypeChange}>
             </RadioList>
-            { reportingDataType === ROADSIDE &&
-                <RoadsideLitterFormFields
-                    bulkyItemsReferenceString={JSON.stringify(bulkyItemsOptions)}
-                    districtsReferenceString={JSON.stringify(districtOptions)}>
-                </RoadsideLitterFormFields> }
-            <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4">Submit</button>
+            { renderSelectedForm() }
+            { reportingDataType !== '' && 
+                <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4">
+                    Submit
+                </button>
+            }
         </form>
     );
 }

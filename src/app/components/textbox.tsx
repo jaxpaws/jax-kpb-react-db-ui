@@ -1,14 +1,6 @@
 import TextboxModel from '../models/textbox.model';
 import isBlank from '../utils/isBlank';
 
-function Error({ errorText, inputId }: { errorText: string | undefined, inputId: string }) {
-    return (isBlank(errorText)) ? '' : <span id={`${inputId}-error`} role="alert">{errorText}</span>
-}
-
-function Description({ descriptionText, inputId }: { descriptionText: string | undefined, inputId: string }) {
-    return (isBlank(descriptionText)) ? '' : <span id={`${inputId}-description`}></span>
-}
-
 /**
  * 
  * @param inputId required
@@ -24,6 +16,14 @@ function Description({ descriptionText, inputId }: { descriptionText: string | u
 export default function Textbox({ inputId, inputType, inputName, labelText, descriptionText, maxlength, width, isRequired, labelFontWeight, errorText }: TextboxModel) {
     const DEFAULT_TEXT_WIDTH: string = 'sm:w-32';
     const DEFAULT_DATE_WIDTH: string = 'sm:w-[138px]';
+
+    function getDescription(descriptionText: string | undefined, inputId: string) {
+        return (isBlank(descriptionText)) ? '' : <span id={`${inputId}-description`}>{ descriptionText }</span>
+    }
+
+    function getError(errorText: string | undefined, inputId: string) {
+        return (isBlank(errorText)) ? '' : <span id={`${inputId}-error`} role="alert">{errorText}</span>
+    }
     
     return (
         <div>
@@ -32,7 +32,7 @@ export default function Textbox({ inputId, inputType, inputName, labelText, desc
                     {`${labelText}${isRequired ? ' (required)' : ''}`}
                 </p>
             </label>
-            <Description descriptionText={descriptionText} inputId={inputId}></Description>
+            { getDescription(descriptionText, inputId) }
             <input
                 id={inputId}
                 type={inputType}
@@ -44,7 +44,7 @@ export default function Textbox({ inputId, inputType, inputName, labelText, desc
                 aria-invalid={!isBlank(errorText)}
                 aria-describedby={`${`${inputId}-label`} ${descriptionText ? `${inputId}-description` : ''} ${errorText ? `${inputId}-error` : ''}`}>
             </input>
-            <Error errorText={errorText} inputId={inputId}></Error>
+            { getError(errorText, inputId) }
         </div>
     );
 }
