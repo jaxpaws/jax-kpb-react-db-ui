@@ -13,7 +13,7 @@ export default function BulkyItemQuantities({ event }: { event: any }) {
                 inputType="number"
                 labelText={value}
                 isRequired={true}
-                labelFontWeight={400}>
+                labelFontWeight="font-normal">
             </Textbox>
         ));
         return quantityFields;
