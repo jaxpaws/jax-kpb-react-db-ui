@@ -4,7 +4,6 @@ import { useState } from 'react';
 import volunteerCleanupFieldsJson from './volunteerCleanupFields.json';
 import cleanupContactFieldsJson from './cleanupContactFields.json';
 import { saveVolunteerCleanupToDb } from './actions';
-import Textbox from '../components/textbox';
 
 const TAN_YELLOW_HEX = '#F4E2A3';
 const GOLD_HEX = '#E4BA24';
