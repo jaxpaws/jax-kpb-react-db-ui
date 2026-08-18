@@ -4,6 +4,8 @@ import Cleanup from '../models/cleanup';
 import { retry } from '../utils/retry';
 import Contact from '@/src/app/models/contact';
 import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
+import ReferenceDataModel from '../models/referenceData.model';
+import { QueryResult } from 'mysql2/promise';
 
 export async function testConnection() {
     const conn = await getConnection();
@@ -12,11 +14,11 @@ export async function testConnection() {
     await conn.release();
 }
 
-export async function getBulkyItemsReference() {
+export async function getBulkyItemsReference(): Promise<QueryResult> {
     try {
         const conn = await getConnection();
         const [result] = await conn.query(
-            'SELECT description FROM bulky_items_reference ' +
+            'SELECT id, description FROM bulky_items_reference ' +
             'WHERE start_date <= CURDATE() ' +
             'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
             'ORDER BY description ASC'
@@ -25,14 +27,15 @@ export async function getBulkyItemsReference() {
         return result;
     } catch (err) {
         console.error(`Error while executing query: ${err}`);
+        return [];
     }
 }
 
-export async function getDistrictReference() {
+export async function getDistrictReference(): Promise<QueryResult> {
     try {
         const conn = await getConnection();
-        const [result] = await conn.query(
-            'SELECT description FROM district_reference ' +
+        const [result] = await conn.execute(
+            'SELECT code, description FROM district_reference ' +
             'WHERE start_date <= CURDATE() ' +
             'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
             'ORDER BY description ASC'
@@ -41,6 +44,7 @@ export async function getDistrictReference() {
         return result;
     } catch (err) {
         console.error(`Error while executing query: ${err}`);
+        return [];
     }
 }
 

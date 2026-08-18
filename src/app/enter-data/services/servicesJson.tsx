@@ -1,3 +1,10 @@
+export const REPORTING_DATA_VALUES = {
+    roadsideLitter: 'roadside',
+    cleanTeam: 'clean-team',
+    trashRoutes: 'routes',
+    countyCleanup: 'county-cleanup'
+}
+
 const ROADSIDE_LITTER_CODE: string = 'rd-ltr';
 const CLEAN_TEAM_CODE: string = 'cln-tm';
 const TRASH_ROUTES_CODE: string = 'tr-rts';
@@ -41,10 +48,10 @@ export const COUNTY_CLEANUP_FORM_DATA_IDS = {
 export const REPORTING_DATA_TYPE_LIST_NAME = 'reporting-data-types';
 
 export const REPORTING_DATA_TYPE_OPTIONS = [
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option1`,label:'Roadside Litter',inputId:'roadside',value:'roadside'},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option2`,label:'Clean Team Event',inputId:'clean-team',value:'clean-team'},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option3`,label:'Trash Routes',inputId:'routes',value:'routes'},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option4`,label:'County Neighborhood Cleanups',inputId:'county-cleanup',value:'county-cleanup'}
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option1`,label:'Clean Team Event',inputId:'clean-team',value:REPORTING_DATA_VALUES.cleanTeam},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option2`,label:'County Neighborhood Cleanups',inputId:'county-cleanup',value:REPORTING_DATA_VALUES.countyCleanup},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option3`,label:'Roadside Litter',inputId:'roadside',value:REPORTING_DATA_VALUES.roadsideLitter},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option4`,label:'Trash Routes',inputId:'routes',value:REPORTING_DATA_VALUES.trashRoutes},
 ];
 
 export const DISTRICT_OPTIONS = [
@@ -58,8 +65,8 @@ export const DISTRICT_OPTIONS = [
 ];
 
 export const HAS_BULKY_ITEMS_OPTIONS = [
-    {key:`${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-option1`,label:'No',inputId:'bulky-items-no',value:'no'},
-    {key:`${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-option2`,label:'Yes',inputId:'bulky-items-yes',value:'yes'}
+    {key:`${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-option1`,label:'No',inputId:`${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-no`,value:'no'},
+    {key:`${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-option2`,label:'Yes',inputId:`${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-yes`,value:'yes'}
 ];
 
 export const BULKY_ITEM_OPTIONS_EXPECTED = [

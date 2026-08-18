@@ -1,0 +1,27 @@
+import { ReferenceDataDAO } from './referenceDataIndex';
+import { ReferenceDataEntity } from '../entities/referenceData.entity';
+import { ReferenceDataModel } from '../models/referenceData.model';
+import { getDistrictReference } from '../lib/sql';
+
+export class DistrictReferenceDataDAO implements ReferenceDataDAO {
+    async getByCode(code: number | string): Promise<ReferenceDataEntity | null> {
+        return null;
+    }
+
+    async getAll(): Promise<ReferenceDataEntity[]> {
+        const result: any = await getDistrictReference();
+        let districts: ReferenceDataEntity[] = [];
+        if (result && result.length >= 1) {
+            result.forEach((district: any) => districts.push({ code: district.code, description: district.description }));
+        }
+        return districts;
+    }
+
+    save(event: ReferenceDataModel): void {
+        
+    }
+
+    delete(code: number | string): void {
+
+    }
+}
