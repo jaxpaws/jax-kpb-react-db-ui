@@ -45,7 +45,8 @@ export function CountyCleanupFormFields({ bulkyItemsReferenceString, errors }:
                     <BulkyItems
                         bulkyItemId={COUNTY_CLEANUP_FORM_DATA_IDS.bulkyItems}
                         bulkyItemsReferenceString={bulkyItemsReferenceString}
-                        isRequired={true}>
+                        isRequired={true}
+                        errors={errors}>
                     </BulkyItems>
                     <div className="mt-4">
                         <Textbox
