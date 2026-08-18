@@ -1,0 +1,1 @@
+export const UNSIGNED_SMALL_INT_MAX: number = 65535;

@@ -1,52 +1,35 @@
 import { useState } from 'react';
-import MultiSelect from '../../components/multiSelect';
-import Textbox from '../../components/textbox';
+import { MultiSelect, Textbox } from '../../components';
+import { ErrorModel } from '../../models';
+import { isBlank } from '../../utils/isBlank';
+import { ifErrorThenGetErrorText } from '../../utils/ifErrorThenGetErrorText';
 
-export default function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired }:
-    { bulkyItemId: string, bulkyItemsReferenceString: string, isRequired?: boolean }
+export function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired, errors }:
+    { bulkyItemId: string, bulkyItemsReferenceString: string, isRequired?: boolean, errors: Map<string, ErrorModel> }
 ) {
-    const [bulkyItemQuantityInputs, setBulkyItemQuantityInputs] = useState(new Map());
+    const [bulkyItemQuantityInputs, setBulkyItemQuantityInputs] = useState(new Map<string, any>());
 
     const BULKY_ITEMS_LABEL: string = 'Bulky Items Collected';
     const BULKY_ITEMS_DESCRIPTION: string = 'Please select each bulky item collected in the multi-select. Use the search bar to filter the bulky item options.';
 
     function handleChange(event: any) {
         if (event) {
-            let copyOfQuantityInputs: Map<string, string> = new Map(JSON.parse(JSON.stringify(Array.from(bulkyItemQuantityInputs))));
-            if (event?.target?.checked && !copyOfQuantityInputs.has(event.target.id)) {
-                copyOfQuantityInputs.set(event.target.id, event.target.value);
+            if (event?.target?.checked && !bulkyItemQuantityInputs.has(event.target.id)) {
+                let copyOfQuantityInputs: any[] = Array.from(bulkyItemQuantityInputs);
+                console.log(`value: ${event.target.value} | label: ${event.target.labels[0].textContent}`);
+                copyOfQuantityInputs.push([event.target.id, { quantityId: `bulky-item-${event.target.value.split('|')[1]}-quantity`, label: event.target.labels[0].textContent }]);
+                copyOfQuantityInputs.sort((itemA: any[], itemB: any[]) => {
+                    return itemA[0].match(/\d+/)[0] - itemB[0].match(/\d+/);
+                });
+                setBulkyItemQuantityInputs(new Map<string, any>(copyOfQuantityInputs));
             } else {
-                if (copyOfQuantityInputs.has(event.target.id)) {
+                if (bulkyItemQuantityInputs.has(event.target.id)) {
+                    let copyOfQuantityInputs: Map<string, any> = new Map<string, any>(Array.from(bulkyItemQuantityInputs));
                     copyOfQuantityInputs.delete(event.target.id);
+                    setBulkyItemQuantityInputs(copyOfQuantityInputs);
                 }
             }
-            setBulkyItemQuantityInputs(copyOfQuantityInputs);
         }
-    }
-    function getQuantityFields(theFields: Map<string, string>) {
-        let quantityFields: React.JSX.Element[] = [];
-        theFields.forEach((value, key) => quantityFields.push(
-            <Textbox
-                key={`${key}-key`}
-                inputId={`${key}-quantity`}
-                inputType="number"
-                inputName="bulky-item-quantities"
-                labelText={`${value} Quantity`}
-                isRequired={true}
-                labelFontWeight="font-normal"
-                width="sm:w-24">
-            </Textbox>
-        ));
-        return (
-            <div>
-                <fieldset>
-                    <legend><p className="text-[1.06rem] font-semibold">Bulky Item Quantities</p></legend>
-                    <div className="flex flex-col gap-2">
-                        { quantityFields }
-                    </div>
-                </fieldset>
-            </div>
-        );
     }
 
     return (
@@ -60,9 +43,33 @@ export default function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isR
                 hasSearch={true}
                 orientation="grid"
                 selectedValuesMap={bulkyItemQuantityInputs}
+                errorText={ifErrorThenGetErrorText(errors, bulkyItemId)}
                 handleChange={handleChange}>
             </MultiSelect>
-            { bulkyItemQuantityInputs.size > 0 && getQuantityFields(bulkyItemQuantityInputs) }
+            { bulkyItemQuantityInputs.size > 0 && 
+                <div>
+                    <fieldset>
+                        <legend><p className="text-[1.06rem] font-semibold">Bulky Item Quantities</p></legend>
+                        <div className="flex flex-col gap-2">
+                            { Array.from(bulkyItemQuantityInputs).map((input) => 
+                                (
+                                    <Textbox
+                                        key={`${input[1].quantityId}-key`}
+                                        inputId={input[1].quantityId}
+                                        inputType="number"
+                                        inputName={input[1].quantityId}
+                                        labelText={`${input[1].label} Quantity`}
+                                        isRequired={true}
+                                        labelFontWeight="font-normal"
+                                        width="sm:w-24"
+                                        errorText={ifErrorThenGetErrorText(errors, input[1].quantityId)}>
+                                    </Textbox>
+                                )
+                            )}
+                        </div>
+                    </fieldset>
+                </div>
+            }
         </span>
     );
 }

@@ -1,7 +1,7 @@
 import { useState, ReactElement } from 'react';
-import Textbox from '../../components/textbox';
+import { Textbox } from '../../components/';
 
-export default function BulkyItemQuantities({ event }: { event: any }) {
+export function BulkyItemQuantities({ event }: { event: any }) {
     const [bulkyItemQuantityInputs, setBulkyItemQuantityInputs] = useState(new Map());
 
     function Fields({ theFields }: { theFields: Map<string, ReactElement> }) {
@@ -13,7 +13,7 @@ export default function BulkyItemQuantities({ event }: { event: any }) {
                 inputType="number"
                 labelText={value}
                 isRequired={true}
-                labelFontWeight={400}>
+                labelFontWeight="font-normal">
             </Textbox>
         ));
         return quantityFields;

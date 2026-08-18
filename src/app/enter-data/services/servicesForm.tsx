@@ -1,14 +1,24 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
-import RadioList from '../../components/radioList';
-import RoadsideLitterFormFields from './roadsideLitterFormFields';
-import CleanTeamFormFields from './cleanTeamFormFields';
-import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
-import { getBulkyItemsReference, getDistrictReference } from '../../lib/sql';
-import MultiSelectOptionModel from '../../models/multiSelectOption.model';
-import TrashRoutesFormFields from './trashRoutesFormFields';
-import CountyCleanupFormFields from './countyCleanupFormFields';
+import { ErrorSummary, RadioList } from '../../components';
+import {
+    REPORTING_DATA_TYPE_LIST_NAME,
+    REPORTING_DATA_TYPE_OPTIONS,
+    ROADSIDE_LITTER_FORM_DATA_IDS,
+    REPORTING_DATA_VALUES
+} from './servicesJson';
+import {
+    saveCleanTeamData,
+    saveCountyCleanupData,
+    saveRoadsideLitterData,
+    saveTrashRoutesData,
+    validateRoadsideLitterData
+} from './actions';
+import { ErrorModel, ReferenceDataModel } from '../../models';
+import { MultiSelectOptionModel } from '../../components/multiSelect/multiSelectOption.model';
+import {  ReferenceDataDAO, DistrictReferenceDataDAO, BulkyItemReferenceDataDAO } from '../../dao/referenceDataIndex'
+import { ServicesFormByActivity } from './servicesFormByActivity';
 
 const TAN_YELLOW_HEX = '#F4E2A3';
 const GOLD_HEX = '#E4BA24';
@@ -18,27 +28,30 @@ const TRASH_ROUTES: string = 'routes';
 const COUNTY_CLEANUP: string = 'county-cleanup';
 
 
-export default function ServicesForm() {
-    const [reportingDataType, setReportingDataType] = useState('');
-    const [bulkyItemsOptions, setBulkyItemOptions] = useState<MultiSelectOptionModel[]>([]);
-    const [districtOptions, setDistrictOptions] = useState<MultiSelectOptionModel[]>([])
+export function ServicesForm() {
+    const [reportingDataType, setReportingDataType] = useState<string>(REPORTING_DATA_VALUES.cleanTeam);
+    const [bulkyItemOptions, setBulkyItemOptions] = useState<MultiSelectOptionModel[]>([]);
+    const [areBulkyItemsRetrieved, setAreBulkyItemsRetrieved] = useState<boolean>(false);
+    const [districtOptions, setDistrictOptions] = useState<MultiSelectOptionModel[]>([]);
+    const [areDistrictsRetrieved, setAreDistrictsRetrieved] = useState<boolean>(false);
+    const [errors, setErrors] = useState<Map<string, ErrorModel>>(new Map<string, ErrorModel>());
 
     useEffect(() => {
-        if (bulkyItemsOptions.length === 0) {
+        if (!areBulkyItemsRetrieved) {
+            setAreBulkyItemsRetrieved(true);
             let newBulkyItemOptions: MultiSelectOptionModel[] = [];
-            getBulkyItemsReference()
-                .then((result: any) => {
-                    if (result && result.length >= 1) {
-                        let itemWithHyphen: string = '';
-                        result.map((row: any) => {
-                            itemWithHyphen = row?.description.trim().replaceAll(' ', '-');
+            const bulkyItemRefDAO: ReferenceDataDAO = new BulkyItemReferenceDataDAO();
+            bulkyItemRefDAO.getAll()
+                .then((items: ReferenceDataModel[]) => {
+                    if (items && items.length >= 1) {
+                        for (let i = 0; i < items.length; i++) {
                             newBulkyItemOptions.push({
-                                key: `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-${itemWithHyphen}`,
-                                label: row?.description,
-                                inputId: `bulky-item-${itemWithHyphen}`,
-                                value: row?.description
+                                key: `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-${items[i]?.code}`,
+                                label: items[i]?.description,
+                                inputId: `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-${i + 1}`,
+                                value: `${items[i]?.description}|${items[i]?.code}`
                             });
-                        });
+                        }
                         console.log(newBulkyItemOptions);
                         setBulkyItemOptions(newBulkyItemOptions);
                     }
@@ -48,76 +61,80 @@ export default function ServicesForm() {
                 });
         }
 
-        if (districtOptions.length === 0) {
+        if (!areDistrictsRetrieved) {
+            setAreDistrictsRetrieved(true);
             let newDistrictOptions: MultiSelectOptionModel[] = [];
-            getDistrictReference()
-                .then((result: any) => {
-                    if (result && result.length >= 1) {
-                        let itemWithHyphen: string = '';
-                        result.map((row: any) => {
-                            itemWithHyphen = row?.description.trim().replaceAll(' ', '-');
+            const districtRefDAO: ReferenceDataDAO = new DistrictReferenceDataDAO();
+            districtRefDAO.getAll()
+                .then((districts: ReferenceDataModel[]) => {
+                    if (districts && districts.length >= 1) {
+                        for (let i = 0; i < districts.length; i++) {
                             newDistrictOptions.push({
-                                key: `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-${itemWithHyphen}`,
-                                label: row?.description,
-                                inputId: `bulky-item-${itemWithHyphen}`,
-                                value: row?.description
+                                key: `${ROADSIDE_LITTER_FORM_DATA_IDS.districts}-${districts[i]?.code}`,
+                                label: districts[i]?.description,
+                                inputId: `${ROADSIDE_LITTER_FORM_DATA_IDS.districts}-${i + 1}`,
+                                value: districts[i]?.code
                             });
-                        });
+                        }
                         console.log(newDistrictOptions);
                         setDistrictOptions(newDistrictOptions);
                     }
                 })
                 .catch(error => {
-                    console.error(`Error getting bulky items reference values.`)
+                    console.error(`Error getting district reference values.`)
                 });
         }
-    }, [bulkyItemsOptions, districtOptions]);
+    }, [bulkyItemOptions, districtOptions]);
 
-    function handleSubmit(e: any) {
+    async function handleSubmit(e: any) {
         e.preventDefault();
+        let errors: Map<string, ErrorModel> | null = null;
+
+        switch (reportingDataType) {
+            case (ROADSIDE):
+                console.log('Validating');
+                errors = await validateRoadsideLitterData(new FormData(e.target));
+                console.log(errors);
+                setErrors(errors);
+                if (errors.size === 0) {
+                    saveRoadsideLitterData(new FormData(e.target));
+                }
+                break;
+            case (CLEAN_TEAM):
+                saveCleanTeamData(new FormData(e.target));
+                break;
+            case (TRASH_ROUTES):
+                saveTrashRoutesData(new FormData(e.target));
+                break;
+            case (COUNTY_CLEANUP):
+                saveCountyCleanupData(new FormData(e.target));
+                break;
+        }
+
+        if (errors !== null && errors.size > 0) {
+            setTimeout(() => {
+                const errorHeader = document.getElementById('error-header');
+                if (errorHeader) {
+                    errorHeader.focus();
+                    window.scroll(0, 0);
+                }
+            }, 100);
+        }
 
         const formData = new FormData(e.target);
         console.log(formData);
-        console.log(`Date: ${formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.date)}`);
-        console.log(`Pounds of Litter: ${formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds)}`);
-        console.log(`Pounds of Recycling: ${formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds)}`);
-        console.log(`Districts: ${formData.getAll(ROADSIDE_LITTER_FORM_DATA_IDS.districts)}`);
-    }
-
-    function renderSelectedForm() {
-        switch (reportingDataType) {
-            case (ROADSIDE):
-                return (
-                    <RoadsideLitterFormFields
-                        bulkyItemsReferenceString={JSON.stringify(bulkyItemsOptions)}
-                        districtsReferenceString={JSON.stringify(districtOptions)}>
-                    </RoadsideLitterFormFields>
-                );
-            case (CLEAN_TEAM):
-                return (
-                    <CleanTeamFormFields></CleanTeamFormFields>
-                );
-            case (TRASH_ROUTES):
-                return (
-                    <TrashRoutesFormFields></TrashRoutesFormFields>
-                );
-            case (COUNTY_CLEANUP):
-                return (
-                    <CountyCleanupFormFields
-                        bulkyItemsReferenceString={JSON.stringify(bulkyItemsOptions)}>
-                    </CountyCleanupFormFields>
-                );
-            default:
-                return '';
-        }
     }
 
     const handleReportingDataTypeChange: any = useCallback((event: any) => {
         setReportingDataType(event.target.value);
+        setErrors(new Map<string, ErrorModel>());
     }, []);
 
     return(
-        <form className="flex flex-col gap-2 mt-3" onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
+            { (errors && errors.size >= 1) &&
+                <ErrorSummary errors={JSON.stringify(Array.from(errors.values()))}></ErrorSummary> }
+            <h1 id="main-content-header" className="text-xl md:text-2xl" tabIndex={-1}>Enter Data: Services Data</h1>
             <RadioList
                 label="Reporting Data Type"
                 listName={REPORTING_DATA_TYPE_LIST_NAME}
@@ -126,9 +143,14 @@ export default function ServicesForm() {
                 selectedValue={reportingDataType}
                 handleChange={handleReportingDataTypeChange}>
             </RadioList>
-            { renderSelectedForm() }
+            <ServicesFormByActivity
+                activity={reportingDataType}
+                bulkyItemOptions={JSON.stringify(bulkyItemOptions)}
+                districtOptions={JSON.stringify(districtOptions)}
+                errors={errors}>
+            </ServicesFormByActivity>
             { reportingDataType !== '' && 
-                <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4">
+                <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4 mb-4">
                     Submit
                 </button>
             }

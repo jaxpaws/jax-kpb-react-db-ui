@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react';
-import Link from "next/link";
+import Link from 'next/link';
 
-export default function Header() {
+export function Header() {
     const [isEnterDataSubNavOpen, setIsEnterDataSubNavOpen] = useState<boolean>(false);
 
     let timer: any = null;
