@@ -1,10 +1,10 @@
-import { ReferenceDataModel } from './referenceData.model';
+import { BulkyItemModel, DistrictModel } from './';
 import { EventModel } from './event.model';
 
 export interface RoadsideLitterModel extends EventModel {
     litterPounds: number;
     recyclingPounds: number;
     locations: string;
-    districts: ReferenceDataModel[];
-    bulkyItems: ReferenceDataModel[];
+    districts: DistrictModel[];
+    bulkyItems: BulkyItemModel[];
 };

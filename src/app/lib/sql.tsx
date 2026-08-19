@@ -5,6 +5,9 @@ import { retry } from '../utils/retry';
 import Contact from '@/src/app/models/contact';
 import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
 import { QueryResult } from 'mysql2/promise';
+import { DistrictEntity } from '../entities/district.entity';
+import { BulkyItemEntity } from '../entities/bulkyItem.entity';
+import { RoadsideLitterEntity } from '../entities/roadsideLitterEvent.entity';
 
 export async function testConnection() {
     const conn = await getConnection();
@@ -39,11 +42,86 @@ export async function getDistrictReference(): Promise<QueryResult> {
             'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
             'ORDER BY description ASC'
         );
-        await conn.release();
+        conn.release();
+        console.log(result);
         return result;
     } catch (err) {
         console.error(`Error while executing query: ${err}`);
         return [];
+    }
+}
+
+export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<any> {
+    console.log('Is anything getting through here?');
+    let conn = null;
+    try {
+        conn = await getConnection();
+        await conn.query('START TRANSACTION');
+        const [result]: any = await conn.execute(
+            'INSERT INTO roadside_litter_cleanups (date, litter_lbs, recycling_lbs, locations) ' +
+            'VALUES (?, ?, ?, ?)',
+            [ event.date, event.litterLbs, event.recyclingLbs, event.locations ]
+        );
+        console.log(result.insertId);
+        if (result && result.insertId) {
+            console.log('Going to try and save districts and bulky items');
+            let districtValuePlaceholders: string = '';
+            let districtValues: any[] = [];
+            districts.map((district) => {
+                districtValuePlaceholders += ' (?, ?),';
+                districtValues.push(result.insertId); // TODO: Make this the event id
+                districtValues.push(district.districtCode);
+            });
+            await conn.execute(
+                'INSERT INTO roadside_litter_districts (roadside_litter_cleanup_id, district_code) ' +
+                `VALUES${districtValuePlaceholders.slice(0, -1)}`,
+                districtValues
+            );
+            let bulkyItemValuePlaceholders: string = '';
+            let bulkyItemValues: any[] = [];
+            bulkyItems.map((item) => {
+                bulkyItemValuePlaceholders += ' (?, ?, ?),';
+                bulkyItemValues.push(item.bulkyItemRefId);
+                bulkyItemValues.push(result.insertId); // TODO: Make this the event id
+                bulkyItemValues.push(item.quantity);
+            });
+            console.log(bulkyItemValuePlaceholders);
+            await conn.execute(
+                'INSERT INTO roadside_litter_bulky_items (bulky_item_ref_id, roadside_litter_cleanup_id, quantity) ' +
+                `VALUES${bulkyItemValuePlaceholders.slice(0, -1)}`,
+                bulkyItemValues
+            );
+        }
+        await conn.query('COMMIT');
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error while executing query to insert Roadside Litter event ${err}`);
+        if (conn) {
+            conn.query('ROLLBACK');
+        }
+    }
+}
+
+export async function updateRoadsideLitterEvent(event: RoadsideLitterEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<void> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        await conn.execute('START TRANSACTION');
+        const [result] = await conn.execute(
+            'UPDATE roadside_litter_cleanups (date, litter_lbs, recycling_lbs, locations) ' +
+            'OUTPUT INSERTED.id' +
+            'VALUES (?, ?, ?, ?)',
+            [ event.date, event.litterLbs, event.recyclingLbs, event.locations ]
+        );
+        console.log(result);
+        await conn.execute('COMMIT');
+        conn.release();
+    } catch (err) {
+        console.error(`Error while executing query to insert Roadside Litter event`);
+        if (conn) {
+            conn.execute('ROLLBACK');
+        }
     }
 }
 

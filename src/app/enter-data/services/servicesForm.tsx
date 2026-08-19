@@ -2,22 +2,16 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ErrorSummary, RadioList } from '../../components';
-import {
-    REPORTING_DATA_TYPE_LIST_NAME,
-    REPORTING_DATA_TYPE_OPTIONS,
-    ROADSIDE_LITTER_FORM_DATA_IDS,
-    REPORTING_DATA_VALUES
-} from './servicesJson';
+import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
 import {
     saveCleanTeamData,
     saveCountyCleanupData,
     saveRoadsideLitterData,
-    saveTrashRoutesData,
-    validateRoadsideLitterData
+    saveTrashRoutesData
 } from './actions';
 import { ErrorModel, ReferenceDataModel } from '../../models';
 import { MultiSelectOptionModel } from '../../components/multiSelect/multiSelectOption.model';
-import {  ReferenceDataDAO, DistrictReferenceDataDAO, BulkyItemReferenceDataDAO } from '../../dao/referenceDataIndex'
+import { ReferenceDataDAO, DistrictReferenceDataDAO, BulkyItemReferenceDataDAO } from '../../dao/referenceData'
 import { ServicesFormByActivity } from './servicesFormByActivity';
 
 const TAN_YELLOW_HEX = '#F4E2A3';
@@ -27,14 +21,14 @@ const CLEAN_TEAM: string = 'clean-team';
 const TRASH_ROUTES: string = 'routes';
 const COUNTY_CLEANUP: string = 'county-cleanup';
 
-
-export function ServicesForm() {
-    const [reportingDataType, setReportingDataType] = useState<string>(REPORTING_DATA_VALUES.cleanTeam);
+export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
+    const [reportingDataType, setReportingDataType] = useState<string>(selectedDataType);
+    const [errors, setErrors] = useState<Map<string, ErrorModel>>(new Map<string, ErrorModel>());
     const [bulkyItemOptions, setBulkyItemOptions] = useState<MultiSelectOptionModel[]>([]);
     const [areBulkyItemsRetrieved, setAreBulkyItemsRetrieved] = useState<boolean>(false);
     const [districtOptions, setDistrictOptions] = useState<MultiSelectOptionModel[]>([]);
     const [areDistrictsRetrieved, setAreDistrictsRetrieved] = useState<boolean>(false);
-    const [errors, setErrors] = useState<Map<string, ErrorModel>>(new Map<string, ErrorModel>());
+    const [selectedBulkyItemValues, setSelectedBulkyItemValues] = useState<string[]>([])
 
     useEffect(() => {
         if (!areBulkyItemsRetrieved) {
@@ -92,13 +86,9 @@ export function ServicesForm() {
 
         switch (reportingDataType) {
             case (ROADSIDE):
-                console.log('Validating');
-                errors = await validateRoadsideLitterData(new FormData(e.target));
+                errors = await saveRoadsideLitterData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
                 console.log(errors);
                 setErrors(errors);
-                if (errors.size === 0) {
-                    saveRoadsideLitterData(new FormData(e.target));
-                }
                 break;
             case (CLEAN_TEAM):
                 saveCleanTeamData(new FormData(e.target));
@@ -130,26 +120,35 @@ export function ServicesForm() {
         setErrors(new Map<string, ErrorModel>());
     }, []);
 
-    return(
+    function handleBulkyItemChange(selectedBulkyItemValues: string[]) {
+        setSelectedBulkyItemValues(selectedBulkyItemValues);
+    }
+
+    return (
         <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-            { (errors && errors.size >= 1) &&
-                <ErrorSummary errors={JSON.stringify(Array.from(errors.values()))}></ErrorSummary> }
-            <h1 id="main-content-header" className="text-xl md:text-2xl" tabIndex={-1}>Enter Data: Services Data</h1>
-            <RadioList
-                label="Reporting Data Type"
-                listName={REPORTING_DATA_TYPE_LIST_NAME}
-                options={JSON.stringify(REPORTING_DATA_TYPE_OPTIONS)}
-                isRequired={true}
-                selectedValue={reportingDataType}
-                handleChange={handleReportingDataTypeChange}>
-            </RadioList>
+            {(errors && errors.size >= 1) &&
+                <ErrorSummary errors={JSON.stringify(Array.from(errors.values()))}></ErrorSummary>}
+            <h1 id="main-content-header" className="text-xl md:text-2xl" tabIndex={-1}>
+                {isUpdate ? 'Update' : 'Enter'} Data: Services Data
+            </h1>
+            {!isUpdate &&
+                <RadioList
+                    label="Reporting Data Type"
+                    listName={REPORTING_DATA_TYPE_LIST_NAME}
+                    options={JSON.stringify(REPORTING_DATA_TYPE_OPTIONS)}
+                    isRequired={true}
+                    selectedValue={reportingDataType}
+                    handleChange={handleReportingDataTypeChange}>
+                </RadioList>
+            }
             <ServicesFormByActivity
                 activity={reportingDataType}
                 bulkyItemOptions={JSON.stringify(bulkyItemOptions)}
                 districtOptions={JSON.stringify(districtOptions)}
-                errors={errors}>
+                errors={errors}
+                handleBulkyItemChange={handleBulkyItemChange}>
             </ServicesFormByActivity>
-            { reportingDataType !== '' && 
+            {reportingDataType !== '' &&
                 <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4 mb-4">
                     Submit
                 </button>

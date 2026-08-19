@@ -1,4 +1,4 @@
 export interface EventModel {
-    id: number;
+    id?: number;
     date: Date;
 }

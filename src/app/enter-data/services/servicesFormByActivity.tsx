@@ -7,8 +7,8 @@ import {
 } from './formsByActivity';
 import { REPORTING_DATA_VALUES } from './servicesJson';
 
-export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOptions, errors }:
-    { activity: string, bulkyItemOptions: string, districtOptions: string, errors: Map<string, ErrorModel> }
+export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOptions, errors, handleBulkyItemChange }:
+    { activity: string, bulkyItemOptions: string, districtOptions: string, errors: Map<string, ErrorModel>, handleBulkyItemChange?: (event: any) => void }
 ): React.JSX.Element | null {
     switch (activity) {
         case (REPORTING_DATA_VALUES.roadsideLitter):
@@ -17,7 +17,8 @@ export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOpt
                 <RoadsideLitterFormFields
                     bulkyItemsReferenceString={bulkyItemOptions}
                     districtsReferenceString={districtOptions}
-                    errors={errors}>
+                    errors={errors}
+                    handleBulkyItemChange={handleBulkyItemChange}>
                 </RoadsideLitterFormFields>
             );
         case (REPORTING_DATA_VALUES.cleanTeam):
@@ -32,7 +33,8 @@ export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOpt
             return (
                 <CountyCleanupFormFields
                     bulkyItemsReferenceString={bulkyItemOptions}
-                    errors={errors}>
+                    errors={errors}
+                    handleBulkyItemChange={handleBulkyItemChange}>
                 </CountyCleanupFormFields>
             );
         default:
