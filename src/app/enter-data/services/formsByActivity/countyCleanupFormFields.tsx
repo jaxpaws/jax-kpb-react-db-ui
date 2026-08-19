@@ -4,8 +4,8 @@ import { ErrorModel } from '../../../models';
 import { BulkyItems } from '../bulkyItems';
 import { COUNTY_CLEANUP_FORM_DATA_IDS, HAS_BULKY_ITEMS_OPTIONS } from '../servicesJson';
 
-export function CountyCleanupFormFields({ bulkyItemsReferenceString, errors }:
-    { bulkyItemsReferenceString: string, errors: Map<string, ErrorModel> }
+export function CountyCleanupFormFields({ bulkyItemsReferenceString, errors, handleBulkyItemChange }:
+    { bulkyItemsReferenceString: string, errors: Map<string, ErrorModel>, handleBulkyItemChange?: (event: any) => void }
 ) {
     const [hasBulkyItems, setHasBulkyItems] = useState('no');
     

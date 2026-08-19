@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { ServicesForm } from './servicesForm';
+import { REPORTING_DATA_VALUES } from './servicesJson';
 
 export const metadata: Metadata = {
   title: 'Enter Data | WARD',
@@ -7,10 +8,13 @@ export const metadata: Metadata = {
   icons: ['./favicon.png']
 };
 
-export default function EnterServicesData() {
-  return(
-      <main id="main-content" className="px-2 sm:px-4 md:px-8">
-          <ServicesForm></ServicesForm>
-      </main>
+export default async function EnterServicesData() {
+  return (
+    <main id="main-content" className="px-2 sm:px-4 md:px-8">
+      <ServicesForm
+        isUpdate={false}
+        selectedDataType={REPORTING_DATA_VALUES.cleanTeam}>
+      </ServicesForm>
+    </main>
   );
 }

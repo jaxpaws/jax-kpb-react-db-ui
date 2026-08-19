@@ -4,8 +4,8 @@ import { ErrorModel } from '../../models';
 import { isBlank } from '../../utils/isBlank';
 import { ifErrorThenGetErrorText } from '../../utils/ifErrorThenGetErrorText';
 
-export function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired, errors }:
-    { bulkyItemId: string, bulkyItemsReferenceString: string, isRequired?: boolean, errors: Map<string, ErrorModel> }
+export function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired, errors, handleBulkyItemChange }:
+    { bulkyItemId: string, bulkyItemsReferenceString: string, isRequired?: boolean, errors: Map<string, ErrorModel>, handleBulkyItemChange?: (event: any) => void }
 ) {
     const [bulkyItemQuantityInputs, setBulkyItemQuantityInputs] = useState(new Map<string, any>());
 
@@ -14,6 +14,7 @@ export function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired,
 
     function handleChange(event: any) {
         if (event) {
+            let selectedBulkyItemValues: string[] = [];
             if (event?.target?.checked && !bulkyItemQuantityInputs.has(event.target.id)) {
                 let copyOfQuantityInputs: any[] = Array.from(bulkyItemQuantityInputs);
                 console.log(`value: ${event.target.value} | label: ${event.target.labels[0].textContent}`);
@@ -22,11 +23,19 @@ export function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired,
                     return itemA[0].match(/\d+/)[0] - itemB[0].match(/\d+/);
                 });
                 setBulkyItemQuantityInputs(new Map<string, any>(copyOfQuantityInputs));
+                if (handleBulkyItemChange) {
+                    copyOfQuantityInputs.map((input) => selectedBulkyItemValues.push(`${input[1].label}|${input[1].quantityId.match(/\d+/)}`));
+                    handleBulkyItemChange(selectedBulkyItemValues);
+                }
             } else {
                 if (bulkyItemQuantityInputs.has(event.target.id)) {
                     let copyOfQuantityInputs: Map<string, any> = new Map<string, any>(Array.from(bulkyItemQuantityInputs));
                     copyOfQuantityInputs.delete(event.target.id);
                     setBulkyItemQuantityInputs(copyOfQuantityInputs);
+                    if (handleBulkyItemChange) {
+                        Array.from(copyOfQuantityInputs).map((input) => selectedBulkyItemValues.push(`${input[1].label}|${input[1].quantityId.match(/\d+/)}`));
+                        handleBulkyItemChange(selectedBulkyItemValues);
+                    }
                 }
             }
         }

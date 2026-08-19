@@ -14,7 +14,7 @@ export function validateDate(
     errors: Map<string, ErrorModel>,
     value: FormDataEntryValue | null,
     inputId: string
-): Map<string, ErrorModel> {
+): { date: Date | null, errors: Map<string, ErrorModel> } {
     if (isFormDataEntryValueNullOrBlank(value)) {
         const error: ErrorModel = {
             inputId: inputId,
@@ -40,10 +40,12 @@ export function validateDate(
                     message: `Cannot be a future date, please enter today's date or a past date`
                 };
                 errors.set(inputId, error);
+            } else {
+                return { date: new Date(dateAsTimestamp), errors: errors };
             }
         }
     }
-    return errors;
+    return { date: null, errors: errors };
 }
 
 export function validatePounds(
@@ -51,7 +53,7 @@ export function validatePounds(
     value: FormDataEntryValue | null,
     inputId: string,
     poundsOfWhat: string
-): Map<string, ErrorModel> {
+): { pounds: number | null, errors: Map<string, ErrorModel> } {
     if (isFormDataEntryValueNullOrBlank(value)) {
         const error: ErrorModel = {
             inputId: inputId,
@@ -77,10 +79,12 @@ export function validatePounds(
                     message: `Please enter a number greater than 0 and less than ${UNSIGNED_SMALL_INT_MAX}`
                 };
                 errors.set(inputId, error);
+            } else {
+                return { pounds: Number(litterPoundsString), errors: errors };
             }
         }
     }
-    return errors;
+    return { pounds: null, errors: errors };
 }
 
 export function validateSimpleTextField(
@@ -89,7 +93,7 @@ export function validateSimpleTextField(
     inputId: string,
     fieldDescription: string,
     maxLength: number
-): Map<string, ErrorModel> {
+): { text: string | null, errors: Map<string, ErrorModel> } {
     if (isFormDataEntryValueNullOrBlank(value)) {
         const error: ErrorModel = {
             inputId: inputId,
@@ -104,6 +108,8 @@ export function validateSimpleTextField(
             message: `Please reduce the character count by at least ${`${value}`.length - maxLength} characters`
         };
         errors.set(inputId, error);
+    } else {
+        return { text: `${value}`, errors: errors };
     }
-    return errors;
+    return { text: null, errors: errors };
 }

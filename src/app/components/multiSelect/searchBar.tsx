@@ -9,7 +9,7 @@ export function SearchBar({ multiSelectName, currValue, handleChange }:
                 type="text"
                 name={`${multiSelectName}-search`}
                 value={currValue}
-                className={`block p-1 border rounded-sm bg-white p-1 w-full sm:w-64`}
+                className={`block p-1 border rounded-sm bg-white p-1 w-full sm:w-64 filter-text-box`}
                 aria-required="false"
                 onChange={handleChange}>
             </input>

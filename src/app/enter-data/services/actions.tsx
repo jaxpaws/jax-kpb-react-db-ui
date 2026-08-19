@@ -1,7 +1,7 @@
-import { ErrorModel, RoadsideLitterModel } from '../../models';
+import { BulkyItemModel, DistrictModel, ErrorModel, RoadsideLitterModel } from '../../models';
 import { ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
 import { ReferenceDataModel } from '../../models';
-import { ReferenceDataDAO, DistrictReferenceDataDAO, BulkyItemReferenceDataDAO } from '../../dao/referenceDataIndex';
+import { ReferenceDataDAO, DistrictReferenceDataDAO, BulkyItemReferenceDataDAO } from '../../dao/referenceData';
 import { 
     isFormDataEntryValueNullOrBlank,
     isFormDataEntryValueArrayNullOrEmpty,
@@ -10,12 +10,12 @@ import {
     validateSimpleTextField
 } from '../../utils/commonFormValidation';
 import { UNSIGNED_SMALL_INT_MAX } from '../../constValues';
+import { RoadsideLitterEventDAO } from '../../dao/event';
 
-function parseRoadsideLitterData(formData: FormData) {
-
-}
-
-async function validateDistricts(errors: Map<string, ErrorModel>, values: FormDataEntryValue[], inputId: string): Promise<Map<string, ErrorModel>> {
+async function validateDistricts(errors: Map<string, ErrorModel>, values: FormDataEntryValue[], inputId: string
+): Promise<{ districts: DistrictModel[] | null, errors: Map<string, ErrorModel> }> {
+    const startingErrorCount: number = errors.size;
+    let validDistricts: DistrictModel[] = [];
     if (isFormDataEntryValueArrayNullOrEmpty(values)) {
         const error: ErrorModel = {
             inputId: inputId,
@@ -28,7 +28,7 @@ async function validateDistricts(errors: Map<string, ErrorModel>, values: FormDa
         const districts: ReferenceDataModel[] = await districtRefDAO.getAll();
         if (districts && districts.length >= 1) {
             const districtMap = new Map<string, string>();
-            districts.map((district: ReferenceDataModel) => districtMap.set(district.code, district.description));
+            districts.map((district: ReferenceDataModel) => districtMap.set(district.code, district.description ? district.description : ''));
             values.map((value: FormDataEntryValue) => {
                 if (!districtMap.has(value.toString().trim())) {
                     const error: ErrorModel = {
@@ -37,18 +37,28 @@ async function validateDistricts(errors: Map<string, ErrorModel>, values: FormDa
                         message: `Invalid district selected with code: '${value.toString().trim()}'`
                     };
                     errors.set(inputId, error);
+                } else {
+                    validDistricts.push({ districtRef: { code: value.toString().trim(), description: '' }});
                 }
             });
+            
         }
     }
-    return errors;
+    if (errors.size > startingErrorCount) {
+        return { districts: null, errors: errors };
+    } else {
+        return { districts: validDistricts, errors: errors }; 
+    }
 }
 
-async function validateBulkyItems(errors: Map<string, ErrorModel>, formData: FormData, inputId: string, searchId?: string): Promise<Map<string, ErrorModel>> {
+async function validateBulkyItems(errors: Map<string, ErrorModel>, formData: FormData, selectedBulkyItemValues: string[], inputId: string, searchId?: string
+): Promise<{ bulkyItems: BulkyItemModel[] | null, errors: Map<string, ErrorModel> }> {
     let quantityErrors: ErrorModel[] = [];
     let quantityField: FormDataEntryValue | null;
+    const startingErrorCount: number = errors.size;
+    let validBulkyItems: BulkyItemModel[] = [];
     const selectedBulkyItems: FormDataEntryValue[] = formData.getAll(inputId);
-    if (isFormDataEntryValueArrayNullOrEmpty(selectedBulkyItems)) {
+    if (isFormDataEntryValueArrayNullOrEmpty(selectedBulkyItemValues)) {
         const error: ErrorModel = {
             inputId: searchId ? searchId : `${inputId}-1`,
             fieldName: 'Bulky Items Collected',
@@ -60,9 +70,9 @@ async function validateBulkyItems(errors: Map<string, ErrorModel>, formData: For
         const bulkyItems: ReferenceDataModel[] = await bulkyItemRefDataDAO.getAll();
         if (bulkyItems && bulkyItems.length >= 1) {
             const bulkyItemsMap = new Map<string, string>();
-            bulkyItems.map((item: ReferenceDataModel) => bulkyItemsMap.set(`${item.code}`, item.description));
+            bulkyItems.map((item: ReferenceDataModel) => bulkyItemsMap.set(`${item.code}`, item.description ? item.description : ''));
             
-            selectedBulkyItems.map((value: FormDataEntryValue) => {
+            selectedBulkyItemValues.map((value: FormDataEntryValue) => {
                 console.log(value);
                 const [itemLabel, itemId] = value.toString().trim().split('|');
                 console.log(`itemLabel: ${itemLabel} | itemId: ${itemId}`);
@@ -75,7 +85,6 @@ async function validateBulkyItems(errors: Map<string, ErrorModel>, formData: For
                     errors.set(inputId, error);
                 }
                 quantityField = formData.get(`bulky-item-${itemId}-quantity`);
-                console.log(`fieldName: ${itemLabel} Quantity`)
                 if (isFormDataEntryValueNullOrBlank(quantityField)) {
                     quantityErrors.push({
                         inputId: `bulky-item-${itemId}-quantity`,
@@ -98,6 +107,8 @@ async function validateBulkyItems(errors: Map<string, ErrorModel>, formData: For
                                 fieldName: `${itemLabel} Quantity`,
                                 message: `Please enter a number greater than 0 and less than ${UNSIGNED_SMALL_INT_MAX}`
                             });
+                        } else {
+                            validBulkyItems.push({ bulkyItemRef: { code: itemId, description: '' }, quantity: quantity });
                         }
                     }
                 }
@@ -108,51 +119,94 @@ async function validateBulkyItems(errors: Map<string, ErrorModel>, formData: For
             ));
         }
     }
-    return errors;
+    if (errors.size > startingErrorCount) {
+        return { bulkyItems: null, errors: errors };
+    } else {
+        return { bulkyItems: validBulkyItems, errors: errors };
+    }
 }
 
 const MAX_ROADSIDE_LITTER_LOCATIONS_LENGTH: number = 300;
 
-export async function validateRoadsideLitterData(formData: FormData): Promise<Map<string, ErrorModel>> {
+export async function validateRoadsideLitterData(formData: FormData, selectedBulkyItemValues: string[]
+): Promise<{ data: RoadsideLitterModel | null, errors: Map<string, ErrorModel> }> {
     let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
 
-    errors = validateDate(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.date), ROADSIDE_LITTER_FORM_DATA_IDS.date),
-    errors = validatePounds(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds), ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds, 'Litter'),
-    errors = validatePounds(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds), ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds, 'Recycling'),
-    errors = await validateDistricts(errors, formData.getAll(ROADSIDE_LITTER_FORM_DATA_IDS.districts), `${ROADSIDE_LITTER_FORM_DATA_IDS.districts}-1`);
-    errors = validateSimpleTextField(
+    const dateValidation = validateDate(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.date), ROADSIDE_LITTER_FORM_DATA_IDS.date);
+    errors = dateValidation.errors;
+    const litterValidation = validatePounds(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds), ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds, 'Litter');
+    errors = litterValidation.errors;
+    const recyclingValidation = validatePounds(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds), ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds, 'Recycling');
+    errors = recyclingValidation.errors;
+    const districtValidation = await validateDistricts(errors, formData.getAll(ROADSIDE_LITTER_FORM_DATA_IDS.districts), `${ROADSIDE_LITTER_FORM_DATA_IDS.districts}-1`);
+    errors = districtValidation.errors;
+    const locationsValidation = validateSimpleTextField(
         errors,
         formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.locations),
         ROADSIDE_LITTER_FORM_DATA_IDS.locations,
         'Locations',
         MAX_ROADSIDE_LITTER_LOCATIONS_LENGTH
     );
-    if (isFormDataEntryValueNullOrBlank(formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems))) {
+    errors = locationsValidation.errors;
+    
+    let bulkyItemValidation: { bulkyItems: BulkyItemModel[] | null, errors: Map<string, ErrorModel> } =
+        { bulkyItems: null, errors: errors};
+    const hasBulkyItems: FormDataEntryValue | null = formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems);
+    console.log(hasBulkyItems);
+    if (isFormDataEntryValueNullOrBlank(hasBulkyItems)) {
         const error: ErrorModel = {
             inputId: `${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-no`,
             fieldName: 'Were any bulky items collected',
             message: 'Please whether bulky items were collected or not.'
         };
         errors.set(`${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-no`, error);
-    } else if (formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems)?.toString() === 'yes') {
-        errors = await validateBulkyItems(errors, formData, ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems, `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-search`);
+    } else if (hasBulkyItems && hasBulkyItems.toString() === 'yes') {
+        bulkyItemValidation = await validateBulkyItems(
+            errors,
+            formData,
+            selectedBulkyItemValues,
+            ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems,
+            `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-search`
+        );
+        errors = bulkyItemValidation.errors;
     }
 
-    console.log(errors);
+    console.log(dateValidation.date);
+    console.log(`litter: ${litterValidation.pounds}`);
+    console.log(`recycling: ${recyclingValidation.pounds}`);
+    console.log(districtValidation.districts);
+    console.log(`locations: ${locationsValidation.text}`);
+    console.log(bulkyItemValidation.bulkyItems);
 
-    return errors;
+
+    let data = null;
+    if (errors.size === 0 && dateValidation.date && litterValidation.pounds && recyclingValidation.pounds &&
+        districtValidation.districts && locationsValidation.text &&
+        (hasBulkyItems && hasBulkyItems.toString() === 'no' || bulkyItemValidation.bulkyItems)
+    ) {
+        data = {
+            date: dateValidation.date,
+            litterPounds: litterValidation.pounds,
+            recyclingPounds: recyclingValidation.pounds,
+            districts: districtValidation.districts,
+            locations: locationsValidation.text,
+            bulkyItems: bulkyItemValidation.bulkyItems ? bulkyItemValidation.bulkyItems : []
+         };
+    }
+    return { data: data, errors: errors };
 }
 
-export async function saveRoadsideLitterData(formData: FormData) {
-    parseRoadsideLitterData
+export async function saveRoadsideLitterData(formData: FormData, selectedBulkyItemValues: string[], isUpdate: boolean) {
+    let validation: { data: RoadsideLitterModel | null, errors: Map<string, ErrorModel> } = await validateRoadsideLitterData(formData, selectedBulkyItemValues);
+    console.log(`error count: ${validation.errors.size}`);
+    console.log(validation.data);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        console.log('about to save Roadside Litter event with DAO');
+        const roadsideLitterDAO: RoadsideLitterEventDAO = new RoadsideLitterEventDAO();
+        await roadsideLitterDAO.save(validation.data, isUpdate);
+    }
     console.log(formData);
-    console.log(formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.date));
-    console.log(formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds));
-    console.log(formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds));
-    console.log(formData.getAll(ROADSIDE_LITTER_FORM_DATA_IDS.districts));
-    console.log(formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.locations));
-    console.log(formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems));
-    console.log(formData.getAll(ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems));
+    return validation.errors;
 }
 
 export async function saveCleanTeamData(formData: FormData) {
