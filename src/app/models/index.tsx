@@ -1,5 +1,6 @@
 export type { BulkyItemModel } from './bulkyItem.model';
 export type { CleanTeamModel } from './cleanTeam.model';
+export type { CountyCleanupModel } from './countyCleanup.model';
 export type { CountyCleanupsBulkyItemModel } from './countyCleanupsBulkyItem.model';
 export type { DistrictModel } from './district.model';
 export type { ErrorModel } from './error.model';

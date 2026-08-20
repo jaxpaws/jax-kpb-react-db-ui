@@ -2,7 +2,7 @@ import { EventDAO } from './';
 import { BulkyItemEntity } from '../../entities/bulkyItem.entity';
 import { DistrictEntity } from '../../entities/district.entity';
 import { EventEntity } from '../../entities/event.entity';
-import { RoadsideLitterEntity } from '../../entities/roadsideLitterEvent.entity';
+import { RoadsideLitterEntity } from '../../entities/roadsideLitter.entity';
 import { BulkyItemModel, DistrictModel, EventModel } from '../../models';
 import { isRoadsideLitterEvent } from '../../utils/eventTypeGuards';
 import { insertRoadsideLitterEvent, updateRoadsideLitterEvent } from '../../lib/sql';
@@ -42,6 +42,7 @@ export class RoadsideLitterEventDAO implements EventDAO {
             });
 
             if (isUpdate) {
+                // TODO: Implement UPDATE method
                 await updateRoadsideLitterEvent(eventEntity, districtEntities, bulkyItemEntities);
             } else {
                 await insertRoadsideLitterEvent(eventEntity, districtEntities, bulkyItemEntities);

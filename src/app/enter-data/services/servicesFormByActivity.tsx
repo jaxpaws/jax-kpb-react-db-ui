@@ -11,22 +11,9 @@ export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOpt
     { activity: string, bulkyItemOptions: string, districtOptions: string, errors: Map<string, ErrorModel>, handleBulkyItemChange?: (event: any) => void }
 ): React.JSX.Element | null {
     switch (activity) {
-        case (REPORTING_DATA_VALUES.roadsideLitter):
-            return (
-                <RoadsideLitterFormFields
-                    bulkyItemsReferenceString={bulkyItemOptions}
-                    districtsReferenceString={districtOptions}
-                    errors={errors}
-                    handleBulkyItemChange={handleBulkyItemChange}>
-                </RoadsideLitterFormFields>
-            );
         case (REPORTING_DATA_VALUES.cleanTeam):
             return (
                 <CleanTeamFormFields errors={errors}></CleanTeamFormFields>
-            );
-        case (REPORTING_DATA_VALUES.trashRoutes):
-            return (
-                <TrashRoutesFormFields errors={errors}></TrashRoutesFormFields>
             );
         case (REPORTING_DATA_VALUES.countyCleanup):
             return (
@@ -36,6 +23,20 @@ export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOpt
                     handleBulkyItemChange={handleBulkyItemChange}>
                 </CountyCleanupFormFields>
             );
+        case (REPORTING_DATA_VALUES.roadsideLitter):
+            return (
+                <RoadsideLitterFormFields
+                    bulkyItemsReferenceString={bulkyItemOptions}
+                    districtsReferenceString={districtOptions}
+                    errors={errors}
+                    handleBulkyItemChange={handleBulkyItemChange}>
+                </RoadsideLitterFormFields>
+            );
+        case (REPORTING_DATA_VALUES.trashRoutes):
+            return (
+                <TrashRoutesFormFields errors={errors}></TrashRoutesFormFields>
+            );
+        
         default:
             return null;
     }

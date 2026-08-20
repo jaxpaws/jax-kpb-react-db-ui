@@ -1,5 +1,4 @@
 import { isBlank } from './isBlank';
-import { UNSIGNED_SMALL_INT_MAX } from '../constValues';
 import { BulkyItemModel, ErrorModel, ReferenceDataModel } from '../models';
 import { BulkyItemReferenceDataDAO } from '../dao/referenceData';
 
@@ -53,39 +52,97 @@ export function validatePounds(
     errors: Map<string, ErrorModel>,
     value: FormDataEntryValue | null,
     inputId: string,
-    poundsOfWhat: string
+    fieldName: string,
+    maxPounds: number,
+    allowZero: boolean
 ): { pounds: number | null, errors: Map<string, ErrorModel> } {
     if (isFormDataEntryValueNullOrBlank(value)) {
         const error: ErrorModel = {
             inputId: inputId,
-            fieldName: `Pounds of ${poundsOfWhat} Collected`,
+            fieldName: fieldName,
             message: `Please enter the pounds collected`
         };
         errors.set(inputId, error);
     } else {
-        const litterPoundsString: string | undefined = value?.toString();
-        if (Number.isNaN(Number(litterPoundsString))) {
+        const poundsString: string | undefined = value?.toString();
+        if (Number.isNaN(Number(poundsString))) {
             const error: ErrorModel = {
                 inputId: inputId,
-                fieldName: `Pounds of ${poundsOfWhat} Collected`,
-                message: 'Please enter the pounds collected'
+                fieldName: fieldName,
+                message: 'Please enter only digits'
             };
             errors.set(inputId, error);
         } else {
-            const litterPounds: number = Number(litterPoundsString);
-            if (litterPounds < 0 || litterPounds > UNSIGNED_SMALL_INT_MAX) {
+            const pounds: number = Number(poundsString);
+            if (!allowZero && (pounds === 0 || pounds > maxPounds)) {
                 const error: ErrorModel = {
                     inputId: inputId,
-                    fieldName: `Pounds of ${poundsOfWhat} Collected`,
-                    message: `Please enter a number greater than 0 and less than ${UNSIGNED_SMALL_INT_MAX}`
+                    fieldName: fieldName,
+                    message: `Please enter a number greater than 0 and less than ${maxPounds}`
+                };
+                errors.set(inputId, error);
+            } else if (pounds < 0 || pounds > maxPounds) {
+                const error: ErrorModel = {
+                    inputId: inputId,
+                    fieldName: fieldName,
+                    message: `Please enter a non-negative number less than ${maxPounds}`
                 };
                 errors.set(inputId, error);
             } else {
-                return { pounds: Number(litterPoundsString), errors: errors };
+                return { pounds: Number(poundsString), errors: errors };
             }
         }
     }
     return { pounds: null, errors: errors };
+}
+
+export function validateCount(
+    errors: Map<string, ErrorModel>,
+    value: FormDataEntryValue | null,
+    inputId: string,
+    fieldDescription: string,
+    maxCount: number,
+    unitOfMeasurement: string,
+    allowZero: boolean
+): { count: number | null, errors: Map<string, ErrorModel> } {
+    if (isFormDataEntryValueNullOrBlank(value)) {
+        const error: ErrorModel = {
+            inputId: inputId,
+            fieldName: fieldDescription,
+            message: `Please enter the ${unitOfMeasurement}`
+        };
+        errors.set(inputId, error);
+    } else {
+        const countString: string | undefined = value?.toString();
+        if (Number.isNaN(Number(countString))) {
+            const error: ErrorModel = {
+                inputId: inputId,
+                fieldName: fieldDescription,
+                message: `Please enter only digits`
+            };
+            errors.set(inputId, error);
+        } else {
+            const count: number = Number(countString);
+            if (!allowZero && (count === 0 || count > maxCount)) {
+                const error: ErrorModel = {
+                    inputId: inputId,
+                    fieldName: fieldDescription,
+                    message: `Please enter a number greater than 0 and less than ${maxCount}`
+                };
+                errors.set(inputId, error);
+            } else if (count < 0 || count > maxCount) {
+                const error: ErrorModel = {
+                    inputId: inputId,
+                    fieldName: fieldDescription,
+                    message: `Please enter a non-negative number less than ${maxCount}`
+                };
+                errors.set(inputId, error);
+            } else {
+                return { count: Number(countString), errors: errors };
+            }
+        }
+    }
+    return { count: null, errors: errors };
 }
 
 export function validateSimpleTextField(
@@ -116,13 +173,19 @@ export function validateSimpleTextField(
 }
 
 export async function validateBulkyItems(
-    errors: Map<string, ErrorModel>, formData: FormData, selectedBulkyItemValues: string[], inputId: string, searchId?: string
+    errors: Map<string, ErrorModel>,
+    formData: FormData,
+    selectedBulkyItemValues: string[],
+    inputId: string,
+    maxQuantity: number,
+    searchId?: string
 ): Promise<{ bulkyItems: BulkyItemModel[] | null, errors: Map<string, ErrorModel> }> {
-    let quantityErrors: ErrorModel[] = [];
+    // let quantityErrors: ErrorModel[] = [];
+    let quantityErrors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
     let quantityField: FormDataEntryValue | null;
     const startingErrorCount: number = errors.size;
     let validBulkyItems: BulkyItemModel[] = [];
-    const selectedBulkyItems: FormDataEntryValue[] = formData.getAll(inputId);
+    // const selectedBulkyItems: FormDataEntryValue[] = formData.getAll(inputId);
     if (isFormDataEntryValueArrayNullOrEmpty(selectedBulkyItemValues)) {
         const error: ErrorModel = {
             inputId: searchId ? searchId : `${inputId}-1`,
@@ -147,38 +210,24 @@ export async function validateBulkyItems(
                     };
                     errors.set(inputId, error);
                 }
-                quantityField = formData.get(`bulky-item-${itemId}-quantity`);
-                if (isFormDataEntryValueNullOrBlank(quantityField)) {
-                    quantityErrors.push({
-                        inputId: `bulky-item-${itemId}-quantity`,
-                        fieldName: `${itemLabel} Quantity`,
-                        message: `Please enter the quantity`
-                    });
-                } else {
-                    const quantityString: string = quantityField ? quantityField.toString().trim() : '0';
-                    if (Number.isNaN(Number(quantityString))) {
-                        quantityErrors.push({
-                            inputId: `bulky-item-${itemId}-quantity`,
-                            fieldName: `${itemLabel} Quantity`,
-                            message: `Please enter only digits`
-                        });
-                    } else {
-                        const quantity: number = Number(quantityString);
-                        if (quantity < 0 || quantity > UNSIGNED_SMALL_INT_MAX) {
-                            quantityErrors.push({
-                                inputId: `bulky-item-${itemId}-quantity`,
-                                fieldName: `${itemLabel} Quantity`,
-                                message: `Please enter a number greater than 0 and less than ${UNSIGNED_SMALL_INT_MAX}`
-                            });
-                        } else {
-                            validBulkyItems.push({ bulkyItemRef: { code: itemId, description: '' }, quantity: quantity });
-                        }
-                    }
+                
+                const beforeValidationErrorCount = quantityErrors.size;
+                const quantityValidation = validateCount(
+                    quantityErrors,
+                    formData.get(`bulky-item-${itemId}-quantity`),
+                    `bulky-item-${itemId}-quantity`,
+                    `${itemLabel} Quantity`,
+                    maxQuantity,
+                    'quantity',
+                    false
+                );
+                if (quantityValidation.errors.size === beforeValidationErrorCount && quantityValidation.count) {
+                    validBulkyItems.push({ bulkyItemRef: { code: itemId, description: '' }, quantity: quantityValidation.count });
                 }
             });
-            quantityErrors.map((error: ErrorModel) => errors.set(
-                error.inputId,
-                { inputId: error.inputId, fieldName: error.fieldName, message: error.message }
+            quantityErrors.forEach((value, key) => errors.set(
+                key,
+                { inputId: value.inputId, fieldName: value.fieldName, message: value.message }
             ));
         }
     }

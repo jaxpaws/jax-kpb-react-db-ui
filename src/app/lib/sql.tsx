@@ -5,10 +5,12 @@ import { retry } from '../utils/retry';
 import Contact from '@/src/app/models/contact';
 import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
 import { QueryResult } from 'mysql2/promise';
-import { DistrictEntity } from '../entities/district.entity';
 import { BulkyItemEntity } from '../entities/bulkyItem.entity';
-import { RoadsideLitterEntity } from '../entities/roadsideLitterEvent.entity';
 import { CleanTeamEntity } from '../entities/cleanTeam.entity';
+import { CountyCleanupEntity } from '../entities/countyCleanup.entity';
+import { DistrictEntity } from '../entities/district.entity';
+import { RoadsideLitterEntity } from '../entities/roadsideLitter.entity';
+
 
 export async function testConnection() {
     const conn = await getConnection();
@@ -26,7 +28,7 @@ export async function getBulkyItemsReference(): Promise<QueryResult> {
             'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
             'ORDER BY description ASC'
         );
-        await conn.release();
+        conn.release();
         return result;
     } catch (err) {
         console.error(`Error while executing query: ${err}`);
@@ -52,6 +54,22 @@ export async function getDistrictReference(): Promise<QueryResult> {
     }
 }
 
+export async function getItemWeightReference(): Promise<QueryResult> {
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(
+            'SELECT code, weight, description FROM item_weights_reference ' +
+            'WHERE start_date <= CURDATE() ' +
+            'AND (end_date IS NULL OR end_date >= CURDATE())'
+        );
+        conn.release();
+        return result;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return [];
+    }
+}
+
 export async function insertCleanTeamEvent(event: CleanTeamEntity): Promise<any> {
     let conn = null;
     try {
@@ -68,6 +86,53 @@ export async function insertCleanTeamEvent(event: CleanTeamEntity): Promise<any>
     }
 }
 
+export async function insertCountyCleanupEvent(event: CountyCleanupEntity, bulkyItems: BulkyItemEntity[]): Promise<any> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        await conn.query('START TRANSACTION');
+        const [result]: any = await conn.execute(
+            'INSERT INTO county_cleanups (date, tire_count, tire_lbs, ' +
+                'paint_can_and_household_chemical_count, paint_can_and_household_chemical_lbs, ' +
+                'bulky_items_lbs) ' +
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            [ 
+                event.date, event.tireCount, event.tireLbs,
+                event.paintCanAndHouseholdChemicalCount, event.paintCanAndHouseholdChemicalLbs,
+                event.bulkyItemsLbs
+            ]
+        );
+        console.log(result.insertId);
+        console.log('Successfully inserted the actual event');
+        if (result && result.insertId && bulkyItems.length > 0) {
+            let bulkyItemValuePlaceholders: string = '';
+            let bulkyItemValues: any[] = [];
+            bulkyItems.map((item) => {
+                bulkyItemValuePlaceholders += ' (?, ?, ?),';
+                bulkyItemValues.push(item.bulkyItemRefId);
+                bulkyItemValues.push(result.insertId);
+                bulkyItemValues.push(item.quantity);
+            });
+            console.log(bulkyItemValuePlaceholders);
+            console.log(bulkyItemValues);
+            await conn.execute(
+                'INSERT INTO county_cleanups_bulky_items (bulky_item_ref_id, county_cleanup_id, quantity) ' +
+                `VALUES${bulkyItemValuePlaceholders.slice(0, -1)}`,
+                bulkyItemValues
+            );
+        }
+        console.log('Right before COMMIT');
+        await conn.query('COMMIT');
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert County Cleanup event: ${err}`);
+        if (conn) {
+            conn.query('ROLLBACK');
+        }
+    }
+}
+
 export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<any> {
     let conn = null;
     try {
@@ -78,33 +143,38 @@ export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, dis
             'VALUES (?, ?, ?, ?)',
             [ event.date, event.litterLbs, event.recyclingLbs, event.locations ]
         );
-        if (result && result.insertId) {
-            let districtValuePlaceholders: string = '';
-            let districtValues: any[] = [];
-            districts.map((district) => {
-                districtValuePlaceholders += ' (?, ?),';
-                districtValues.push(result.insertId); // TODO: Make this the event id
-                districtValues.push(district.districtCode);
-            });
-            await conn.execute(
-                'INSERT INTO roadside_litter_districts (roadside_litter_cleanup_id, district_code) ' +
-                `VALUES${districtValuePlaceholders.slice(0, -1)}`,
-                districtValues
-            );
-            let bulkyItemValuePlaceholders: string = '';
-            let bulkyItemValues: any[] = [];
-            bulkyItems.map((item) => {
-                bulkyItemValuePlaceholders += ' (?, ?, ?),';
-                bulkyItemValues.push(item.bulkyItemRefId);
-                bulkyItemValues.push(result.insertId); // TODO: Make this the event id
-                bulkyItemValues.push(item.quantity);
-            });
-            await conn.execute(
-                'INSERT INTO roadside_litter_bulky_items (bulky_item_ref_id, roadside_litter_cleanup_id, quantity) ' +
-                `VALUES${bulkyItemValuePlaceholders.slice(0, -1)}`,
-                bulkyItemValues
-            );
+        if (result && result.insertId  && (districts.length > 0 || bulkyItems.length > 0)) {
+            if (districts.length > 0) {
+                let districtValuePlaceholders: string = '';
+                let districtValues: any[] = [];
+                districts.map((district) => {
+                    districtValuePlaceholders += ' (?, ?),';
+                    districtValues.push(result.insertId);
+                    districtValues.push(district.districtCode);
+                });
+                await conn.execute(
+                    'INSERT INTO roadside_litter_districts (roadside_litter_cleanup_id, district_code) ' +
+                    `VALUES${districtValuePlaceholders.slice(0, -1)}`,
+                    districtValues
+                );
+            }
+            if (bulkyItems.length > 0) {
+                let bulkyItemValuePlaceholders: string = '';
+                let bulkyItemValues: any[] = [];
+                bulkyItems.map((item) => {
+                    bulkyItemValuePlaceholders += ' (?, ?, ?),';
+                    bulkyItemValues.push(item.bulkyItemRefId);
+                    bulkyItemValues.push(result.insertId);
+                    bulkyItemValues.push(item.quantity);
+                });
+                await conn.execute(
+                    'INSERT INTO roadside_litter_bulky_items (bulky_item_ref_id, roadside_litter_cleanup_id, quantity) ' +
+                    `VALUES${bulkyItemValuePlaceholders.slice(0, -1)}`,
+                    bulkyItemValues
+                );
+            }
         }
+        console.log('Right before COMMIT');
         await conn.query('COMMIT');
         conn.release();
         return result.insertId;
@@ -116,6 +186,7 @@ export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, dis
     }
 }
 
+// TODO: Implement UPDATE logic
 export async function updateCleanTeamEvent(event: CleanTeamEntity): Promise<any> {
     let conn = null;
     try {
@@ -137,6 +208,50 @@ export async function updateCleanTeamEvent(event: CleanTeamEntity): Promise<any>
     }
 }
 
+// TODO: Implement UPDATE logic
+export async function updateCountyCleanupEvent(event: CountyCleanupEntity, bulkyItems: BulkyItemEntity[]): Promise<any> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        await conn.query('START TRANSACTION');
+        const [result]: any = await conn.execute(
+            'INSERT INTO county_cleanups (date, tire_count, tire_lbs, ' +
+                'paint_can_and_household_chemical_count, paint_can_and_household_chemical_lbs, ' +
+                ' bulky_item_lbs) ' +
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            [ 
+                event.date, event.tireCount, event.tireLbs,
+                event.paintCanAndHouseholdChemicalCount, event.paintCanAndHouseholdChemicalLbs,
+                event.bulkyItemsLbs
+            ]
+        );
+        if (result && result.insertId) {
+            let bulkyItemValuePlaceholders: string = '';
+            let bulkyItemValues: any[] = [];
+            bulkyItems.map((item) => {
+                bulkyItemValuePlaceholders += ' (?, ?, ?),';
+                bulkyItemValues.push(item.bulkyItemRefId);
+                bulkyItemValues.push(result.insertId); // TODO: Make this the event id
+                bulkyItemValues.push(item.quantity);
+            });
+            await conn.execute(
+                'INSERT INTO county_cleanups_bulky_items (bulky_item_ref_id, county_cleanup_id, quantity) ' +
+                `VALUES${bulkyItemValuePlaceholders.slice(0, -1)}`,
+                bulkyItemValues
+            );
+        }
+        await conn.query('COMMIT');
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert County Cleanup event: ${err}`);
+        if (conn) {
+            conn.query('ROLLBACK');
+        }
+    }
+}
+
+// TODO: Implement UPDATE logic
 export async function updateRoadsideLitterEvent(event: RoadsideLitterEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<void> {
     let conn = null;
     try {
