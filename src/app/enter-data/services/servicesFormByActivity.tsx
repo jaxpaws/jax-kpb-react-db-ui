@@ -12,7 +12,6 @@ export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOpt
 ): React.JSX.Element | null {
     switch (activity) {
         case (REPORTING_DATA_VALUES.roadsideLitter):
-            console.log(`ServicesFormByActivity: ${errors}`);
             return (
                 <RoadsideLitterFormFields
                     bulkyItemsReferenceString={bulkyItemOptions}

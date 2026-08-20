@@ -1,6 +1,7 @@
 import { Textbox } from '../../../components';
 import { ErrorModel } from '../../../models';
 import { CLEAN_TEAM_FORM_DATA_IDS } from '../servicesJson';
+import { ifErrorThenGetErrorText } from '../../../utils/ifErrorThenGetErrorText';
 
 export function CleanTeamFormFields({ errors }: { errors: Map<string, ErrorModel> }) {
     return (
@@ -10,21 +11,24 @@ export function CleanTeamFormFields({ errors }: { errors: Map<string, ErrorModel
                 inputType="date"
                 labelText="Date"
                 descriptionText="Please enter the date that the litter was collected."
-                isRequired={true}>
+                isRequired={true}
+                errorText={ifErrorThenGetErrorText(errors, CLEAN_TEAM_FORM_DATA_IDS.date)}>
             </Textbox>
             <Textbox
                 inputId={CLEAN_TEAM_FORM_DATA_IDS.trashPounds}
                 inputType="number"
                 labelText="Pounds of Trash Collected"
                 width="sm:w-24"
-                isRequired={true}>
+                isRequired={true}
+                errorText={ifErrorThenGetErrorText(errors, CLEAN_TEAM_FORM_DATA_IDS.trashPounds)}>
             </Textbox>
             <Textbox
                 inputId={CLEAN_TEAM_FORM_DATA_IDS.recyclingPounds}
                 inputType="number"
                 labelText="Pounds of Recycling Collected"
                 width="sm:w-24"
-                isRequired={true}>
+                isRequired={true}
+                errorText={ifErrorThenGetErrorText(errors, CLEAN_TEAM_FORM_DATA_IDS.recyclingPounds)}>
             </Textbox>
             <Textbox
                 inputId={CLEAN_TEAM_FORM_DATA_IDS.description}
@@ -33,7 +37,8 @@ export function CleanTeamFormFields({ errors }: { errors: Map<string, ErrorModel
                 descriptionText={`Please enter a brief description of the event, such as "Mardi Gras Parade".`}
                 width="sm:w-160"
                 maxlength={70}
-                isRequired={true}>
+                isRequired={true}
+                errorText={ifErrorThenGetErrorText(errors, CLEAN_TEAM_FORM_DATA_IDS.description)}>
             </Textbox>
         </div>
     );
