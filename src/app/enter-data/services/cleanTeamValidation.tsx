@@ -1,6 +1,7 @@
 import { CleanTeamModel, ErrorModel } from '../../models';
 import { CLEAN_TEAM_FORM_DATA_IDS } from './servicesJson';
 import { validateDate, validatePounds, validateSimpleTextField } from '../../utils/commonFormValidation';
+import { UNSIGNED_SMALL_INT_MAX } from '../../constValues';
 
 const MAX_CLEAN_TEAM_EVENT_DESC_LENGTH: number = 70;
 
@@ -16,7 +17,9 @@ export async function validateCleanTeamData(
         errors,
         formData.get(CLEAN_TEAM_FORM_DATA_IDS.trashPounds),
         CLEAN_TEAM_FORM_DATA_IDS.trashPounds,
-        'Trash'
+        'Pounds of Trash Collected',
+        UNSIGNED_SMALL_INT_MAX,
+        true
     );
     errors = trashValidation.errors;
 
@@ -24,7 +27,9 @@ export async function validateCleanTeamData(
         errors,
         formData.get(CLEAN_TEAM_FORM_DATA_IDS.recyclingPounds),
         CLEAN_TEAM_FORM_DATA_IDS.recyclingPounds,
-        'Recycling'
+        'Pounds of Recycling Collected',
+        UNSIGNED_SMALL_INT_MAX,
+        true
     );
     errors = recyclingValidation.errors;
 
