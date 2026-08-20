@@ -27,6 +27,6 @@ body {
 }
 
 :focus-visible {
-    outline: 3px solid black;
+    outline: 3px solid --foreground;
     box-shadow: 0 0 0 6px white;
 }

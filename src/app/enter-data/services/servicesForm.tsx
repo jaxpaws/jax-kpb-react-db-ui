@@ -91,7 +91,9 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
                 setErrors(errors);
                 break;
             case (COUNTY_CLEANUP):
-                saveCountyCleanupData(new FormData(e.target));
+                errors = await saveCountyCleanupData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
+                console.log(errors);
+                setErrors(errors);
                 break;
             case (ROADSIDE):
                 errors = await saveRoadsideLitterData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
@@ -99,7 +101,7 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
                 setErrors(errors);
                 break;
             case (TRASH_ROUTES):
-                saveTrashRoutesData(new FormData(e.target));
+                saveTrashRoutesData(new FormData(e.target), isUpdate);
                 break;
         }
 
@@ -119,6 +121,7 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
 
     const handleReportingDataTypeChange: any = useCallback((event: any) => {
         setReportingDataType(event.target.value);
+        setSelectedBulkyItemValues([]);
         setErrors(new Map<string, ErrorModel>());
     }, []);
 

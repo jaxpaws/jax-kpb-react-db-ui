@@ -10,6 +10,7 @@ import {
     validateSimpleTextField,
     validateBulkyItems
 } from '../../utils/commonFormValidation';
+import { UNSIGNED_SMALL_INT_MAX } from '../../constValues';
 
 const MAX_ROADSIDE_LITTER_LOCATIONS_LENGTH: number = 300;
 
@@ -59,12 +60,34 @@ export async function validateRoadsideLitterData(
 
     const dateValidation = validateDate(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.date), ROADSIDE_LITTER_FORM_DATA_IDS.date);
     errors = dateValidation.errors;
-    const litterValidation = validatePounds(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds), ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds, 'Litter');
+
+    const litterValidation = validatePounds(
+        errors,
+        formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds),
+        ROADSIDE_LITTER_FORM_DATA_IDS.litterPounds,
+        'Pounds of Litter Collected',
+        UNSIGNED_SMALL_INT_MAX,
+        true
+    );
     errors = litterValidation.errors;
-    const recyclingValidation = validatePounds(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds), ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds, 'Recycling');
+
+    const recyclingValidation = validatePounds(
+        errors,
+        formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds),
+        ROADSIDE_LITTER_FORM_DATA_IDS.recyclingPounds,
+        'Pounds of Recycling Collected',
+        UNSIGNED_SMALL_INT_MAX,
+        true
+    );
     errors = recyclingValidation.errors;
-    const districtValidation = await validateDistricts(errors, formData.getAll(ROADSIDE_LITTER_FORM_DATA_IDS.districts), `${ROADSIDE_LITTER_FORM_DATA_IDS.districts}-1`);
+
+    const districtValidation = await validateDistricts(
+        errors,
+        formData.getAll(ROADSIDE_LITTER_FORM_DATA_IDS.districts),
+        `${ROADSIDE_LITTER_FORM_DATA_IDS.districts}-1`
+    );
     errors = districtValidation.errors;
+
     const locationsValidation = validateSimpleTextField(
         errors,
         formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.locations),
@@ -81,7 +104,7 @@ export async function validateRoadsideLitterData(
         const error: ErrorModel = {
             inputId: `${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-no`,
             fieldName: 'Were any bulky items collected',
-            message: 'Please whether bulky items were collected or not.'
+            message: 'Please select whether bulky items were collected or not.'
         };
         errors.set(`${ROADSIDE_LITTER_FORM_DATA_IDS.hasBulkyItems}-no`, error);
     } else if (hasBulkyItems && hasBulkyItems.toString() === 'yes') {
@@ -90,6 +113,7 @@ export async function validateRoadsideLitterData(
             formData,
             selectedBulkyItemValues,
             ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems,
+            UNSIGNED_SMALL_INT_MAX,
             `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-search`
         );
         errors = bulkyItemValidation.errors;
