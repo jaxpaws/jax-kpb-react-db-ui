@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { ErrorSummary, RadioList } from '../../components';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
 import {
+    getBulkyItemRefData,
+    getDistrictRefData,
     saveCleanTeamData,
     saveCountyCleanupData,
     saveRoadsideLitterData,
@@ -11,8 +13,9 @@ import {
 } from './actions';
 import { ErrorModel, ReferenceDataModel } from '../../models';
 import { MultiSelectOptionModel } from '../../components/multiSelect/multiSelectOption.model';
-import { ReferenceDataDAO, DistrictReferenceDataDAO, BulkyItemReferenceDataDAO } from '../../dao/referenceData'
+import { ReferenceDataDAO, DistrictReferenceDataDAO, BulkyItemReferenceDataDAO } from '../../dao/referenceData';
 import { ServicesFormByActivity } from './servicesFormByActivity';
+import { isBlank } from '../../utils/isBlank';
 
 const TAN_YELLOW_HEX = '#F4E2A3';
 const GOLD_HEX = '#E4BA24';
@@ -33,50 +36,20 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
     useEffect(() => {
         if (!areBulkyItemsRetrieved) {
             setAreBulkyItemsRetrieved(true);
-            let newBulkyItemOptions: MultiSelectOptionModel[] = [];
-            const bulkyItemRefDAO: ReferenceDataDAO = new BulkyItemReferenceDataDAO();
-            bulkyItemRefDAO.getAll()
-                .then((items: ReferenceDataModel[]) => {
-                    if (items && items.length >= 1) {
-                        for (let i = 0; i < items.length; i++) {
-                            newBulkyItemOptions.push({
-                                key: `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-${items[i]?.code}`,
-                                label: items[i]?.description,
-                                inputId: `${ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}-${i + 1}`,
-                                value: `${items[i]?.description}|${items[i]?.code}`
-                            });
-                        }
-                        console.log(newBulkyItemOptions);
-                        setBulkyItemOptions(newBulkyItemOptions);
-                    }
-                })
-                .catch(error => {
-                    console.error(`Error getting bulky items reference values.`)
-                });
+            getBulkyItemRefData().then((items: string) => {
+                if (!isBlank(items)) {
+                    setBulkyItemOptions(JSON.parse(items));
+                }
+            });
         }
 
         if (!areDistrictsRetrieved) {
             setAreDistrictsRetrieved(true);
-            let newDistrictOptions: MultiSelectOptionModel[] = [];
-            const districtRefDAO: ReferenceDataDAO = new DistrictReferenceDataDAO();
-            districtRefDAO.getAll()
-                .then((districts: ReferenceDataModel[]) => {
-                    if (districts && districts.length >= 1) {
-                        for (let i = 0; i < districts.length; i++) {
-                            newDistrictOptions.push({
-                                key: `${ROADSIDE_LITTER_FORM_DATA_IDS.districts}-${districts[i]?.code}`,
-                                label: districts[i]?.description,
-                                inputId: `${ROADSIDE_LITTER_FORM_DATA_IDS.districts}-${i + 1}`,
-                                value: districts[i]?.code
-                            });
-                        }
-                        console.log(newDistrictOptions);
-                        setDistrictOptions(newDistrictOptions);
-                    }
-                })
-                .catch(error => {
-                    console.error(`Error getting district reference values.`)
-                });
+            getDistrictRefData().then((districts: string) => {
+                if (!isBlank(districts)) {
+                    setDistrictOptions(JSON.parse(districts));
+                }
+            });
         }
     }, [bulkyItemOptions, districtOptions]);
 
@@ -101,7 +74,9 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
                 setErrors(errors);
                 break;
             case (TRASH_ROUTES):
-                saveTrashRoutesData(new FormData(e.target), isUpdate);
+                errors = await saveTrashRoutesData(new FormData(e.target), isUpdate);
+                console.log(errors);
+                setErrors(errors);
                 break;
         }
 

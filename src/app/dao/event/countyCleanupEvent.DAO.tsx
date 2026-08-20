@@ -5,7 +5,7 @@ import { EventEntity } from '../../entities/event.entity';
 import { ItemWeightReferenceDataEntity } from '../../entities/itemWeightReferenceData.entity';
 import { BulkyItemModel, EventModel } from '../../models';
 import { isCountyCleanupEvent } from '../../utils/eventTypeGuards';
-import { insertCountyCleanupEvent, updateCountyCleanupEvent } from '../../lib/sql';
+import { insertCountyCleanupEvent, updateCountyCleanupEvent } from '../../lib/event.sql';
 import { ItemWeightReferenceDataDAO } from '../referenceData';
 
 export class CountyCleanupEventDAO implements EventDAO {

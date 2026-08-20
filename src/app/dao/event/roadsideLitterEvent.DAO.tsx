@@ -5,7 +5,7 @@ import { EventEntity } from '../../entities/event.entity';
 import { RoadsideLitterEntity } from '../../entities/roadsideLitter.entity';
 import { BulkyItemModel, DistrictModel, EventModel } from '../../models';
 import { isRoadsideLitterEvent } from '../../utils/eventTypeGuards';
-import { insertRoadsideLitterEvent, updateRoadsideLitterEvent } from '../../lib/sql';
+import { insertRoadsideLitterEvent, updateRoadsideLitterEvent } from '../../lib/event.sql';
 
 export class RoadsideLitterEventDAO implements EventDAO {
     getById(id: number): EventEntity | null {

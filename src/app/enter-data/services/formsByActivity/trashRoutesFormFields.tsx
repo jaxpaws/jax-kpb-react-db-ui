@@ -1,6 +1,7 @@
 import { Textbox } from '../../../components';
 import { ErrorModel } from '../../../models';
 import { TRASH_ROUTES_FORM_DATA_IDS } from '../servicesJson';
+import { ifErrorThenGetErrorText } from '../../../utils/ifErrorThenGetErrorText';
 
 export function TrashRoutesFormFields({ errors }: { errors: Map<string, ErrorModel> }) {
     return (
@@ -10,21 +11,24 @@ export function TrashRoutesFormFields({ errors }: { errors: Map<string, ErrorMod
                 inputType="date"
                 labelText="Date"
                 descriptionText="Please enter the date that the litter was collected."
-                isRequired={true}>
+                isRequired={true}
+                errorText={ifErrorThenGetErrorText(errors, TRASH_ROUTES_FORM_DATA_IDS.date)}>
             </Textbox>
             <Textbox
                 inputId={TRASH_ROUTES_FORM_DATA_IDS.trashPounds}
                 inputType="number"
                 labelText="Pounds of Trash Collected"
                 width="sm:w-24"
-                isRequired={true}>
+                isRequired={true}
+                errorText={ifErrorThenGetErrorText(errors, TRASH_ROUTES_FORM_DATA_IDS.trashPounds)}>
             </Textbox>
             <Textbox
                 inputId={TRASH_ROUTES_FORM_DATA_IDS.recyclingPounds}
                 inputType="number"
                 labelText="Pounds of Recycling Collected"
                 width="sm:w-24"
-                isRequired={true}>
+                isRequired={true}
+                errorText={ifErrorThenGetErrorText(errors, TRASH_ROUTES_FORM_DATA_IDS.recyclingPounds)}>
             </Textbox>
         </div>
     );

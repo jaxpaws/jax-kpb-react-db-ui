@@ -1,4 +1,4 @@
-import { CleanTeamModel, CountyCleanupModel, RoadsideLitterModel } from '../models';
+import { CleanTeamModel, CountyCleanupModel, RoadsideLitterModel, TrashRoutesModel } from '../models';
 
 export function isCleanTeamEvent(event: any): event is CleanTeamModel {
     return typeof event === 'object' && event !== null &&
@@ -22,4 +22,10 @@ export function isRoadsideLitterEvent(event: any): event is RoadsideLitterModel 
         'locations' in event &&
         'districts' in event &&
         'bulkyItems' in event;
+}
+
+export function isTrashRoutesEvent(event: any): event is TrashRoutesModel {
+    return typeof event === 'object' && event !== null &&
+        'trashPounds' in event &&
+        'recyclingPounds' in event;
 }

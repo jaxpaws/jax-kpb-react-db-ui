@@ -1,33 +1,32 @@
 import { EventDAO } from './';
 import { EventEntity } from '../../entities/event.entity';
-import { CleanTeamEntity } from '../../entities/cleanTeam.entity';
+import { TrashRoutesEntity } from '../../entities/trashRoutes.entity';
 import { EventModel } from '../../models';
-import { isCleanTeamEvent } from '../../utils/eventTypeGuards';
-import { insertCleanTeamEvent, updateCleanTeamEvent } from '../../lib/event.sql';
+import { isTrashRoutesEvent } from '../../utils/eventTypeGuards';
+import { insertTrashRoutesEvent, updateTrashRoutesEvent } from '../../lib/event.sql';
 
-export class CleanTeamEventDAO implements EventDAO {
+export class TrashRoutesEventDAO implements EventDAO {
     getById(id: number): EventEntity | null {
         return null;
     }
 
     async save(event: EventModel, isUpdate: boolean): Promise<void> {
-        if (isCleanTeamEvent(event)) {
-            const eventEntity: CleanTeamEntity = {
+        if (isTrashRoutesEvent(event)) {
+            const eventEntity: TrashRoutesEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
-                eventDesc: event.eventDescription,
                 trashLbs: event.trashPounds,
                 recyclingLbs: event.recyclingPounds
             };
 
             if (isUpdate) {
                 // TODO: Implement UPDATE method
-                await updateCleanTeamEvent(eventEntity);
+                await updateTrashRoutesEvent(eventEntity);
             } else {
-                await insertCleanTeamEvent(eventEntity);
+                await insertTrashRoutesEvent(eventEntity);
             }
         } else {
-            console.error(`Error in save(): invalid data did not adhere to CleanTeamModel.`);
+            console.error(`Error in save(): invalid data did not adhere to TrashRoutesModel.`);
         }
     }
 
