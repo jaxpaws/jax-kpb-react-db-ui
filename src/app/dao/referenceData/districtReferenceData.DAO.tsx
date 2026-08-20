@@ -1,7 +1,7 @@
 import { ReferenceDataDAO } from '.';
 import { ReferenceDataEntity } from '../../entities/referenceData.entity';
 import { ReferenceDataModel } from '../../models/referenceData.model';
-import { getDistrictReference } from '../../lib/sql';
+import { getDistrictReference } from '../../lib/referenceData.sql';
 
 export class DistrictReferenceDataDAO implements ReferenceDataDAO {
     async getByCode(code: number | string): Promise<ReferenceDataEntity | null> {

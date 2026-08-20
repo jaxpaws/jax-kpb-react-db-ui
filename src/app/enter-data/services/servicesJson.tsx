@@ -51,7 +51,7 @@ export const REPORTING_DATA_TYPE_OPTIONS = [
     {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option1`,label:'Clean Team Event',inputId:'clean-team',value:REPORTING_DATA_VALUES.cleanTeam},
     {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option2`,label:'County Neighborhood Cleanups',inputId:'county-cleanup',value:REPORTING_DATA_VALUES.countyCleanup},
     {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option3`,label:'Roadside Litter',inputId:'roadside',value:REPORTING_DATA_VALUES.roadsideLitter},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option4`,label:'Trash Routes',inputId:'routes',value:REPORTING_DATA_VALUES.trashRoutes},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option4`,label:'Trash Can Routes',inputId:'routes',value:REPORTING_DATA_VALUES.trashRoutes},
 ];
 
 export const DISTRICT_OPTIONS = [

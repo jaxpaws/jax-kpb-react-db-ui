@@ -1,7 +1,7 @@
 import { ReferenceDataDAO } from '.';
 import { ReferenceDataEntity } from '../../entities/referenceData.entity';
 import { ReferenceDataModel } from '../../models/referenceData.model';
-import { getBulkyItemsReference } from '../../lib/sql';
+import { getBulkyItemsReference } from '../../lib/referenceData.sql';
 
 export class BulkyItemReferenceDataDAO implements ReferenceDataDAO {
     async getByCode(code: number | string): Promise<ReferenceDataEntity | null> {

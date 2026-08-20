@@ -8,3 +8,4 @@ export type { EventModel } from './event.model';
 export type { ReferenceDataModel } from './referenceData.model';
 export type { RoadsideLitterModel } from './roadsideLitter.model';
 export type { RoadsideLitterBulkyItemModel } from './roadsideLitterBulkyItem.model';
+export type { TrashRoutesModel } from './trashRoutes.model';
