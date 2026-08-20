@@ -13,7 +13,6 @@ export class RoadsideLitterEventDAO implements EventDAO {
     }
 
     async save(event: EventModel, isUpdate: boolean): Promise<void> {
-        console.log(isRoadsideLitterEvent(event));
         if (isRoadsideLitterEvent(event)) {
             const eventEntity: RoadsideLitterEntity = {
                 id: event.id ? event.id : -1,
@@ -45,9 +44,10 @@ export class RoadsideLitterEventDAO implements EventDAO {
             if (isUpdate) {
                 await updateRoadsideLitterEvent(eventEntity, districtEntities, bulkyItemEntities);
             } else {
-                console.log('Calling insert for roadside litter event');
                 await insertRoadsideLitterEvent(eventEntity, districtEntities, bulkyItemEntities);
             }
+        } else {
+            console.error(`Error in save(): invalid data did not adhere to RoadsideLitterModel.`);
         }
     }
 

@@ -85,19 +85,21 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
         let errors: Map<string, ErrorModel> | null = null;
 
         switch (reportingDataType) {
+            case (CLEAN_TEAM):
+                errors = await saveCleanTeamData(new FormData(e.target), isUpdate);
+                console.log(errors);
+                setErrors(errors);
+                break;
+            case (COUNTY_CLEANUP):
+                saveCountyCleanupData(new FormData(e.target));
+                break;
             case (ROADSIDE):
                 errors = await saveRoadsideLitterData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
                 console.log(errors);
                 setErrors(errors);
                 break;
-            case (CLEAN_TEAM):
-                saveCleanTeamData(new FormData(e.target));
-                break;
             case (TRASH_ROUTES):
                 saveTrashRoutesData(new FormData(e.target));
-                break;
-            case (COUNTY_CLEANUP):
-                saveCountyCleanupData(new FormData(e.target));
                 break;
         }
 

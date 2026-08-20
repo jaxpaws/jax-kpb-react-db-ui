@@ -8,6 +8,7 @@ import { QueryResult } from 'mysql2/promise';
 import { DistrictEntity } from '../entities/district.entity';
 import { BulkyItemEntity } from '../entities/bulkyItem.entity';
 import { RoadsideLitterEntity } from '../entities/roadsideLitterEvent.entity';
+import { CleanTeamEntity } from '../entities/cleanTeam.entity';
 
 export async function testConnection() {
     const conn = await getConnection();
@@ -51,8 +52,23 @@ export async function getDistrictReference(): Promise<QueryResult> {
     }
 }
 
+export async function insertCleanTeamEvent(event: CleanTeamEntity): Promise<any> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO clean_team_events (date, event_desc, trash_lbs, recycling_lbs) ' +
+            'VALUES (?, ?, ?, ?)',
+            [ event.date, event.eventDesc, event.trashLbs, event.recyclingLbs ]
+        );
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Clean Team event: ${err}`);
+    }
+}
+
 export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<any> {
-    console.log('Is anything getting through here?');
     let conn = null;
     try {
         conn = await getConnection();
@@ -62,9 +78,7 @@ export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, dis
             'VALUES (?, ?, ?, ?)',
             [ event.date, event.litterLbs, event.recyclingLbs, event.locations ]
         );
-        console.log(result.insertId);
         if (result && result.insertId) {
-            console.log('Going to try and save districts and bulky items');
             let districtValuePlaceholders: string = '';
             let districtValues: any[] = [];
             districts.map((district) => {
@@ -85,7 +99,6 @@ export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, dis
                 bulkyItemValues.push(result.insertId); // TODO: Make this the event id
                 bulkyItemValues.push(item.quantity);
             });
-            console.log(bulkyItemValuePlaceholders);
             await conn.execute(
                 'INSERT INTO roadside_litter_bulky_items (bulky_item_ref_id, roadside_litter_cleanup_id, quantity) ' +
                 `VALUES${bulkyItemValuePlaceholders.slice(0, -1)}`,
@@ -96,10 +109,31 @@ export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, dis
         conn.release();
         return result.insertId;
     } catch (err) {
-        console.error(`Error while executing query to insert Roadside Litter event ${err}`);
+        console.error(`Error: Unable to insert Roadside Litter event: ${err}`);
         if (conn) {
             conn.query('ROLLBACK');
         }
+    }
+}
+
+export async function updateCleanTeamEvent(event: CleanTeamEntity): Promise<any> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        //await conn.query('START TRANSACTION');
+        const [result]: any = await conn.execute(
+            'INSERT INTO clean_team_events (date, event_desc, trash_lbs, recycling_lbs) ' +
+            'VALUES (?, ?, ?, ?)',
+            [ event.date, event.eventDesc, event.trashLbs, event.recyclingLbs ]
+        );
+        //await conn.query('COMMIT');
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Roadside Litter event: ${err}`);
+        // if (conn) {
+        //     conn.query('ROLLBACK');
+        // }
     }
 }
 
