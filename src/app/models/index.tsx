@@ -1,3 +1,4 @@
+export type { AdoptASpotGroupModel } from './adoptASpotGroup.model';
 export type { BulkyItemModel } from './bulkyItem.model';
 export type { CleanTeamModel } from './cleanTeam.model';
 export type { CountyCleanupModel } from './countyCleanup.model';
@@ -5,6 +6,7 @@ export type { CountyCleanupsBulkyItemModel } from './countyCleanupsBulkyItem.mod
 export type { DistrictModel } from './district.model';
 export type { ErrorModel } from './error.model';
 export type { EventModel } from './event.model';
+export type { GroupModel } from './group.model';
 export type { ReferenceDataModel } from './referenceData.model';
 export type { RoadsideLitterModel } from './roadsideLitter.model';
 export type { RoadsideLitterBulkyItemModel } from './roadsideLitterBulkyItem.model';

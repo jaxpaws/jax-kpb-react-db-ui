@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ErrorSummary, RadioList } from '../../components';
-import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
+import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './servicesJson';
 import {
     getBulkyItemRefData,
     getDistrictRefData,
@@ -11,18 +11,10 @@ import {
     saveRoadsideLitterData,
     saveTrashRoutesData
 } from './actions';
-import { ErrorModel, ReferenceDataModel } from '../../models';
+import { ErrorModel } from '../../models';
 import { MultiSelectOptionModel } from '../../components/multiSelect/multiSelectOption.model';
-import { ReferenceDataDAO, DistrictReferenceDataDAO, BulkyItemReferenceDataDAO } from '../../dao/referenceData';
 import { ServicesFormByActivity } from './servicesFormByActivity';
 import { isBlank } from '../../utils/isBlank';
-
-const TAN_YELLOW_HEX = '#F4E2A3';
-const GOLD_HEX = '#E4BA24';
-const ROADSIDE: string = 'roadside';
-const CLEAN_TEAM: string = 'clean-team';
-const TRASH_ROUTES: string = 'routes';
-const COUNTY_CLEANUP: string = 'county-cleanup';
 
 export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
     const [reportingDataType, setReportingDataType] = useState<string>(selectedDataType);
@@ -31,7 +23,7 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
     const [areBulkyItemsRetrieved, setAreBulkyItemsRetrieved] = useState<boolean>(false);
     const [districtOptions, setDistrictOptions] = useState<MultiSelectOptionModel[]>([]);
     const [areDistrictsRetrieved, setAreDistrictsRetrieved] = useState<boolean>(false);
-    const [selectedBulkyItemValues, setSelectedBulkyItemValues] = useState<string[]>([])
+    const [selectedBulkyItemValues, setSelectedBulkyItemValues] = useState<string[]>([]);
 
     useEffect(() => {
         if (!areBulkyItemsRetrieved) {
@@ -51,29 +43,29 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
                 }
             });
         }
-    }, [bulkyItemOptions, districtOptions]);
+    }, [areBulkyItemsRetrieved, areDistrictsRetrieved]);
 
     async function handleSubmit(e: any) {
         e.preventDefault();
         let errors: Map<string, ErrorModel> | null = null;
 
         switch (reportingDataType) {
-            case (CLEAN_TEAM):
+            case (REPORTING_DATA_VALUES.cleanTeam):
                 errors = await saveCleanTeamData(new FormData(e.target), isUpdate);
                 console.log(errors);
                 setErrors(errors);
                 break;
-            case (COUNTY_CLEANUP):
+            case (REPORTING_DATA_VALUES.countyCleanup):
                 errors = await saveCountyCleanupData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
                 console.log(errors);
                 setErrors(errors);
                 break;
-            case (ROADSIDE):
+            case (REPORTING_DATA_VALUES.roadsideLitter):
                 errors = await saveRoadsideLitterData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
                 console.log(errors);
                 setErrors(errors);
                 break;
-            case (TRASH_ROUTES):
+            case (REPORTING_DATA_VALUES.trashRoutes):
                 errors = await saveTrashRoutesData(new FormData(e.target), isUpdate);
                 console.log(errors);
                 setErrors(errors);

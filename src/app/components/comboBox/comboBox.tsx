@@ -1,19 +1,21 @@
+'use client'
+
 import { useEffect, useState, useRef } from 'react';
 import { ComboBoxModel } from './comboBox.model';
-import { ComboBoxListItem } from './comboBoxListItem.model';
+import { ComboBoxListItemModel } from './comboBoxListItem.model';
 import { parseJsonStringOptions } from '../../utils/parseJsonStringOptions';
 import { isBlank } from '../../utils/isBlank';
 
-export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLabel, options, autocomplete, errorText }: ComboBoxModel) {
+export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLabel, options, isRequired, autocomplete, errorText }: ComboBoxModel) {
     const [comboBoxNodeActiveDescendant, setComboBoxNodeActiveDescendant] = useState<string>('');
     const [comboBoxNodeValue, setComboBoxNodeValue] = useState<string>('');
     const [comboBoxHasVisualFocus, setComboBoxHasVisualFocus] = useState<boolean>(false);
     const [listboxHasVisualFocus, setListboxHasVisualFocus] = useState<boolean>(false);
-    const [filteredOptions, setFilteredOptions] = useState<ComboBoxListItem[]>(parseJsonStringOptions(options));
+    const [filteredOptions, setFilteredOptions] = useState<ComboBoxListItemModel[]>(parseJsonStringOptions(options));
     const [isListboxExpanded, setIsListboxExpanded] = useState<boolean>(false);
-    const [firstOption, setFirstOption] = useState<ComboBoxListItem | null>(null);
-    const [lastOption, setLastOption] = useState<ComboBoxListItem | null>(null);
-    const [currOption, setCurrOption] = useState<ComboBoxListItem | null>(null);
+    const [firstOption, setFirstOption] = useState<ComboBoxListItemModel | null>(null);
+    const [lastOption, setLastOption] = useState<ComboBoxListItemModel | null>(null);
+    const [currOption, setCurrOption] = useState<ComboBoxListItemModel | null>(null);
     const [filter, setFilter] = useState<string>('');
     const listboxRef = useRef<HTMLUListElement>(null);
     const comboBoxNodeRef = useRef<HTMLInputElement>(null);
@@ -30,10 +32,10 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
     let isNone: boolean = (autocomplete === 'none' || autocomplete === undefined);
     let isList: boolean = (autocomplete === 'list');
     let isBoth: boolean = (autocomplete === 'both');
-    let allOptions: ComboBoxListItem[] = parseJsonStringOptions(options);
-    const BLANK_LIST_ITEM_OBJECT = { listItemId: '', label: '', isSelected: false};
+    let allOptions: ComboBoxListItemModel[] = parseJsonStringOptions(options);
+    const BLANK_LIST_ITEM_OBJECT = { key: '', listItemId: '', label: '', isSelected: false};
 
-    function getLowercaseContent(option: ComboBoxListItem): string {
+    function getLowercaseContent(option: ComboBoxListItemModel): string {
         return option.label.toLowerCase();
     }
 
@@ -49,7 +51,7 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
         );
     }
 
-    function setActiveDescendant(option: ComboBoxListItem | null, listboxHasVisualFocusCopy?: boolean): void {
+    function setActiveDescendant(option: ComboBoxListItemModel | null, listboxHasVisualFocusCopy?: boolean): void {
         if (option && (listboxHasVisualFocus || listboxHasVisualFocusCopy)) {
             setComboBoxNodeActiveDescendant(option.listItemId);
             let optionAsHTMLElement = getOptionAsHTMLElement(option);
@@ -70,11 +72,11 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
         filterOptions(value);
     }
 
-    function getOptionAsHTMLElement(option: ComboBoxListItem): HTMLElement | null {
+    function getOptionAsHTMLElement(option: ComboBoxListItemModel): HTMLElement | null {
         return (listboxRef?.current) ? listboxRef.current.querySelector(`#${option.listItemId}`) : null;
     }
 
-    function setOption(option: ComboBoxListItem | null, flag?: any): void {
+    function setOption(option: ComboBoxListItemModel | null, flag?: any): void {
         if (typeof flag !== 'boolean') {
             flag = false;
         }
@@ -109,7 +111,7 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
         setActiveDescendant(null);
     }
 
-    function setVisualFocusListbox(activeDescendant?: ComboBoxListItem | null): void {
+    function setVisualFocusListbox(activeDescendant?: ComboBoxListItemModel | null): void {
         const comboBoxHasVisualFocusCopy: boolean = false;
         const listboxHasVisualFocusCopy: boolean = true;
         if (comboBoxNodeRef.current && comboBoxNodeRef.current.parentElement) {
@@ -138,16 +140,16 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
 
     /* COMBOBOX EVENTS */
 
-    function filterOptions(filterStr: string): ComboBoxListItem | null {
+    function filterOptions(filterStr: string): ComboBoxListItemModel | null {
         // Do not filter any options if autocomplete is none
         if (isNone) {
             filterStr = '';
         }
 
-        let option: ComboBoxListItem | null;
-        const currentOption: ComboBoxListItem | null = currOption;
+        let option: ComboBoxListItemModel | null;
+        const currentOption: ComboBoxListItemModel | null = currOption;
         const lowercaseFilter: string = filterStr.toLowerCase();
-        let updatedFilteredObjects: ComboBoxListItem[] = [];
+        let updatedFilteredObjects: ComboBoxListItemModel[] = [];
 
         for (var i = 0; i < allOptions.length; i++) {
             option = allOptions[i];
@@ -180,10 +182,10 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
         return option;
     }
 
-    function setCurrentOptionStyle(option: ComboBoxListItem): void {
+    function setCurrentOptionStyle(option: ComboBoxListItemModel): void {
         let updatedFilteredOptions: any[] = JSON.parse(JSON.stringify(filteredOptions));
         for (let i = 0; i < updatedFilteredOptions.length; i++) {
-            const opt: ComboBoxListItem = updatedFilteredOptions[i];
+            const opt: ComboBoxListItemModel = updatedFilteredOptions[i];
             if (opt.listItemId === option.listItemId) {
                 opt.isSelected = true;
                 let optAsHTMLElement: HTMLElement | null = getOptionAsHTMLElement(opt);
@@ -209,7 +211,7 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
         setFilteredOptions(updatedFilteredOptions);
     }
 
-    function getPreviousOption(currentOption: ComboBoxListItem | null): ComboBoxListItem | null {
+    function getPreviousOption(currentOption: ComboBoxListItemModel | null): ComboBoxListItemModel | null {
         if (currentOption && (currentOption.listItemId !== firstOption?.listItemId)) {
             const index: number = filteredOptions.findIndex((option) => option.listItemId === currentOption.listItemId);
             return filteredOptions[index - 1];
@@ -217,7 +219,7 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
         return lastOption;
     }
 
-    function getNextOption(currentOption: ComboBoxListItem | null): ComboBoxListItem | null {
+    function getNextOption(currentOption: ComboBoxListItemModel | null): ComboBoxListItemModel | null {
         if (currentOption && (currentOption.listItemId !== lastOption?.listItemId)) {
             const index: number = filteredOptions.findIndex((option) => option.listItemId === currentOption.listItemId);
             return filteredOptions[index + 1];
@@ -286,10 +288,12 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
             case 'Enter':
                 if (listboxHasVisualFocus) {
                     setValue((currOption) ? currOption.label : '');
+                    close(true);
+                    setVisualFocusCombobox();
+                    flag = true;
+                } else {
+                    open();
                 }
-                close(true);
-                setVisualFocusCombobox();
-                flag = true;
                 break;
 
             case 'Down':
@@ -303,7 +307,7 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                             listboxHasVisualFocus ||
                             (isBoth && filteredOptions.length > 1)
                         ) {
-                            const nextOption: ComboBoxListItem | null = JSON.parse(JSON.stringify(getNextOption(currOption)));
+                            const nextOption: ComboBoxListItemModel | null = JSON.parse(JSON.stringify(getNextOption(currOption)));
                             setOption(nextOption, true);
                             setVisualFocusListbox(nextOption);
                         } else {
@@ -385,7 +389,7 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
 
     function onComboboxKeyUp(event: any) {
         let flag: boolean = false;
-        let option: ComboBoxListItem | null = null;
+        let option: ComboBoxListItemModel | null = null;
         const char = event.key;
         let filterCopy: string = filter;
 
@@ -503,8 +507,10 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
         ) {
             setComboBoxHasVisualFocus(false);
             setCurrentOptionStyle(BLANK_LIST_ITEM_OBJECT);
-            removeVisualFocusAll();
-            setTimeout(() => close(true), 300);
+            setTimeout(() => {
+                close(true);
+                removeVisualFocusAll();
+            }, 300);
         }
     }
 
@@ -550,9 +556,18 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                 {`
                     .combobox .group.focus,
                     .combobox .group:hover {
-                        padding: 2px;
-                        border: 2px solid currentcolor;
-                        border-radius: 4px;
+                        /* 
+                            padding: 2px;
+                            border: 2px solid currentcolor; 
+                            border-radius: 4px;
+                        */
+                        outline: 3px solid var(--foreground);
+                        box-shadow: 0 0 0 6px white;
+                    }
+                    
+                    #${searchInputId}:focus-visible {
+                        outline: 0px;
+                        box-shadow: none;
                     }
 
                     .combobox .group.focus polygon,
@@ -570,9 +585,9 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                     }
                 `}
             </style>
-            <label htmlFor={searchInputId}>{label}</label>
-            <div className="relative combobox-list">
-                <div className={`inline-flex p-1 cursor-pointer ${comboBoxHasVisualFocus ? 'focus' : ''}`}>
+            <label htmlFor={searchInputId} className="text-[1.06rem] font-semibold">{label}{isRequired ? ' (required)' : ''}</label>
+            <div className="relative combobox combobox-list">
+                <div className={`group inline-flex  cursor-pointer rounded-md ${comboBoxHasVisualFocus ? 'focus' : ''}`}>
                     <input
                         id={searchInputId}
                         className={`cb_edit w-64 bg-white text-black box-border p-1 m-0
@@ -615,7 +630,7 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                 </div>
                 <ul
                     id={listboxId}
-                    className={`m-0 p-0 absolute left-[4px] top-[38px] list-none bg-white
+                    className={`m-0 p-0 absolute left-[2px] top-[38px] list-none bg-white z-10
                         hidden box-border border-2 border-current border-solid max-h-[250px]
                         w-64 overflow-scroll overflow-x-hidden text-[87.5%] cursor-pointer
                         ${listboxHasVisualFocus ? 'focus' : ''}`}
