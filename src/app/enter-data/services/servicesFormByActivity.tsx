@@ -7,9 +7,15 @@ import {
 } from './formsByActivity';
 import { REPORTING_DATA_VALUES } from './servicesJson';
 
-export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOptions, errors, handleBulkyItemChange }:
-    { activity: string, bulkyItemOptions: string, districtOptions: string, errors: Map<string, ErrorModel>, handleBulkyItemChange?: (event: any) => void }
-): React.JSX.Element | null {
+export function ServicesFormByActivity({ activity, bulkyItemOptions, districtOptions, errors, handleBulkyItemChange
+
+}: {
+    activity: string,
+    bulkyItemOptions: string,
+    districtOptions: string,
+    errors: Map<string, ErrorModel>,
+    handleBulkyItemChange?: (event: any) => void
+}): React.JSX.Element | null {
     switch (activity) {
         case (REPORTING_DATA_VALUES.cleanTeam):
             return (

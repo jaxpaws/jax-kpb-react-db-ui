@@ -18,6 +18,23 @@ export async function getBulkyItemsReference(): Promise<QueryResult> {
     }
 }
 
+export async function getCleanupLocationReference(): Promise<QueryResult> {
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(
+            'SELECT id, location FROM cleanup_locations ' +
+            'WHERE start_date <= CURDATE() ' +
+            'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
+            'ORDER BY location ASC'
+        );
+        conn.release();
+        return result;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return [];
+    }
+}
+
 export async function getDistrictReference(): Promise<QueryResult> {
     try {
         const conn = await getConnection();
@@ -29,6 +46,23 @@ export async function getDistrictReference(): Promise<QueryResult> {
         );
         conn.release();
         console.log(result);
+        return result;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return [];
+    }
+}
+
+export async function getEducationTopicReference(): Promise<QueryResult> {
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(
+            'SELECT id, topic FROM education_topics ' +
+            'WHERE start_date <= CURDATE() ' +
+            'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
+            'ORDER BY topic ASC'
+        );
+        conn.release();
         return result;
     } catch (err) {
         console.error(`Error while executing query: ${err}`);

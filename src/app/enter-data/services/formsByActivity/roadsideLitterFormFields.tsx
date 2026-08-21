@@ -11,7 +11,12 @@ import { BulkyItems } from '../bulkyItems';
 import { ROADSIDE_LITTER_FORM_DATA_IDS, HAS_BULKY_ITEMS_OPTIONS } from '../servicesJson';
 
 export function RoadsideLitterFormFields({ bulkyItemsReferenceString, districtsReferenceString, errors, handleBulkyItemChange }:
-    { bulkyItemsReferenceString: string, districtsReferenceString: string, errors: Map<string, ErrorModel>, handleBulkyItemChange?: (event: any) => void }
+    {
+        bulkyItemsReferenceString: string,
+        districtsReferenceString: string,
+        errors: Map<string, ErrorModel>,
+        handleBulkyItemChange?: (event: any) => void
+    }
 ) {
     const [hasBulkyItems, setHasBulkyItems] = useState('no');
     const [selectedDistricts, setSelectedDistricts] = useState(new Map());
@@ -79,7 +84,7 @@ export function RoadsideLitterFormFields({ bulkyItemsReferenceString, districtsR
                 selectedValue={hasBulkyItems}
                 handleChange={(event: any) => setHasBulkyItems(event.target.value)}>
             </RadioList>
-            {  (hasBulkyItems === 'yes') &&
+            {(hasBulkyItems === 'yes') &&
                 <BulkyItems
                     bulkyItemId={ROADSIDE_LITTER_FORM_DATA_IDS.bulkyItems}
                     bulkyItemsReferenceString={bulkyItemsReferenceString}
