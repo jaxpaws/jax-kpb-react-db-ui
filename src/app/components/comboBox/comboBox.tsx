@@ -425,6 +425,9 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                 setFilter(comboBoxNodeValue);
                 setCurrOption(null);
                 filterOptions(comboBoxNodeValue);
+                if (handleChange) {
+                    handleChange('');
+                }
                 flag = true;
                 break;
 

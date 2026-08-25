@@ -6,6 +6,7 @@ import { CountyCleanupEventEntity } from '../entities/countyCleanupEvent.entity'
 import { DistrictEntity } from '../entities/district.entity';
 import { RoadsideLitterEventEntity } from '../entities/roadsideLitterEvent.entity';
 import { TrashRoutesEventEntity } from '../entities/trashRoutesEvent.entity';
+import { GroupCleanupEventEntity } from '../entities/groupCleanupEvent.entity';
 
 export async function insertAdoptASpotEvent(event: AdoptASpotEventEntity): Promise<number> {
     let conn = null;
@@ -80,6 +81,23 @@ export async function insertCountyCleanupEvent(event: CountyCleanupEventEntity, 
         if (conn) {
             conn.query('ROLLBACK');
         }
+        return -1;
+    }
+}
+
+export async function insertGroupCleanupEvent(event: GroupCleanupEventEntity): Promise<number> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO group_cleanups (organization_id, location_id, date, volunteer_count, volunteer_hours, litter_lbs, recycling_lbs) ' +
+            'VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [ event.organizationId, event.locationId, event.date, event.volunteerCount, event.volunteerHours, event.litterLbs, event.recyclingLbs ]
+        );
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Group Cleanup event: ${err}`);
         return -1;
     }
 }
@@ -234,6 +252,24 @@ export async function updateCountyCleanupEvent(event: CountyCleanupEventEntity, 
         if (conn) {
             conn.query('ROLLBACK');
         }
+    }
+}
+
+// TODO: Implement UPDATE logic
+export async function updateGroupCleanupEvent(event: GroupCleanupEventEntity): Promise<number> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO group_cleanups (organization_id, location_id, date, volunteer_count, volunteer_hours, litter_lbs, recycling_lbs) ' +
+            'VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [ event.organizationId, event.locationId, event.date, event.volunteerCount, event.volunteerHours, event.litterLbs, event.recyclingLbs ]
+        );
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Group Cleanup event: ${err}`);
+        return -1;
     }
 }
 

@@ -23,7 +23,6 @@ export async function insertCleanupWithContact(cleanup: Cleanup, contact: Contac
                     cleanup.hours, contact.fName, '', contact.lName, contact.phoneNum
                 ]
             );
-            console.log(result);
         },
         {
             attempts: 3,

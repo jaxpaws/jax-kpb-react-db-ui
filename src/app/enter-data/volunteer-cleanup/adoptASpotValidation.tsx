@@ -98,13 +98,6 @@ export async function validateAdoptASpotData(
     );
     errors = recyclingValidation.errors;
 
-    console.log(dateValidation);
-    console.log(spotValidation);
-    console.log(volunteerCountValidation);
-    console.log(volunteerHoursValidation);
-    console.log(litterValidation);
-    console.log(recyclingValidation);
-
     let data: AdoptASpotEventModel | null = null;
     if (errors.size === 0 && dateValidation.date &&
         spotValidation.spot &&

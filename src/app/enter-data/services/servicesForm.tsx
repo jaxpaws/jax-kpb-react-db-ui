@@ -80,9 +80,6 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
                 }
             }, 100);
         }
-
-        const formData = new FormData(e.target);
-        console.log(formData);
     }
 
     const handleReportingDataTypeChange: any = useCallback((event: any) => {

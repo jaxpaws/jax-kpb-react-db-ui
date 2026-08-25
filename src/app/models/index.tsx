@@ -7,6 +7,7 @@ export type { CountyCleanupsBulkyItemModel } from './countyCleanupsBulkyItem.mod
 export type { DistrictModel } from './district.model';
 export type { ErrorModel } from './error.model';
 export type { EventModel } from './event.model';
+export type { GroupCleanupEventModel } from './groupCleanupEvent.model';
 export type { GroupModel } from './group.model';
 export type { ReferenceDataModel } from './referenceData.model';
 export type { RoadsideLitterEventModel } from './roadsideLitterEvent.model';

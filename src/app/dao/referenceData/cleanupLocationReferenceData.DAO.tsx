@@ -1,10 +1,20 @@
 import { ReferenceDataDAO } from '.';
 import { ReferenceDataEntity } from '../../entities/referenceData.entity';
 import { ReferenceDataModel } from '../../models/referenceData.model';
-import { getCleanupLocationReference } from '../../lib/referenceData.sql';
+import { getCleanupLocationById, getCleanupLocationReference } from '../../lib/referenceData.sql';
 
 export class CleanupLocationReferenceDataDAO implements ReferenceDataDAO {
     async getByCode(code: number | string): Promise<ReferenceDataEntity | null> {
+        let id: number = -1;
+        if (typeof code !== 'number' && Number.isNaN(Number(code))) {
+            return null;
+        } else {
+            id = Number(code);
+        }
+        const result: any = await getCleanupLocationById(id);
+        if (result && result.length >= 1) {
+            return { code: result[0].code, description: result[0].description };
+        }
         return null;
     }
 

@@ -2,6 +2,7 @@ import {
     AdoptASpotEventModel,
     CleanTeamEventModel,
     CountyCleanupEventModel,
+    GroupCleanupEventModel,
     RoadsideLitterEventModel,
     TrashRoutesEventModel
 } from '../models';
@@ -28,6 +29,16 @@ export function isCountyCleanupEvent(event: any): event is CountyCleanupEventMod
         'paintCanAndHouseholdChemicalCount' in event &&
         'otherBulkyItems' in event &&
         'otherBulkyItemPounds' in event;
+}
+
+export function isGroupCleanupEvent(event: any): event is GroupCleanupEventModel {
+    return typeof event === 'object' && event !== null &&
+        'organization' in event &&
+        'location' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event &&
+        'litterCollected' in event &&
+        'recyclingCollected' in event;
 }
 
 export function isRoadsideLitterEvent(event: any): event is RoadsideLitterEventModel {
