@@ -12,19 +12,14 @@ import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListIte
 import { AdoptASpotGroupDAO } from '../../dao/group';
 import { AdoptASpotEventDAO } from '../../dao/event';
 import { AdoptASpotGroupEntity } from '../../entities/adoptASpotGroup.entity';
+import { CleanupLocationReferenceDataDAO } from '../../dao/referenceData/cleanupLocationReferenceData.DAO';
+import { CleanupOrganizationGroupDAO } from '../../dao/group/cleanupOrganizationGroup.DAO';
 
-// TODO: Pull options from database
 export async function getAdoptASpotAssignmentOptions() {
     let newAdoptASpotAssignmentOptions: ComboBoxListItemModel[] = [];
     const adoptASpotDAO: AdoptASpotGroupDAO = new AdoptASpotGroupDAO();
     try {
         const spots: AdoptASpotGroupEntity[] = await adoptASpotDAO.getAll();
-        // const items: AdoptASpotGroupModel[] = [
-        //     { id: 1, name: 'Example Group', location: 'Example Park' },
-        //     { id: 2, name: 'Another Group', location: 'Another Park' },
-        //     { id: 3, name: 'This Group', location: 'That Park' },
-        //     { id: 4, name: 'The Coolest Group', location: 'The Coolest Park' }
-        // ];
         if (spots && spots.length >= 1) {
             for (let i = 0; i < spots.length; i++) {
                 newAdoptASpotAssignmentOptions.push({
@@ -44,18 +39,11 @@ export async function getAdoptASpotAssignmentOptions() {
     }
 }
 
-// TODO: Pull options from database
 export async function getCleanupLocationOptions() {
     let newCleanupLocationOptions: ComboBoxListItemModel[] = [];
-    // const cleanupLocationRefDataDAO: GroupDAO = new CleanupLocationReferenceDataDAO();
+    const cleanupLocationRefDataDAO: CleanupLocationReferenceDataDAO = new CleanupLocationReferenceDataDAO();
     try {
-        // const locations: ReferenceDataModel[] = await cleanupLocationRefDataDAO.getAll();
-        const locations: ReferenceDataModel[] = [
-            { code: '1', description: 'Example Park' },
-            { code: '2', description: 'Another Park' },
-            { code: '3', description: 'That Park' },
-            { code: '4', description: 'The Coolest Park' }
-        ];
+        const locations: ReferenceDataModel[] = await cleanupLocationRefDataDAO.getAll();
         if (locations && locations.length >= 1) {
             for (let i = 0; i < locations.length; i++) {
                 newCleanupLocationOptions.push({
@@ -75,18 +63,11 @@ export async function getCleanupLocationOptions() {
     }
 }
 
-// TODO: Pull options from database
 export async function getCleanupOrganizationOptions() {
     let newCleanupOrganizationOptions: ComboBoxListItemModel[] = [];
-    // const cleanupOrganizationDAO: GroupDAO = new CleanupOrganizationGroupDAO();
+    const cleanupOrganizationDAO: CleanupOrganizationGroupDAO = new CleanupOrganizationGroupDAO();
     try {
-        // const organizations: GroupModel[] = await cleanupOrganizationDAO.getAll();
-        const organizations: GroupModel[] = [
-            { id: 1, name: 'Example Group' },
-            { id: 2, name: 'Another Group' },
-            { id: 3, name: 'This Group' },
-            { id: 4, name: 'The Coolest Group' }
-        ];
+        const organizations: GroupModel[] = await cleanupOrganizationDAO.getAll();
         if (organizations && organizations.length >= 1) {
             for (let i = 0; i < organizations.length; i++) {
                 newCleanupOrganizationOptions.push({
@@ -106,8 +87,7 @@ export async function getCleanupOrganizationOptions() {
     }
 }
 
-export async function saveAdoptASpotData(formData: FormData, spotId: string, isUpdate: boolean) {
-    console.log('in saveAdoptASpotData');
+export async function saveAdoptASpotData(formData: FormData, spotId: string, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
     console.log(formData);
     let validation: { data: AdoptASpotEventModel | null, errors: Map<string, ErrorModel> } =
         await validateAdoptASpotData(formData, spotId);
@@ -118,8 +98,8 @@ export async function saveAdoptASpotData(formData: FormData, spotId: string, isU
     return validation.errors;
 }
 
-export async function saveGroupCleanupData(formData: FormData, orgId: string, locationId: string, isUpdate: boolean) {
-    console.log('Saving...');
+export async function saveGroupCleanupData(formData: FormData, orgId: string, locationId: string, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
+    let validation: { data: null, errors: Map<string, ErrorModel> } = { data: null, errors: new Map<string, ErrorModel>()}
     // let validation: { data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } =
     //     await validateGroupCleanupData(formData, orgId, locationId);
     // if ((!validation.errors || validation.errors.size === 0) && validation.data) {
@@ -127,4 +107,5 @@ export async function saveGroupCleanupData(formData: FormData, orgId: string, lo
     //     await groupCleanupDAO.save(validation.data, isUpdate);
     // }
     // return validation.errors;
+    return validation.errors;
 }
