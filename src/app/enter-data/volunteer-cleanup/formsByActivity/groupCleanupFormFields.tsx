@@ -3,11 +3,13 @@ import { ErrorModel } from '../../../models';
 import { ifErrorThenGetErrorText } from '../../../utils/ifErrorThenGetErrorText';
 import { GROUP_CLEANUP_FORM_DATA_IDS } from '../volunteerCleanupJson';
 
-export function GroupCleanupFormFields({ organizationOptions, locationOptions, errors }:
+export function GroupCleanupFormFields({ organizationOptions, locationOptions, errors, handleLocationChange, handleOrganizationChange }:
     { 
         organizationOptions: string,
         locationOptions: string,
-        errors: Map<string, ErrorModel>
+        errors: Map<string, ErrorModel>,
+        handleLocationChange: (value: string) => void,
+        handleOrganizationChange: (value: string) => void
     }
 ) {
     return (
@@ -29,7 +31,8 @@ export function GroupCleanupFormFields({ organizationOptions, locationOptions, e
                 options={organizationOptions}
                 isRequired={true}
                 autocomplete="list"
-                errorText={ifErrorThenGetErrorText(errors, `${GROUP_CLEANUP_FORM_DATA_IDS.organization}-input`)}>
+                errorText={ifErrorThenGetErrorText(errors, `${GROUP_CLEANUP_FORM_DATA_IDS.organization}-input`)}
+                handleChange={handleOrganizationChange}>
             </ComboBox>
             <ComboBox
                 label="Cleanup Location"
@@ -40,7 +43,8 @@ export function GroupCleanupFormFields({ organizationOptions, locationOptions, e
                 options={locationOptions}
                 isRequired={true}
                 autocomplete="list"
-                errorText={ifErrorThenGetErrorText(errors, `${GROUP_CLEANUP_FORM_DATA_IDS.location}-input`)}>
+                errorText={ifErrorThenGetErrorText(errors, `${GROUP_CLEANUP_FORM_DATA_IDS.location}-input`)}
+                handleChange={handleLocationChange}>
             </ComboBox>
             <Textbox
                 inputId={GROUP_CLEANUP_FORM_DATA_IDS.volunteerCount}
@@ -55,6 +59,7 @@ export function GroupCleanupFormFields({ organizationOptions, locationOptions, e
                 inputType="number"
                 labelText="Volunteer Hours"
                 descriptionText="Please enter the combined volunteer hours of all volunteers at the cleanup."
+                step={0.25}
                 width="sm:w-24"
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, GROUP_CLEANUP_FORM_DATA_IDS.volunteerHours)}>

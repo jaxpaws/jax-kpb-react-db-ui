@@ -2,12 +2,13 @@
 
 import {
     AdoptASpotEventModel,
-    AdoptASpotGroupModel,
     ErrorModel,
     GroupModel,
+    GroupCleanupEventModel,
     ReferenceDataModel
 } from '../../models';
 import { validateAdoptASpotData } from './adoptASpotValidation';
+import { validateGroupCleanupData } from './groupCleanupValidation';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { AdoptASpotGroupDAO } from '../../dao/group';
 import { AdoptASpotEventDAO } from '../../dao/event';
@@ -99,13 +100,7 @@ export async function saveAdoptASpotData(formData: FormData, spotId: string, isU
 }
 
 export async function saveGroupCleanupData(formData: FormData, orgId: string, locationId: string, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
-    let validation: { data: null, errors: Map<string, ErrorModel> } = { data: null, errors: new Map<string, ErrorModel>()}
-    // let validation: { data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } =
-    //     await validateGroupCleanupData(formData, orgId, locationId);
-    // if ((!validation.errors || validation.errors.size === 0) && validation.data) {
-    //     const groupCleanupDAO: GroupCleanupEventDAO = new GroupCleanupEventDAO();
-    //     await groupCleanupDAO.save(validation.data, isUpdate);
-    // }
-    // return validation.errors;
+    let validation: { data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } = 
+        await validateGroupCleanupData(formData, orgId, locationId);
     return validation.errors;
 }

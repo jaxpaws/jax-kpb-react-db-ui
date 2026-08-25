@@ -2,10 +2,14 @@ import { GroupEntity } from '../../entities/group.entity';
 import { ReferenceDataEntity } from '../../entities/referenceData.entity';
 import { GroupModel } from '../../models';
 import { GroupDAO } from './group.DAO';
-import { getCleanupOrganizations } from '../../lib/group.sql';
+import { getCleanupOrganizationById, getCleanupOrganizations } from '../../lib/group.sql';
 
 export class CleanupOrganizationGroupDAO implements GroupDAO {
     async getById(id: number): Promise<GroupEntity | null> {
+        const result: any = await getCleanupOrganizationById(id);
+        if (result && result.length >= 1) {
+            return { id: result[0].id, name: result[0].name };
+        }
         return null;
     }
 

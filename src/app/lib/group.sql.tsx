@@ -36,6 +36,24 @@ export async function getAdoptASpotAssignments(): Promise<QueryResult> {
     }
 }
 
+export async function getCleanupOrganizationById(id: number): Promise<QueryResult> {
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(
+            'SELECT id, name FROM organizations ' +
+            'WHERE start_date <= CURDATE() ' +
+            'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
+            'AND id = ?',
+            [ id ]
+        );
+        conn.release();
+        return result;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return [];
+    }
+}
+
 export async function getCleanupOrganizations(): Promise<QueryResult> {
     try {
         const conn = await getConnection();

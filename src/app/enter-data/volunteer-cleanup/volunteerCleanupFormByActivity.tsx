@@ -9,7 +9,9 @@ export function VolunteerCleanupFormByActivity({
     cleanupOrganizations,
     cleanupLocations,
     errors,
-    handleAdoptASpotChange
+    handleAdoptASpotChange,
+    handleCleanupLocationChange,
+    handleCleanupOrganizationChange
 }: {
     activity: string,
     adoptASpotAssignments: string,
@@ -17,6 +19,8 @@ export function VolunteerCleanupFormByActivity({
     cleanupLocations: string,
     errors: Map<string, ErrorModel>,
     handleAdoptASpotChange: (value: string) => void,
+    handleCleanupLocationChange: (value: string) => void,
+    handleCleanupOrganizationChange: (value: string) => void
 }): React.JSX.Element | null {
     switch (activity) {
         case(REPORTING_DATA_VALUES.adoptASpot):
@@ -32,7 +36,9 @@ export function VolunteerCleanupFormByActivity({
                 <GroupCleanupFormFields
                     locationOptions={cleanupLocations}
                     organizationOptions={cleanupOrganizations}
-                    errors={errors}>
+                    errors={errors}
+                    handleLocationChange={handleCleanupLocationChange}
+                    handleOrganizationChange={handleCleanupOrganizationChange}>
                 </GroupCleanupFormFields>
             );
         default:
