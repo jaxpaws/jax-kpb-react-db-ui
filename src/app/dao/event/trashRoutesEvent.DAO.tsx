@@ -1,6 +1,6 @@
 import { EventDAO } from './';
 import { EventEntity } from '../../entities/event.entity';
-import { TrashRoutesEntity } from '../../entities/trashRoutes.entity';
+import { TrashRoutesEventEntity } from '../../entities/trashRoutesEvent.entity';
 import { EventModel } from '../../models';
 import { isTrashRoutesEvent } from '../../utils/eventTypeGuards';
 import { insertTrashRoutesEvent, updateTrashRoutesEvent } from '../../lib/event.sql';
@@ -12,7 +12,7 @@ export class TrashRoutesEventDAO implements EventDAO {
 
     async save(event: EventModel, isUpdate: boolean): Promise<void> {
         if (isTrashRoutesEvent(event)) {
-            const eventEntity: TrashRoutesEntity = {
+            const eventEntity: TrashRoutesEventEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
                 trashLbs: event.trashPounds,

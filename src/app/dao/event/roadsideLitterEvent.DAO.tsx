@@ -2,7 +2,7 @@ import { EventDAO } from './';
 import { BulkyItemEntity } from '../../entities/bulkyItem.entity';
 import { DistrictEntity } from '../../entities/district.entity';
 import { EventEntity } from '../../entities/event.entity';
-import { RoadsideLitterEntity } from '../../entities/roadsideLitter.entity';
+import { RoadsideLitterEventEntity } from '../../entities/roadsideLitterEvent.entity';
 import { BulkyItemModel, DistrictModel, EventModel } from '../../models';
 import { isRoadsideLitterEvent } from '../../utils/eventTypeGuards';
 import { insertRoadsideLitterEvent, updateRoadsideLitterEvent } from '../../lib/event.sql';
@@ -14,7 +14,7 @@ export class RoadsideLitterEventDAO implements EventDAO {
 
     async save(event: EventModel, isUpdate: boolean): Promise<void> {
         if (isRoadsideLitterEvent(event)) {
-            const eventEntity: RoadsideLitterEntity = {
+            const eventEntity: RoadsideLitterEventEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
                 litterLbs: event.litterPounds,

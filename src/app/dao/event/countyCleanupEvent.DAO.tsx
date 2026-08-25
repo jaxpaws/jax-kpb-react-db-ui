@@ -1,6 +1,6 @@
 import { EventDAO } from './';
 import { BulkyItemEntity } from '../../entities/bulkyItem.entity';
-import { CountyCleanupEntity } from '../../entities/countyCleanup.entity';
+import { CountyCleanupEventEntity } from '../../entities/countyCleanupEvent.entity';
 import { EventEntity } from '../../entities/event.entity';
 import { ItemWeightReferenceDataEntity } from '../../entities/itemWeightReferenceData.entity';
 import { BulkyItemModel, EventModel } from '../../models';
@@ -30,7 +30,7 @@ export class CountyCleanupEventDAO implements EventDAO {
                 }
             });
 
-            const eventEntity: CountyCleanupEntity = {
+            const eventEntity: CountyCleanupEventEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
                 tireCount: event.tireCount,
