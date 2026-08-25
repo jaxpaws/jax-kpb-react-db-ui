@@ -12,16 +12,15 @@ import {
     saveTrashRoutesData
 } from './actions';
 import { ErrorModel } from '../../models';
-import { MultiSelectOptionModel } from '../../components/multiSelect/multiSelectOption.model';
 import { ServicesFormByActivity } from './servicesFormByActivity';
 import { isBlank } from '../../utils/isBlank';
 
 export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
     const [reportingDataType, setReportingDataType] = useState<string>(selectedDataType);
     const [errors, setErrors] = useState<Map<string, ErrorModel>>(new Map<string, ErrorModel>());
-    const [bulkyItemOptions, setBulkyItemOptions] = useState<MultiSelectOptionModel[]>([]);
+    const [bulkyItemOptions, setBulkyItemOptions] = useState<string>('[]');
     const [areBulkyItemsRetrieved, setAreBulkyItemsRetrieved] = useState<boolean>(false);
-    const [districtOptions, setDistrictOptions] = useState<MultiSelectOptionModel[]>([]);
+    const [districtOptions, setDistrictOptions] = useState<string>('[]');
     const [areDistrictsRetrieved, setAreDistrictsRetrieved] = useState<boolean>(false);
     const [selectedBulkyItemValues, setSelectedBulkyItemValues] = useState<string[]>([]);
 
@@ -30,7 +29,7 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
             setAreBulkyItemsRetrieved(true);
             getBulkyItemRefData().then((items: string) => {
                 if (!isBlank(items)) {
-                    setBulkyItemOptions(JSON.parse(items));
+                    setBulkyItemOptions(items);
                 }
             });
         }
@@ -39,7 +38,7 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
             setAreDistrictsRetrieved(true);
             getDistrictRefData().then((districts: string) => {
                 if (!isBlank(districts)) {
-                    setDistrictOptions(JSON.parse(districts));
+                    setDistrictOptions(districts);
                 }
             });
         }
@@ -115,8 +114,8 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
             }
             <ServicesFormByActivity
                 activity={reportingDataType}
-                bulkyItemOptions={JSON.stringify(bulkyItemOptions)}
-                districtOptions={JSON.stringify(districtOptions)}
+                bulkyItemOptions={bulkyItemOptions}
+                districtOptions={districtOptions}
                 errors={errors}
                 handleBulkyItemChange={handleBulkyItemChange}>
             </ServicesFormByActivity>

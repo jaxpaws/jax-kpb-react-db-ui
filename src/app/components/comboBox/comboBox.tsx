@@ -6,7 +6,7 @@ import { ComboBoxListItemModel } from './comboBoxListItem.model';
 import { parseJsonStringOptions } from '../../utils/parseJsonStringOptions';
 import { isBlank } from '../../utils/isBlank';
 
-export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLabel, options, isRequired, autocomplete, errorText }: ComboBoxModel) {
+export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLabel, options, isRequired, autocomplete, errorText, handleChange }: ComboBoxModel) {
     const [comboBoxNodeActiveDescendant, setComboBoxNodeActiveDescendant] = useState<string>('');
     const [comboBoxNodeValue, setComboBoxNodeValue] = useState<string>('');
     const [comboBoxHasVisualFocus, setComboBoxHasVisualFocus] = useState<boolean>(false);
@@ -287,7 +287,12 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
         switch (event.key) {
             case 'Enter':
                 if (listboxHasVisualFocus) {
-                    setValue((currOption) ? currOption.label : '');
+                    if (currOption) {
+                        setValue(currOption.label);
+                        if (handleChange) {
+                            handleChange(currOption.label);
+                        }
+                    }
                     close(true);
                     setVisualFocusCombobox();
                     flag = true;
@@ -354,6 +359,9 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                 if (listboxHasVisualFocus) {
                     if (currOption) {
                         setValue(currOption.label);
+                        if (handleChange) {
+                            handleChange(currOption.label);
+                        }
                     }
                 }
                 break;
@@ -537,6 +545,9 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
 
     function onOptionClick(event: any): void {
         setComboBoxNodeValue(event.target.textContent);
+        if (handleChange) {
+            handleChange(event.target.textContent);
+        }
         close(true);
     }
 

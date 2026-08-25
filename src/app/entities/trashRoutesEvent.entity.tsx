@@ -1,7 +1,6 @@
 import { EventEntity } from './event.entity';
 
-export interface CleanTeamEntity extends EventEntity {
-    eventDesc: string;
+export interface TrashRoutesEventEntity extends EventEntity {
     trashLbs: number;
     recyclingLbs: number;
 }

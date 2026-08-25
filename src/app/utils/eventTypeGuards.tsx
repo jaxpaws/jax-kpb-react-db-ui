@@ -1,13 +1,28 @@
-import { CleanTeamModel, CountyCleanupModel, RoadsideLitterModel, TrashRoutesModel } from '../models';
+import {
+    AdoptASpotEventModel,
+    CleanTeamEventModel,
+    CountyCleanupEventModel,
+    RoadsideLitterEventModel,
+    TrashRoutesEventModel
+} from '../models';
 
-export function isCleanTeamEvent(event: any): event is CleanTeamModel {
+export function isAdoptASpotEvent(event: any): event is AdoptASpotEventModel {
+    return typeof event === 'object' && event !== null &&
+        'spot' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event &&
+        'litterCollected' in event &&
+        'recyclingCollected' in event;
+}
+
+export function isCleanTeamEvent(event: any): event is CleanTeamEventModel {
     return typeof event === 'object' && event !== null &&
         'eventDescription' in event &&
         'trashPounds' in event &&
         'recyclingPounds' in event;
 }
 
-export function isCountyCleanupEvent(event: any): event is CountyCleanupModel {
+export function isCountyCleanupEvent(event: any): event is CountyCleanupEventModel {
     return typeof event === 'object' && event !== null &&
         'tireCount' in event &&
         'paintCanAndHouseholdChemicalCount' in event &&
@@ -15,7 +30,7 @@ export function isCountyCleanupEvent(event: any): event is CountyCleanupModel {
         'otherBulkyItemPounds' in event;
 }
 
-export function isRoadsideLitterEvent(event: any): event is RoadsideLitterModel {
+export function isRoadsideLitterEvent(event: any): event is RoadsideLitterEventModel {
     return typeof event === 'object' && event !== null &&
         'litterPounds' in event &&
         'recyclingPounds' in event &&
@@ -24,7 +39,7 @@ export function isRoadsideLitterEvent(event: any): event is RoadsideLitterModel 
         'bulkyItems' in event;
 }
 
-export function isTrashRoutesEvent(event: any): event is TrashRoutesModel {
+export function isTrashRoutesEvent(event: any): event is TrashRoutesEventModel {
     return typeof event === 'object' && event !== null &&
         'trashPounds' in event &&
         'recyclingPounds' in event;

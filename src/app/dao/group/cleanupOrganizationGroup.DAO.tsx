@@ -3,8 +3,12 @@ import { GroupModel } from '../../models';
 import { GroupDAO } from './group.DAO';
 
 export class CleanupOrganizationGroupDAO implements GroupDAO {
-    getById(id: number): GroupEntity | null {
+    async getById(id: number): Promise<GroupEntity | null> {
         return null;
+    }
+
+    async getAll(): Promise<GroupEntity[]> {
+        return [];
     }
 
     async save(group: GroupModel): Promise<void> {}

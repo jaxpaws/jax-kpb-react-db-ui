@@ -1,6 +1,6 @@
 import { EventModel } from './event.model';
 
-export interface TrashRoutesModel extends EventModel {
+export interface TrashRoutesEventModel extends EventModel {
     trashPounds: number;
     recyclingPounds: number;
 }

@@ -1,26 +1,36 @@
 'use server'
 
-import { AdoptASpotGroupModel, GroupModel, ReferenceDataModel } from '../../models';
+import {
+    AdoptASpotEventModel,
+    AdoptASpotGroupModel,
+    ErrorModel,
+    GroupModel,
+    ReferenceDataModel
+} from '../../models';
+import { validateAdoptASpotData } from './adoptASpotValidation';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
+import { AdoptASpotGroupDAO } from '../../dao/group';
+import { AdoptASpotEventDAO } from '../../dao/event';
+import { AdoptASpotGroupEntity } from '../../entities/adoptASpotGroup.entity';
 
 // TODO: Pull options from database
 export async function getAdoptASpotAssignmentOptions() {
     let newAdoptASpotAssignmentOptions: ComboBoxListItemModel[] = [];
-    // const adoptASpotDAO: GroupDAO = new AdoptASpotGroupDAO();
+    const adoptASpotDAO: AdoptASpotGroupDAO = new AdoptASpotGroupDAO();
     try {
-        // const items: AdoptASpotGroupModel[] = await adoptASpotDAO.getAll();
-        const items: AdoptASpotGroupModel[] = [
-            { id: 1, name: 'Example Group', location: 'Example Park' },
-            { id: 2, name: 'Another Group', location: 'Another Park' },
-            { id: 3, name: 'This Group', location: 'That Park' },
-            { id: 4, name: 'The Coolest Group', location: 'The Coolest Park' }
-        ];
-        if (items && items.length >= 1) {
-            for (let i = 0; i < items.length; i++) {
+        const spots: AdoptASpotGroupEntity[] = await adoptASpotDAO.getAll();
+        // const items: AdoptASpotGroupModel[] = [
+        //     { id: 1, name: 'Example Group', location: 'Example Park' },
+        //     { id: 2, name: 'Another Group', location: 'Another Park' },
+        //     { id: 3, name: 'This Group', location: 'That Park' },
+        //     { id: 4, name: 'The Coolest Group', location: 'The Coolest Park' }
+        // ];
+        if (spots && spots.length >= 1) {
+            for (let i = 0; i < spots.length; i++) {
                 newAdoptASpotAssignmentOptions.push({
-                    key: `adopted-spot-${items[i]?.id}`,
+                    key: `${spots[i]?.id}`,
                     listItemId: `adopted-spot-${i + 1}`,
-                    label: `${items[i]?.name}`,
+                    label: `${spots[i]?.location} - ${spots[i]?.name}`,
                     isSelected: false
                 });
             }
@@ -49,7 +59,7 @@ export async function getCleanupLocationOptions() {
         if (locations && locations.length >= 1) {
             for (let i = 0; i < locations.length; i++) {
                 newCleanupLocationOptions.push({
-                    key: `location-${locations[i]?.code}`,
+                    key: `${locations[i]?.code}`,
                     listItemId: `location-${i + 1}`,
                     label: `${locations[i]?.description}`,
                     isSelected: false
@@ -80,7 +90,7 @@ export async function getCleanupOrganizationOptions() {
         if (organizations && organizations.length >= 1) {
             for (let i = 0; i < organizations.length; i++) {
                 newCleanupOrganizationOptions.push({
-                    key: `organization-${organizations[i]?.id}`,
+                    key: `${organizations[i]?.id}`,
                     listItemId: `organization-${i + 1}`,
                     label: `${organizations[i]?.name}`,
                     isSelected: false
@@ -94,4 +104,27 @@ export async function getCleanupOrganizationOptions() {
         console.error(`Error getting group cleanup organization options.`);
         return '';
     }
+}
+
+export async function saveAdoptASpotData(formData: FormData, spotId: string, isUpdate: boolean) {
+    console.log('in saveAdoptASpotData');
+    console.log(formData);
+    let validation: { data: AdoptASpotEventModel | null, errors: Map<string, ErrorModel> } =
+        await validateAdoptASpotData(formData, spotId);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        const adoptASpotDAO: AdoptASpotEventDAO = new AdoptASpotEventDAO();
+        await adoptASpotDAO.save(validation.data, isUpdate);
+    }
+    return validation.errors;
+}
+
+export async function saveGroupCleanupData(formData: FormData, orgId: string, locationId: string, isUpdate: boolean) {
+    console.log('Saving...');
+    // let validation: { data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } =
+    //     await validateGroupCleanupData(formData, orgId, locationId);
+    // if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+    //     const groupCleanupDAO: GroupCleanupEventDAO = new GroupCleanupEventDAO();
+    //     await groupCleanupDAO.save(validation.data, isUpdate);
+    // }
+    // return validation.errors;
 }

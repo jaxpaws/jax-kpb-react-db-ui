@@ -1,7 +1,7 @@
-import { BulkyItemModel } from './';
+import { BulkyItemModel } from '.';
 import { EventModel } from './event.model';
 
-export interface CountyCleanupModel extends EventModel {
+export interface CountyCleanupEventModel extends EventModel {
     tireCount: number;
     paintCanAndHouseholdChemicalCount: number;
     otherBulkyItems: BulkyItemModel[];

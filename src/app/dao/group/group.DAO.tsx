@@ -2,7 +2,8 @@ import { GroupEntity } from '../../entities/group.entity';
 import { GroupModel } from '../../models';
 
 export interface GroupDAO {
-    getById(id: number): GroupEntity | null;
-    save(group: GroupModel): void;
+    getById(id: number): Promise<GroupEntity | null>;
+    getAll(): Promise<GroupEntity[]>;
+    save(group: GroupModel): Promise<void>;
     delete(id: number): void;
 }

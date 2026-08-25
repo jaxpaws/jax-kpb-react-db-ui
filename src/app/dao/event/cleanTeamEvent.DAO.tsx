@@ -1,6 +1,6 @@
 import { EventDAO } from './';
 import { EventEntity } from '../../entities/event.entity';
-import { CleanTeamEntity } from '../../entities/cleanTeam.entity';
+import { CleanTeamEventEntity } from '../../entities/cleanTeamEvent.entity';
 import { EventModel } from '../../models';
 import { isCleanTeamEvent } from '../../utils/eventTypeGuards';
 import { insertCleanTeamEvent, updateCleanTeamEvent } from '../../lib/event.sql';
@@ -12,7 +12,7 @@ export class CleanTeamEventDAO implements EventDAO {
 
     async save(event: EventModel, isUpdate: boolean): Promise<void> {
         if (isCleanTeamEvent(event)) {
-            const eventEntity: CleanTeamEntity = {
+            const eventEntity: CleanTeamEventEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
                 eventDesc: event.eventDescription,

@@ -5,6 +5,7 @@ export interface TextboxModel {
     labelText: string,
     descriptionText?: string,
     maxlength?: number,
+    step?: number,
     width?: string,
     isRequired?: boolean,
     labelFontWeight?: string,

@@ -1,35 +1,48 @@
 'use client'
 
 import { useCallback, useEffect, useState, useRef } from 'react';
-import {
-    AdoptASpotGroupModel,
-    ErrorModel,
-    GroupModel,
-    ReferenceDataModel
-} from '../../models';
+import {ErrorModel } from '../../models';
 import { ErrorSummary, RadioList } from '../../components';
 import { VolunteerCleanupFormByActivity } from './volunteerCleanupFormByActivity';
-import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS } from './volunteerCleanupJson';
-import { getAdoptASpotAssignmentOptions, getCleanupLocationOptions, getCleanupOrganizationOptions } from './actions';
+import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './volunteerCleanupJson';
+import {
+    getAdoptASpotAssignmentOptions,
+    getCleanupLocationOptions,
+    getCleanupOrganizationOptions,
+    saveAdoptASpotData
+} from './actions';
 import { isBlank } from '../../utils/isBlank';
+import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 
 export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
     const [reportingDataType, setReportingDataType] = useState<string>(selectedDataType);
     const [errors, setErrors] = useState<Map<string, ErrorModel>>(new Map<string, ErrorModel>());
-    const [adoptASpotAssignmentOptions, setAdoptASpotAssignmentOptions] = useState<AdoptASpotGroupModel[]>([]);
+    const [adoptASpotAssignmentOptions, setAdoptASpotAssignmentOptions] = useState<string>('[]');
+    const [adoptASpotAssignmentValueToIdMap, setAdoptASpotAssignmentValueToIdMap] = useState<Map<string, string>>(new Map<string, string>());
     const [areAdoptASpotAssignmentsRetrieved, setAreAdoptASpotAssignmentsRetrieved] = useState<boolean>(false);
-    const [cleanupLocationOptions, setCleanupLocationOptions] = useState<ReferenceDataModel[]>([]);
+    
+    const [cleanupLocationOptions, setCleanupLocationOptions] = useState<string>('[]');
     const [areCleanupLocationsRetrieved, setAreCleanupLocationsRetrieved] = useState<boolean>(false);
-    const [cleanupOrganizationOptions, setCleanupOrganizationOptions] = useState<GroupModel[]>([]);
+    const [cleanupLocationValueToIdMap, setCleanupLocationValueToIdMap] = useState<Map<string, string>>(new Map<string, string>());
+
+    const [cleanupOrganizationOptions, setCleanupOrganizationOptions] = useState<string>('[]');
     const [areCleanupOrganizationsRetrieved, setAreCleanupOrganizationsRetrieved] = useState<boolean>(false);
+    const [cleanupOrganizationValueToIdMap, setCleanupOrganizationValueToIdMap] = useState<Map<string, string>>(new Map<string, string>());
+    
+    const [selectedAdoptASpot, setSelectedAdoptASpot] = useState<string>('');
     const formRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {
         if (!areAdoptASpotAssignmentsRetrieved) {
             setAreAdoptASpotAssignmentsRetrieved(true);
             getAdoptASpotAssignmentOptions().then((assignments: string) => {
-                if (!isBlank(assignments)) {
+                if (!isBlank(assignments) && assignments !== '[]') {
                     setAdoptASpotAssignmentOptions(JSON.parse(assignments));
+                    let assignmentValueToIdMap: Map<string, string> = new Map<string, string>();
+                    JSON.parse(assignments).map((assignment: ComboBoxListItemModel) => {
+                        assignmentValueToIdMap.set(assignment.label, assignment.key);
+                    });
+                    setAdoptASpotAssignmentValueToIdMap(assignmentValueToIdMap);
                 }
             });
         }
@@ -39,6 +52,11 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
             getCleanupLocationOptions().then((locations: string) => {
                 if (!isBlank(locations)) {
                     setCleanupLocationOptions(JSON.parse(locations));
+                    let locationValueToIdMap: Map<string, string> = new Map<string, string>();
+                    JSON.parse(locations).map((location: ComboBoxListItemModel) => {
+                        locationValueToIdMap.set(location.label, location.key);
+                    });
+                    setCleanupLocationValueToIdMap(locationValueToIdMap);
                 }
             })
         }
@@ -48,6 +66,11 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
             getCleanupOrganizationOptions().then((organizations: string) => {
                 if (!isBlank(organizations)) {
                     setCleanupOrganizationOptions(JSON.parse(organizations));
+                    let organizationValueToIdMap: Map<string, string> = new Map<string, string>();
+                    JSON.parse(organizations).map((organization: ComboBoxListItemModel) => {
+                        organizationValueToIdMap.set(organization.label, organization.key);
+                    });
+                    setCleanupOrganizationValueToIdMap(organizationValueToIdMap);
                 }
             })
         }
@@ -62,13 +85,56 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
     }, [areAdoptASpotAssignmentsRetrieved, areCleanupLocationsRetrieved, areCleanupOrganizationsRetrieved]);
 
     // TODO: implement handleSubmit logic
-    function handleSubmit(e: any) {
+    async function handleSubmit(e: any) {
         e.preventDefault();
-        console.log('Submitting...');
+        let errors: Map<string, ErrorModel> | null = null;
+
+        switch (reportingDataType) {
+            case (REPORTING_DATA_VALUES.adoptASpot):
+                const selectedSpotId: string | undefined = adoptASpotAssignmentValueToIdMap.has(selectedAdoptASpot)
+                    ? adoptASpotAssignmentValueToIdMap.get(selectedAdoptASpot) : '';
+                errors = await saveAdoptASpotData(
+                    new FormData(e.target),
+                    selectedSpotId ? selectedSpotId : '',
+                    isUpdate
+                );
+                console.log(errors);
+                setErrors(errors);
+                break;
+            case (REPORTING_DATA_VALUES.groupCleanup):
+                console.log('Saving Group Cleanup');
+                // const selectedOrgId: string | undefined = cleanupOrganizationValueToIdMap.has(selectedCleanupOrg)
+                //     ? cleanupOrganizationValueToIdMap.get(selectedCleanupOrg) : '';
+                // const selectedLocationId: string | undefined = cleanupLocationValueToIdMap.has(selectedCleanupLoc)
+                //     ? cleanupLocationValueToIdMap.get(selectedCleanupLoc) : '';
+                // errors = await saveGroupCleanupData(
+                //     new FormData(e.target),
+                //     selectedOrgId ? selectedOrgId : '',
+                //     selectedLocationId ? selectedLocationId : '',
+                //     isUpdate
+                // );
+                // console.log(errors);
+                // setErrors(errors);
+                break;
+        }
+            
+        if (errors !== null && errors.size > 0) {
+            setTimeout(() => {
+                const errorHeader = document.getElementById('error-header');
+                if (errorHeader) {
+                    errorHeader.focus();
+                    window.scroll(0, 0);
+                }
+            }, 100);
+        }
+
+        const formData = new FormData(e.target);
+        console.log(formData);
     }
 
     const handleReportingDataTypeChange: any = useCallback((event: any) => {
         setReportingDataType(event.target.value);
+        setSelectedAdoptASpot('');
         setErrors(new Map<string, ErrorModel>());
     }, []);
 
@@ -94,7 +160,8 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
                 adoptASpotAssignments={JSON.stringify(adoptASpotAssignmentOptions)}
                 cleanupLocations={JSON.stringify(cleanupLocationOptions)}
                 cleanupOrganizations={JSON.stringify(cleanupOrganizationOptions)}
-                errors={errors}>
+                errors={errors}
+                handleAdoptASpotChange={setSelectedAdoptASpot}>
             </VolunteerCleanupFormByActivity>
             {reportingDataType !== '' &&
                 <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4 mb-4">

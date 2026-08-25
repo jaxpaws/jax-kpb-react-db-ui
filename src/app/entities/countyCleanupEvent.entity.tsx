@@ -1,6 +1,6 @@
 import { EventEntity } from './event.entity';
 
-export interface CountyCleanupEntity extends EventEntity {
+export interface CountyCleanupEventEntity extends EventEntity {
     tireCount: number;
     tireLbs: number;
     paintCanAndHouseholdChemicalCount: number;

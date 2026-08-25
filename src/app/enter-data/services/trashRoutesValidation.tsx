@@ -1,11 +1,11 @@
-import { TrashRoutesModel, ErrorModel } from '../../models';
+import { TrashRoutesEventModel, ErrorModel } from '../../models';
 import { TRASH_ROUTES_FORM_DATA_IDS } from './servicesJson';
 import { validateDate, validatePounds } from '../../utils/commonFormValidation';
 import { UNSIGNED_SMALL_INT_MAX } from '../../constValues';
 
 export async function validateTrashRoutesData(
     formData: FormData
-): Promise<{ data: TrashRoutesModel | null, errors: Map<string, ErrorModel> }> {
+): Promise<{ data: TrashRoutesEventModel | null, errors: Map<string, ErrorModel> }> {
     let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
 
     const dateValidation = validateDate(errors, formData.get(TRASH_ROUTES_FORM_DATA_IDS.date), TRASH_ROUTES_FORM_DATA_IDS.date);
@@ -31,7 +31,7 @@ export async function validateTrashRoutesData(
     );
     errors = recyclingValidation.errors;
 
-    let data: TrashRoutesModel | null = null;
+    let data: TrashRoutesEventModel | null = null;
     if (errors.size === 0 && dateValidation.date &&
         (trashValidation.pounds || trashValidation.pounds === 0) &&
         (recyclingValidation.pounds || recyclingValidation.pounds === 0)

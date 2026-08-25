@@ -1,4 +1,4 @@
-import { BulkyItemModel, DistrictModel, ErrorModel, RoadsideLitterModel } from '../../models';
+import { BulkyItemModel, DistrictModel, ErrorModel, RoadsideLitterEventModel } from '../../models';
 import { ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
 import { ReferenceDataModel } from '../../models';
 import { ReferenceDataDAO, DistrictReferenceDataDAO } from '../../dao/referenceData';
@@ -55,7 +55,7 @@ async function validateDistricts(errors: Map<string, ErrorModel>, values: FormDa
 
 export async function validateRoadsideLitterData(
     formData: FormData, selectedBulkyItemValues: string[]
-): Promise<{ data: RoadsideLitterModel | null, errors: Map<string, ErrorModel> }> {
+): Promise<{ data: RoadsideLitterEventModel | null, errors: Map<string, ErrorModel> }> {
     let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
 
     const dateValidation = validateDate(errors, formData.get(ROADSIDE_LITTER_FORM_DATA_IDS.date), ROADSIDE_LITTER_FORM_DATA_IDS.date);
@@ -119,7 +119,7 @@ export async function validateRoadsideLitterData(
         errors = bulkyItemValidation.errors;
     }
 
-    let data: RoadsideLitterModel | null = null;
+    let data: RoadsideLitterEventModel | null = null;
     if (errors.size === 0 && dateValidation.date &&
         (litterValidation.pounds || litterValidation.pounds === 0) &&
         (recyclingValidation.pounds || recyclingValidation.pounds === 0) &&

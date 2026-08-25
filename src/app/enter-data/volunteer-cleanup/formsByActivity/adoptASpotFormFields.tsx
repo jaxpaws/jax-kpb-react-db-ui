@@ -3,8 +3,8 @@ import { ErrorModel } from '../../../models';
 import { ifErrorThenGetErrorText } from '../../../utils/ifErrorThenGetErrorText';
 import { ADOPT_A_SPOT_FORM_DATA_IDS } from '../volunteerCleanupJson';
 
-export function AdoptASpotFormFields({ assignmentOptions, errors }:
-    { assignmentOptions: string, errors: Map<string, ErrorModel> }
+export function AdoptASpotFormFields({ assignmentOptions, errors, handleSpotChange }:
+    { assignmentOptions: string, errors: Map<string, ErrorModel>, handleSpotChange?: (value: string) => void }
 ) {
     return (
         <div className="flex flex-col gap-4 mt-3">
@@ -25,7 +25,8 @@ export function AdoptASpotFormFields({ assignmentOptions, errors }:
                 options={assignmentOptions}
                 isRequired={true}
                 autocomplete="list"
-                errorText={ifErrorThenGetErrorText(errors, `${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-input`)}>
+                errorText={ifErrorThenGetErrorText(errors, `${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-input`)}
+                handleChange={handleSpotChange}>
             </ComboBox>
             <Textbox
                 inputId={ADOPT_A_SPOT_FORM_DATA_IDS.volunteerCount}
@@ -39,7 +40,8 @@ export function AdoptASpotFormFields({ assignmentOptions, errors }:
                 inputId={ADOPT_A_SPOT_FORM_DATA_IDS.volunteerHours}
                 inputType="number"
                 labelText="Volunteer Hours"
-                descriptionText="Please enter the combined volunteer hours of all volunteers at the cleanup."
+                descriptionText="Please enter the combined volunteer hours of all volunteers at the cleanup. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
+                step={0.25}
                 width="sm:w-24"
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, ADOPT_A_SPOT_FORM_DATA_IDS.volunteerHours)}>

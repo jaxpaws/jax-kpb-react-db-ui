@@ -8,4 +8,5 @@ export interface ComboBoxModel {
     isRequired: boolean;
     autocomplete?: 'none' | 'list' | 'both';
     errorText?: string;
+    handleChange?: (value: string) => void;
 }

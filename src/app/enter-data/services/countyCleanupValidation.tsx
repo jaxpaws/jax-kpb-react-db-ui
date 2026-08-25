@@ -1,4 +1,4 @@
-import { BulkyItemModel, ErrorModel, CountyCleanupModel } from '../../models';
+import { BulkyItemModel, ErrorModel, CountyCleanupEventModel } from '../../models';
 import { COUNTY_CLEANUP_FORM_DATA_IDS } from './servicesJson';
 import { 
     isFormDataEntryValueNullOrBlank,
@@ -11,7 +11,7 @@ import { UNSIGNED_SMALL_INT_MAX } from '../../constValues';
 
 export async function validateCountyCleanupData(
     formData: FormData, selectedBulkyItemValues: string[]
-): Promise<{ data: CountyCleanupModel | null, errors: Map<string, ErrorModel> }> {
+): Promise<{ data: CountyCleanupEventModel | null, errors: Map<string, ErrorModel> }> {
     let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
 
     const dateValidation = validateDate(errors, formData.get(COUNTY_CLEANUP_FORM_DATA_IDS.date), COUNTY_CLEANUP_FORM_DATA_IDS.date);
@@ -72,7 +72,7 @@ export async function validateCountyCleanupData(
         errors = bulkyItemPoundsValidation.errors;
     }
 
-    let data: CountyCleanupModel | null = null;
+    let data: CountyCleanupEventModel | null = null;
     if (errors.size === 0 && dateValidation.date &&
         (tireCountValidation.count || tireCountValidation.count === 0) &&
         (canAndChemicalCountValidation.count || canAndChemicalCountValidation.count === 0) &&

@@ -1,7 +1,7 @@
-import { BulkyItemModel, DistrictModel } from './';
+import { BulkyItemModel, DistrictModel } from '.';
 import { EventModel } from './event.model';
 
-export interface RoadsideLitterModel extends EventModel {
+export interface RoadsideLitterEventModel extends EventModel {
     litterPounds: number;
     recyclingPounds: number;
     locations: string;
