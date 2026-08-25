@@ -27,7 +27,7 @@ export class RoadsideLitterEventDAO implements EventDAO {
                 districtEntities.push({
                     id: district.id ? district.id : -1,
                     eventId: event.id ? event.id : -1,
-                    districtCode: district.districtRef.code
+                    districtCode: `${district.districtRef.code}`
                 });
             });
 
