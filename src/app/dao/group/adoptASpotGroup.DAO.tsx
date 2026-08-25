@@ -14,7 +14,6 @@ export class AdoptASpotGroupDAO implements GroupDAO {
 
     async getAll(): Promise<AdoptASpotGroupEntity[]> {
         const result: any = await getAdoptASpotAssignments();
-        console.log(result);
         let assignments: AdoptASpotGroupEntity[] = [];
         if (result && result.length >= 1) {
             result.forEach((assignment: any) => assignments.push({ id: assignment.id, name: assignment.group_name, location: assignment.location }));

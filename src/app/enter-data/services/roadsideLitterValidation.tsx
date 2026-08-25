@@ -30,7 +30,7 @@ async function validateDistricts(errors: Map<string, ErrorModel>, values: FormDa
         const districts: ReferenceDataModel[] = await districtRefDAO.getAll();
         if (districts && districts.length >= 1) {
             const districtMap = new Map<string, string>();
-            districts.map((district: ReferenceDataModel) => districtMap.set(district.code, district.description ? district.description : ''));
+            districts.map((district: ReferenceDataModel) => districtMap.set(`${district.code}`, district.description ? district.description : ''));
             values.map((value: FormDataEntryValue) => {
                 if (!districtMap.has(value.toString().trim())) {
                     const error: ErrorModel = {

@@ -1,4 +1,4 @@
 export interface ReferenceDataModel {
-    code: string;
+    code: string | number;
     description: string;
 }

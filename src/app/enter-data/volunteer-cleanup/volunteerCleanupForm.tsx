@@ -128,9 +128,6 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
                 }
             }, 100);
         }
-
-        const formData = new FormData(e.target);
-        console.log(formData);
     }
 
     const handleReportingDataTypeChange: any = useCallback((event: any) => {

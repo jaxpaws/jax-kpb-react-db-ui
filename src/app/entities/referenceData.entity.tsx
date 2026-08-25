@@ -1,4 +1,4 @@
 export interface ReferenceDataEntity {
-    code: string;
+    code: string | number;
     description: string;
 }

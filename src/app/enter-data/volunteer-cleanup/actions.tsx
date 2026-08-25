@@ -15,6 +15,7 @@ import { AdoptASpotEventDAO } from '../../dao/event';
 import { AdoptASpotGroupEntity } from '../../entities/adoptASpotGroup.entity';
 import { CleanupLocationReferenceDataDAO } from '../../dao/referenceData/cleanupLocationReferenceData.DAO';
 import { CleanupOrganizationGroupDAO } from '../../dao/group/cleanupOrganizationGroup.DAO';
+import { GroupCleanupEventDAO } from '../../dao/event/groupCleanupEvent.DAO';
 
 export async function getAdoptASpotAssignmentOptions() {
     let newAdoptASpotAssignmentOptions: ComboBoxListItemModel[] = [];
@@ -30,7 +31,6 @@ export async function getAdoptASpotAssignmentOptions() {
                     isSelected: false
                 });
             }
-            console.log(newAdoptASpotAssignmentOptions);
             return JSON.stringify(newAdoptASpotAssignmentOptions);
         }
         return '';
@@ -54,7 +54,6 @@ export async function getCleanupLocationOptions() {
                     isSelected: false
                 });
             }
-            console.log(newCleanupLocationOptions);
             return JSON.stringify(newCleanupLocationOptions);
         }
         return '';
@@ -78,7 +77,6 @@ export async function getCleanupOrganizationOptions() {
                     isSelected: false
                 });
             }
-            console.log(newCleanupOrganizationOptions);
             return JSON.stringify(newCleanupOrganizationOptions);
         }
         return '';
@@ -89,7 +87,6 @@ export async function getCleanupOrganizationOptions() {
 }
 
 export async function saveAdoptASpotData(formData: FormData, spotId: string, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
-    console.log(formData);
     let validation: { data: AdoptASpotEventModel | null, errors: Map<string, ErrorModel> } =
         await validateAdoptASpotData(formData, spotId);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
@@ -102,5 +99,9 @@ export async function saveAdoptASpotData(formData: FormData, spotId: string, isU
 export async function saveGroupCleanupData(formData: FormData, orgId: string, locationId: string, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
     let validation: { data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } = 
         await validateGroupCleanupData(formData, orgId, locationId);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        const groupCleanupDAO: GroupCleanupEventDAO = new GroupCleanupEventDAO();
+        await groupCleanupDAO.save(validation.data, isUpdate);
+    }
     return validation.errors;
 }

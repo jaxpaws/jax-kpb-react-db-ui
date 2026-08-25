@@ -63,7 +63,6 @@ export async function getDistrictReference(): Promise<QueryResult> {
             'ORDER BY description ASC'
         );
         conn.release();
-        console.log(result);
         return result;
     } catch (err) {
         console.error(`Error while executing query: ${err}`);

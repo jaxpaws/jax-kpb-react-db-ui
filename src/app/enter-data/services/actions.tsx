@@ -35,7 +35,6 @@ export async function getBulkyItemRefData() {
                     value: `${items[i]?.description}|${items[i]?.code}`
                 });
             }
-            console.log(newBulkyItemOptions);
             return JSON.stringify(newBulkyItemOptions);
         }
         return '';
@@ -56,10 +55,9 @@ export async function getDistrictRefData() {
                     key: `district-${districts[i]?.code}`,
                     label: districts[i]?.description,
                     inputId: `district-${i + 1}`,
-                    value: districts[i]?.code
+                    value: `${districts[i]?.code}`
                 });
             }
-            console.log(newDistrictOptions);
             return JSON.stringify(newDistrictOptions);
         }
         return '';

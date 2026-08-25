@@ -17,7 +17,6 @@ export function BulkyItems({ bulkyItemId, bulkyItemsReferenceString, isRequired,
             let selectedBulkyItemValues: string[] = [];
             if (event?.target?.checked && !bulkyItemQuantityInputs.has(event.target.id)) {
                 let copyOfQuantityInputs: any[] = Array.from(bulkyItemQuantityInputs);
-                console.log(`value: ${event.target.value} | label: ${event.target.labels[0].textContent}`);
                 copyOfQuantityInputs.push([event.target.id, { quantityId: `bulky-item-${event.target.value.split('|')[1]}-quantity`, label: event.target.labels[0].textContent }]);
                 copyOfQuantityInputs.sort((itemA: any[], itemB: any[]) => {
                     return itemA[0].match(/\d+/)[0] - itemB[0].match(/\d+/);
