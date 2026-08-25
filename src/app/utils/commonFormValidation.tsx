@@ -103,7 +103,8 @@ export function validateCount(
     fieldDescription: string,
     maxCount: number,
     unitOfMeasurement: string,
-    allowZero: boolean
+    allowZero: boolean,
+    decimalPlacesAllowed?: number
 ): { count: number | null, errors: Map<string, ErrorModel> } {
     if (isFormDataEntryValueNullOrBlank(value)) {
         const error: ErrorModel = {
@@ -123,22 +124,38 @@ export function validateCount(
             errors.set(inputId, error);
         } else {
             const count: number = Number(countString);
-            if (!allowZero && (count === 0 || count > maxCount)) {
+            if (!decimalPlacesAllowed && (count - Math.floor(count)) !== 0) {
                 const error: ErrorModel = {
                     inputId: inputId,
                     fieldName: fieldDescription,
-                    message: `Please enter a number greater than 0 and less than ${maxCount}`
+                    message: `Please enter a whole number`
                 };
                 errors.set(inputId, error);
-            } else if (count < 0 || count > maxCount) {
+            } else if (decimalPlacesAllowed && countString && countString.split('.').length === 2 && countString.split('.')[1].length > decimalPlacesAllowed) {
                 const error: ErrorModel = {
                     inputId: inputId,
                     fieldName: fieldDescription,
-                    message: `Please enter a non-negative number less than ${maxCount}`
+                    message: `Please enter a number with ${decimalPlacesAllowed} or less digits after the decimal.`
                 };
                 errors.set(inputId, error);
             } else {
-                return { count: Number(countString), errors: errors };
+                if (!allowZero && (count === 0 || count > maxCount)) {
+                    const error: ErrorModel = {
+                        inputId: inputId,
+                        fieldName: fieldDescription,
+                        message: `Please enter a number greater than 0 and less than ${maxCount}`
+                    };
+                    errors.set(inputId, error);
+                } else if (count < 0 || count > maxCount) {
+                    const error: ErrorModel = {
+                        inputId: inputId,
+                        fieldName: fieldDescription,
+                        message: `Please enter a non-negative number less than ${maxCount}`
+                    };
+                    errors.set(inputId, error);
+                } else {
+                    return { count: Number(countString), errors: errors };
+                }
             }
         }
     }
