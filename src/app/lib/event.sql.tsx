@@ -1,12 +1,30 @@
 import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
+import { AdoptASpotEventEntity } from '../entities/adoptASpotEvent.entity';
 import { BulkyItemEntity } from '../entities/bulkyItem.entity';
-import { CleanTeamEntity } from '../entities/cleanTeam.entity';
-import { CountyCleanupEntity } from '../entities/countyCleanup.entity';
+import { CleanTeamEventEntity } from '../entities/cleanTeamEvent.entity';
+import { CountyCleanupEventEntity } from '../entities/countyCleanupEvent.entity';
 import { DistrictEntity } from '../entities/district.entity';
-import { RoadsideLitterEntity } from '../entities/roadsideLitter.entity';
-import { TrashRoutesEntity } from '../entities/trashRoutes.entity';
+import { RoadsideLitterEventEntity } from '../entities/roadsideLitterEvent.entity';
+import { TrashRoutesEventEntity } from '../entities/trashRoutesEvent.entity';
 
-export async function insertCleanTeamEvent(event: CleanTeamEntity): Promise<any> {
+export async function insertAdoptASpotEvent(event: AdoptASpotEventEntity): Promise<number> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO adopt_a_spot_cleanups (assignment_id, date, volunteer_count, volunteer_hours, litter_lbs, recycling_lbs) ' +
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            [ event.assignmentId, event.date, event.volunteerCount, event.volunteerHours, event.litterLbs, event.recyclingLbs ]
+        );
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Adopt-a-Spot event: ${err}`);
+        return -1;
+    }
+}
+
+export async function insertCleanTeamEvent(event: CleanTeamEventEntity): Promise<number> {
     let conn = null;
     try {
         conn = await getConnection();
@@ -19,10 +37,11 @@ export async function insertCleanTeamEvent(event: CleanTeamEntity): Promise<any>
         return result.insertId;
     } catch (err) {
         console.error(`Error: Unable to insert Clean Team event: ${err}`);
+        return -1;
     }
 }
 
-export async function insertCountyCleanupEvent(event: CountyCleanupEntity, bulkyItems: BulkyItemEntity[]): Promise<any> {
+export async function insertCountyCleanupEvent(event: CountyCleanupEventEntity, bulkyItems: BulkyItemEntity[]): Promise<number> {
     let conn = null;
     try {
         conn = await getConnection();
@@ -61,10 +80,11 @@ export async function insertCountyCleanupEvent(event: CountyCleanupEntity, bulky
         if (conn) {
             conn.query('ROLLBACK');
         }
+        return -1;
     }
 }
 
-export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<any> {
+export async function insertRoadsideLitterEvent(event: RoadsideLitterEventEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<number> {
     let conn = null;
     try {
         conn = await getConnection();
@@ -113,10 +133,11 @@ export async function insertRoadsideLitterEvent(event: RoadsideLitterEntity, dis
         if (conn) {
             conn.query('ROLLBACK');
         }
+        return -1;
     }
 }
 
-export async function insertTrashRoutesEvent(event: TrashRoutesEntity): Promise<any> {
+export async function insertTrashRoutesEvent(event: TrashRoutesEventEntity): Promise<number> {
     let conn = null;
     try {
         conn = await getConnection();
@@ -129,11 +150,30 @@ export async function insertTrashRoutesEvent(event: TrashRoutesEntity): Promise<
         return result.insertId;
     } catch (err) {
         console.error(`Error: Unable to insert Trash Routes event: ${err}`);
+        return -1;
     }
 }
 
 // TODO: Implement UPDATE logic
-export async function updateCleanTeamEvent(event: CleanTeamEntity): Promise<any> {
+export async function updateAdoptASpotEvent(event: AdoptASpotEventEntity): Promise<number> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO adopt_a_spot_cleanups (assignment_id, date, volunteer_count, volunteer_hours, litter_lbs, recycling_lbs) ' +
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            [ event.assignmentId, event.date, event.volunteerCount, event.volunteerHours, event.litterLbs, event.recyclingLbs ]
+        );
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Adopt-a-Spot event: ${err}`);
+        return -1;
+    }
+}
+
+// TODO: Implement UPDATE logic
+export async function updateCleanTeamEvent(event: CleanTeamEventEntity): Promise<any> {
     let conn = null;
     try {
         conn = await getConnection();
@@ -155,7 +195,7 @@ export async function updateCleanTeamEvent(event: CleanTeamEntity): Promise<any>
 }
 
 // TODO: Implement UPDATE logic
-export async function updateCountyCleanupEvent(event: CountyCleanupEntity, bulkyItems: BulkyItemEntity[]): Promise<any> {
+export async function updateCountyCleanupEvent(event: CountyCleanupEventEntity, bulkyItems: BulkyItemEntity[]): Promise<any> {
     let conn = null;
     try {
         conn = await getConnection();
@@ -198,7 +238,7 @@ export async function updateCountyCleanupEvent(event: CountyCleanupEntity, bulky
 }
 
 // TODO: Implement UPDATE logic
-export async function updateRoadsideLitterEvent(event: RoadsideLitterEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<void> {
+export async function updateRoadsideLitterEvent(event: RoadsideLitterEventEntity, districts: DistrictEntity[], bulkyItems: BulkyItemEntity[]): Promise<void> {
     let conn = null;
     try {
         conn = await getConnection();
@@ -220,7 +260,7 @@ export async function updateRoadsideLitterEvent(event: RoadsideLitterEntity, dis
 }
 
 // TODO: Implement UPDATE logic
-export async function updateTrashRoutesEvent(event: TrashRoutesEntity): Promise<any> {
+export async function updateTrashRoutesEvent(event: TrashRoutesEventEntity): Promise<any> {
     let conn = null;
     try {
         conn = await getConnection();

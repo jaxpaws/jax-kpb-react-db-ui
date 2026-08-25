@@ -1,9 +1,19 @@
 import {
+    AdoptASpotEventModel,
     CleanTeamEventModel,
     CountyCleanupEventModel,
     RoadsideLitterEventModel,
     TrashRoutesEventModel
 } from '../models';
+
+export function isAdoptASpotEvent(event: any): event is AdoptASpotEventModel {
+    return typeof event === 'object' && event !== null &&
+        'spot' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event &&
+        'litterCollected' in event &&
+        'recyclingCollected' in event;
+}
 
 export function isCleanTeamEvent(event: any): event is CleanTeamEventModel {
     return typeof event === 'object' && event !== null &&
