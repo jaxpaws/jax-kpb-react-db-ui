@@ -1,3 +1,4 @@
+export const DECIMAL_2_DOT_2_MAX: number = 99.99;
 export const DECIMAL_3_DOT_2_MAX: number = 999.99;
 export const DECIMAL_4_DOT_2_MAX: number = 9999.99;
 

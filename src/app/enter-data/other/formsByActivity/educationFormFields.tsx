@@ -66,6 +66,7 @@ export function EducationFormFields({ recipientOptions, topicOptions, errors, ha
                 inputId={EDUCATION_FORM_DATA_IDS.volunteerCount}
                 inputType="number"
                 labelText="Number of Volunteers"
+                descriptionText="Please enter the number of volunteers present at the event, including any parents who acted as chaperones."
                 width="sm:w-24"
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, EDUCATION_FORM_DATA_IDS.volunteerCount)}>

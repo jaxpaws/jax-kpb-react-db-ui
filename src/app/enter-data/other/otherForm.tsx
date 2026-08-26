@@ -5,8 +5,14 @@ import { ErrorSummary, RadioList } from '../../components';
 import { ErrorModel } from '../../models';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { OtherFormByActivity } from './otherFormByActivity';
-import { getEducationRecipients, getEducationTopics } from './actions';
-import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS } from './otherJson';
+import {
+    getEducationRecipients,
+    getEducationTopics,
+    saveBagSwapData,
+    saveEducationData,
+    saveTreePlantingData
+} from './actions';
+import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './otherJson';
 import { isBlank } from '../../utils/isBlank';
 
 export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
@@ -63,12 +69,56 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
         }
     }, [areEdRecipientsRetrieved, areEdTopicsRetrieved]);
 
-    async function handleSubmit(event: any) {
-        event.preventDefault();
+    async function handleSubmit(e: any) {
+        e.preventDefault();
         console.log('Handling submit...');
-        console.log(new FormData(event.target));
+        console.log(new FormData(e.target));
         console.log(`education recipient: ${selectedEdRecipient}`);
         console.log(`education topic: ${selectedEdTopic}`);
+        let newErrors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
+
+        switch (reportingDataType) {
+            case REPORTING_DATA_VALUES.bagSwap:
+                newErrors = await saveBagSwapData(
+                    new FormData(e.target),
+                    isUpdate
+                );
+                console.log(newErrors);
+                setErrors(newErrors);
+                break;
+            case REPORTING_DATA_VALUES.education:
+                const selectedRecipientId: string | undefined = edRecipientValueToIdMap.has(selectedEdRecipient)
+                    ? edRecipientValueToIdMap.get(selectedEdRecipient) : '';
+                const selectedTopicId: string | undefined = edTopicValueToIdMap.has(selectedEdTopic)
+                    ? edTopicValueToIdMap.get(selectedEdTopic) : '';
+                newErrors = await saveEducationData(
+                    new FormData(e.target),
+                    selectedRecipientId ? selectedRecipientId : '',
+                    selectedTopicId ? selectedTopicId : '',
+                    isUpdate
+                );
+                console.log(newErrors);
+                setErrors(newErrors);
+                break;
+            case REPORTING_DATA_VALUES.treePlanting:
+                newErrors = await saveTreePlantingData(
+                    new FormData(e.target),
+                    isUpdate
+                );
+                console.log(newErrors);
+                setErrors(newErrors);
+                break;
+        }
+
+        if (newErrors !== null && newErrors.size > 0) {
+            setTimeout(() => {
+                const errorHeader = document.getElementById('error-header');
+                if (errorHeader) {
+                    errorHeader.focus();
+                    window.scroll(0, 0);
+                }
+            }, 100);
+        }
     }
 
     const handleReportingDataTypeChange: any = useCallback((event: any) => {
