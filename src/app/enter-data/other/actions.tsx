@@ -1,4 +1,6 @@
+import { BagSwapEventModel, ErrorModel } from '../../models';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
+import { validateBagSwapData } from './validation/bagSwapValidation';
 
 export async function getEducationRecipients(): Promise<string> {
     let recipientOptions: ComboBoxListItemModel[] = [];
@@ -51,4 +53,13 @@ export async function getEducationTopics(): Promise<string> {
         console.error(`Error getting education topic options.`);
         return '[]';
     }
+}
+
+export async function saveBagSwapData(formData: FormData, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
+    let validation: { data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } =
+        await validateBagSwapData(formData);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        console.log('Saving...'); // TO-DO: Implement and call DAO
+    }
+    return validation.errors;
 }

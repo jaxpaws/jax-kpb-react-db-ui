@@ -1,5 +1,6 @@
 export type { AdoptASpotEventModel } from './adoptASpotEvent.model';
 export type { AdoptASpotGroupModel } from './adoptASpotGroup.model';
+export type { BagSwapEventModel } from './bagSwapEvent.model';
 export type { BulkyItemModel } from './bulkyItem.model';
 export type { CleanTeamEventModel } from './cleanTeamEvent.model';
 export type { CountyCleanupEventModel } from './countyCleanupEvent.model';

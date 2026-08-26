@@ -1,8 +1,6 @@
 import { ErrorModel } from '../../models';
 import { REPORTING_DATA_VALUES } from './otherJson';
-import { BagSwapFormFields } from './formsByActivity/bagSwapFormFields';
-import { EducationFormFields } from './formsByActivity/educationFormFields';
-import { TreePlantingFormFields } from './formsByActivity/treePlantingFormFields';
+import { BagSwapFormFields, EducationFormFields, TreePlantingFormFields } from './formsByActivity';
 
 export function OtherFormByActivity({
     activity,
