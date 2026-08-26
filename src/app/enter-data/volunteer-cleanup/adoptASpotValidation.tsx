@@ -2,43 +2,13 @@ import { AdoptASpotEventModel, AdoptASpotGroupModel, ErrorModel } from '../../mo
 import { ADOPT_A_SPOT_FORM_DATA_IDS } from './volunteerCleanupJson';
 import { 
     isFormDataEntryValueNullOrBlank,
+    validateComboBox,
     validateDate,
     validatePounds,
     validateCount
 } from '../../utils/commonFormValidation';
 import { DECIMAL_3_DOT_2_MAX, UNSIGNED_TINY_INT_MAX, UNSIGNED_SMALL_INT_MAX } from '../../constValues';
 import { AdoptASpotGroupDAO } from '../../dao/group';
-
-async function validateSpot(
-    errors: Map<string, ErrorModel>, spotId: string, inputId: string
-): Promise<{ spot: AdoptASpotGroupModel | null, errors: Map<string, ErrorModel> }> {
-    if (isFormDataEntryValueNullOrBlank(spotId)) {
-        const error: ErrorModel = {
-            inputId: inputId,
-            fieldName: 'Adopt-a-Spot Spot',
-            message: 'Please select a spot'
-        };
-        errors.set(inputId, error);
-        return { spot: null, errors: errors };
-    } else {
-        const adoptASpotDAO: AdoptASpotGroupDAO = new AdoptASpotGroupDAO();
-        let spot: AdoptASpotGroupModel | null = null;
-        if (!Number.isNaN(Number(spotId.trim()))) {
-            spot = await adoptASpotDAO.getById(Number(spotId.trim()));
-        }
-        if (!spot) {
-            const error: ErrorModel = {
-                inputId: inputId,
-                fieldName: 'Adopt-a-Spot Spot',
-                message: `Invalid spot selected with id: '${spotId.toString().trim()}'`
-            };
-            errors.set(inputId, error);
-            return { spot: null, errors: errors };
-        } else {
-            return { spot: { id: Number(spotId.trim()), name: spot.name, location: spot.location }, errors: errors };
-        }
-    }
-}
 
 export async function validateAdoptASpotData(
     formData: FormData, selectedSpot: string
@@ -48,11 +18,21 @@ export async function validateAdoptASpotData(
     const dateValidation = validateDate(errors, formData.get(ADOPT_A_SPOT_FORM_DATA_IDS.date), ADOPT_A_SPOT_FORM_DATA_IDS.date);
     errors = dateValidation.errors;
 
-    const spotValidation = await validateSpot(
+    const spotValidation = await validateComboBox(
         errors,
         selectedSpot,
-        `${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-input`
+        `${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-input`,
+        'Adopt-a-Spot Spot',
+        'spot',
+        new AdoptASpotGroupDAO()
     );
+    if (spotValidation.selection) {
+        spotValidation.selection = {
+            id: Number(selectedSpot.trim()),
+            name: spotValidation.selection.name,
+            location: spotValidation.selection.location
+        };
+    }
     errors = spotValidation.errors;
 
     const volunteerCountValidation = validateCount(
@@ -100,7 +80,7 @@ export async function validateAdoptASpotData(
 
     let data: AdoptASpotEventModel | null = null;
     if (errors.size === 0 && dateValidation.date &&
-        spotValidation.spot &&
+        spotValidation.selection &&
         volunteerCountValidation.count &&
         volunteerHoursValidation.count &&
         litterValidation.pounds &&
@@ -108,7 +88,7 @@ export async function validateAdoptASpotData(
     ) {
         data = {
             date: dateValidation.date,
-            spot: spotValidation.spot,
+            spot: spotValidation.selection,
             volunteerCount: volunteerCountValidation.count,
             volunteerHours: volunteerHoursValidation.count,
             litterCollected: litterValidation.pounds,
