@@ -70,3 +70,38 @@ export async function getCleanupOrganizations(): Promise<QueryResult> {
         return [];
     }
 }
+
+export async function getEducationRecipientById(id: number): Promise<QueryResult> {
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(
+            'SELECT id, name FROM education_recipients ' +
+            'WHERE start_date <= CURDATE() ' +
+            'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
+            'AND id = ?',
+            [ id ]
+        );
+        conn.release();
+        return result;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return [];
+    }
+}
+
+export async function getEducationRecipients(): Promise<QueryResult> {
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(
+            'SELECT id, name FROM education_recipients ' +
+            'WHERE start_date <= CURDATE() ' +
+            'AND (end_date IS NULL OR end_date >= CURDATE()) ' +
+            'ORDER BY name ASC'
+        );
+        conn.release();
+        return result;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return [];
+    }
+}
