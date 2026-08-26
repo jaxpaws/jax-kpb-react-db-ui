@@ -6,7 +6,7 @@ import { isGroupCleanupEvent } from '../../utils/eventTypeGuards';
 import { insertGroupCleanupEvent, updateGroupCleanupEvent } from '../../lib/event.sql';
 
 export class GroupCleanupEventDAO implements EventDAO {
-    getById(id: number): EventEntity | null {
+    async getById(id: number): Promise<EventEntity | null> {
         return null;
     }
 

@@ -6,7 +6,7 @@ import { isAdoptASpotEvent } from '../../utils/eventTypeGuards';
 import { insertAdoptASpotEvent, updateAdoptASpotEvent } from '../../lib/event.sql';
 
 export class AdoptASpotEventDAO implements EventDAO {
-    getById(id: number): EventEntity | null {
+    async getById(id: number): Promise<EventEntity | null> {
         return null;
     }
 

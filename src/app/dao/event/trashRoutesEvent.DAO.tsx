@@ -6,7 +6,7 @@ import { isTrashRoutesEvent } from '../../utils/eventTypeGuards';
 import { insertTrashRoutesEvent, updateTrashRoutesEvent } from '../../lib/event.sql';
 
 export class TrashRoutesEventDAO implements EventDAO {
-    getById(id: number): EventEntity | null {
+    async getById(id: number): Promise<EventEntity | null> {
         return null;
     }
 
