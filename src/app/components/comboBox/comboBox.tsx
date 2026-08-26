@@ -607,7 +607,8 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                         className={`cb_edit w-64 bg-white text-black box-border p-1 m-0
                             align-bottom border-t-1 border-b-1 border-l-1 border-gray 
                             border-solid relative cursor-pointer border-r-none
-                            rounded-l-md hover:bg-[#def] focus:bg-[#def]`}
+                            rounded-l-md hover:bg-[#def] focus:bg-[#def]
+                            ${errorText && !isBlank(errorText) ? 'border-t-2 border-b-2 border-l-2 border-red-500' : ''}`}
                         type="text"
                         value={comboBoxNodeValue}
                         onChange={(event) => setComboBoxNodeValue(event.target.value)}
@@ -626,10 +627,11 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                     <button
                         id={buttonId}
                         type="button"
-                        className="bg-white text-black box-border p-1 m-0
+                        className={`bg-white text-black box-border p-1 m-0
                             align-bottom border border-gray border-solid relative
                             cursor-pointer w-[26px] border-l-0 text-[rgb(0 90 156)]
-                            rounded-r-md hover:bg-[#def] focus:bg-[#def]"
+                            rounded-r-md hover:bg-[#def] focus:bg-[#def]
+                            ${errorText && !isBlank(errorText) ? 'border-t-2 border-b-2 border-r-2 border-red-500' : ''}`}
                         tabIndex={-1}
                         aria-label={listAriaLabel}
                         aria-expanded={isListboxExpanded}
