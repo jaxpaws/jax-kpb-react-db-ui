@@ -8,7 +8,8 @@ import { OtherFormByActivity } from './otherFormByActivity';
 import {
     getEducationRecipients,
     getEducationTopics,
-    saveBagSwapData
+    saveBagSwapData,
+    saveEducationData
 } from './actions';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './otherJson';
 import { isBlank } from '../../utils/isBlank';
@@ -79,6 +80,20 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
             case REPORTING_DATA_VALUES.bagSwap:
                 newErrors = await saveBagSwapData(
                     new FormData(e.target),
+                    isUpdate
+                );
+                console.log(newErrors);
+                setErrors(newErrors);
+                break;
+            case REPORTING_DATA_VALUES.education:
+                const selectedRecipientId: string | undefined = edRecipientValueToIdMap.has(selectedEdRecipient)
+                    ? edRecipientValueToIdMap.get(selectedEdRecipient) : '';
+                const selectedTopicId: string | undefined = edTopicValueToIdMap.has(selectedEdTopic)
+                    ? edTopicValueToIdMap.get(selectedEdTopic) : '';
+                newErrors = await saveEducationData(
+                    new FormData(e.target),
+                    selectedRecipientId ? selectedRecipientId : '',
+                    selectedTopicId ? selectedTopicId : '',
                     isUpdate
                 );
                 console.log(newErrors);

@@ -1,16 +1,19 @@
-import { BagSwapEventModel, ErrorModel } from '../../models';
+'use server'
+
+import { BagSwapEventModel, EducationEventModel, ErrorModel } from '../../models';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { validateBagSwapData } from './validation/bagSwapValidation';
+import { validateEducationData } from './validation/educationValidation';
+import { EducationRecipientGroupDAO } from '../../dao/group';
+import { EducationTopicReferenceDataDAO } from '../../dao/referenceData';
+import { GroupEntity } from '../../entities/group.entity';
+import { ReferenceDataEntity } from '../../entities/referenceData.entity';
 
 export async function getEducationRecipients(): Promise<string> {
     let recipientOptions: ComboBoxListItemModel[] = [];
-    const recipients: { id: number, name: string }[] = [
-        { id: 1, name: 'Gallery Night' },
-        { id: 2, name: 'Girl Scouts' },
-        { id: 3, name: 'Montessori School' },
-        { id: 4, name: 'Brown Barge Middle School' }
-    ];
+    const recipientDAO: EducationRecipientGroupDAO = new EducationRecipientGroupDAO();
     try {
+        const recipients: GroupEntity[] = await recipientDAO.getAll();
         if (recipients && recipients.length >= 1) {
             for (let i = 0; i < recipients.length; i++) {
                 recipientOptions.push({
@@ -31,18 +34,16 @@ export async function getEducationRecipients(): Promise<string> {
 
 export async function getEducationTopics(): Promise<string> {
     let topicOptions: ComboBoxListItemModel[] = [];
-    const topics: { code: number | string, topic: string }[] = [
-        { code: 1, topic: 'Marine Debris' },
-        { code: 2, topic: 'Litter' },
-        { code: 3, topic: 'Recycling' }
-    ];
+    const topicDAO: EducationTopicReferenceDataDAO = new EducationTopicReferenceDataDAO();
     try {
+        const topics: ReferenceDataEntity[] = await topicDAO.getAll();
+        console.log
         if (topics && topics.length >= 1) {
             for (let i = 0; i < topics.length; i++) {
                 topicOptions.push({
                     key: `${topics[i]?.code}`,
                     listItemId: `recipient-${i + 1}`,
-                    label: topics[i]?.topic,
+                    label: topics[i]?.description,
                     isSelected: false
                 });
             }
@@ -58,6 +59,15 @@ export async function getEducationTopics(): Promise<string> {
 export async function saveBagSwapData(formData: FormData, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
     let validation: { data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } =
         await validateBagSwapData(formData);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        console.log('Saving...'); // TO-DO: Implement and call DAO
+    }
+    return validation.errors;
+}
+
+export async function saveEducationData(formData: FormData, recipientId: string, topicId: string, isUpdate: boolean) {
+    let validation: { data: EducationEventModel | null, errors: Map<string, ErrorModel> } =
+        await validateEducationData(formData, recipientId, topicId);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
         console.log('Saving...'); // TO-DO: Implement and call DAO
     }

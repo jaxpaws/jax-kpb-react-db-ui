@@ -10,6 +10,71 @@ export function isFormDataEntryValueArrayNullOrEmpty(valueArray: FormDataEntryVa
     return valueArray === null || valueArray.length === 0;
 }
 
+export async function validateComboBox(
+    errors: Map<string, ErrorModel>, selectedId: string, inputId: string, fieldName: string, optionDescriptor: string, dao: any
+): Promise<{ selection: any, errors: Map<string, ErrorModel> }> {
+    if (isBlank(selectedId)) {
+        const error: ErrorModel = {
+            inputId: inputId,
+            fieldName: fieldName,
+            message: `Please select a ${optionDescriptor}`
+        };
+        errors.set(inputId, error);
+        return { selection: null, errors: errors };
+    } else {
+        let selection: any = null;
+        if (dao && 'getByCode' in dao) {
+            selection = await dao.getByCode(selectedId.trim());
+        } else if (dao && 'getById' in dao && !Number.isNaN(Number(selectedId.trim()))) {
+            selection = await dao.getById(Number(selectedId.trim()));
+        }
+        if (!selection) {
+            const error: ErrorModel = {
+                inputId: inputId,
+                fieldName: fieldName,
+                message: `Invalid ${optionDescriptor} selected with id: '${selectedId.toString().trim()}'`
+            };
+            errors.set(inputId, error);
+            return { selection: null, errors: errors };
+        } else {
+            return { selection: selection, errors: errors };
+        }
+    }
+}
+
+/*
+async function validateSpot(
+    errors: Map<string, ErrorModel>, spotId: string, inputId: string
+): Promise<{ spot: AdoptASpotGroupModel | null, errors: Map<string, ErrorModel> }> {
+    if (isFormDataEntryValueNullOrBlank(spotId)) {
+        const error: ErrorModel = {
+            inputId: inputId,
+            fieldName: 'Adopt-a-Spot Spot',
+            message: 'Please select a spot'
+        };
+        errors.set(inputId, error);
+        return { spot: null, errors: errors };
+    } else {
+        const adoptASpotDAO: AdoptASpotGroupDAO = new AdoptASpotGroupDAO();
+        let spot: AdoptASpotGroupModel | null = null;
+        if (!Number.isNaN(Number(spotId.trim()))) {
+            spot = await adoptASpotDAO.getById(Number(spotId.trim()));
+        }
+        if (!spot) {
+            const error: ErrorModel = {
+                inputId: inputId,
+                fieldName: 'Adopt-a-Spot Spot',
+                message: `Invalid spot selected with id: '${spotId.toString().trim()}'`
+            };
+            errors.set(inputId, error);
+            return { spot: null, errors: errors };
+        } else {
+            return { spot: { id: Number(spotId.trim()), name: spot.name, location: spot.location }, errors: errors };
+        }
+    }
+}
+*/
+
 export function validateDate(
     errors: Map<string, ErrorModel>,
     value: FormDataEntryValue | null,
