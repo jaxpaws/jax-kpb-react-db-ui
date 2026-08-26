@@ -15,3 +15,4 @@ export type { ReferenceDataModel } from './referenceData.model';
 export type { RoadsideLitterEventModel } from './roadsideLitterEvent.model';
 export type { RoadsideLitterBulkyItemModel } from './roadsideLitterBulkyItem.model';
 export type { TrashRoutesEventModel } from './trashRoutesEvent.model';
+export type { TreePlantingEventModel } from './treePlantingEvent.model';

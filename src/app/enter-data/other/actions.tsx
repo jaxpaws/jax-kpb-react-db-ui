@@ -1,9 +1,15 @@
 'use server'
 
-import { BagSwapEventModel, EducationEventModel, ErrorModel } from '../../models';
+import {
+    BagSwapEventModel,
+    EducationEventModel,
+    ErrorModel,
+    TreePlantingEventModel
+} from '../../models';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { validateBagSwapData } from './validation/bagSwapValidation';
 import { validateEducationData } from './validation/educationValidation';
+import { validateTreePlantingData } from './validation/treePlantingValidation';
 import { EducationRecipientGroupDAO } from '../../dao/group';
 import { EducationTopicReferenceDataDAO } from '../../dao/referenceData';
 import { GroupEntity } from '../../entities/group.entity';
@@ -68,6 +74,15 @@ export async function saveBagSwapData(formData: FormData, isUpdate: boolean): Pr
 export async function saveEducationData(formData: FormData, recipientId: string, topicId: string, isUpdate: boolean) {
     let validation: { data: EducationEventModel | null, errors: Map<string, ErrorModel> } =
         await validateEducationData(formData, recipientId, topicId);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        console.log('Saving...'); // TO-DO: Implement and call DAO
+    }
+    return validation.errors;
+}
+
+export async function saveTreePlantingData(formData: FormData, isUpdate: boolean) {
+    let validation: { data: TreePlantingEventModel | null, errors: Map<string, ErrorModel> } =
+        await validateTreePlantingData(formData);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
         console.log('Saving...'); // TO-DO: Implement and call DAO
     }

@@ -9,7 +9,8 @@ import {
     getEducationRecipients,
     getEducationTopics,
     saveBagSwapData,
-    saveEducationData
+    saveEducationData,
+    saveTreePlantingData
 } from './actions';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './otherJson';
 import { isBlank } from '../../utils/isBlank';
@@ -94,6 +95,14 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
                     new FormData(e.target),
                     selectedRecipientId ? selectedRecipientId : '',
                     selectedTopicId ? selectedTopicId : '',
+                    isUpdate
+                );
+                console.log(newErrors);
+                setErrors(newErrors);
+                break;
+            case REPORTING_DATA_VALUES.treePlanting:
+                newErrors = await saveTreePlantingData(
+                    new FormData(e.target),
                     isUpdate
                 );
                 console.log(newErrors);
