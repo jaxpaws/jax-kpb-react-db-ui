@@ -1,7 +1,8 @@
-import { ComboBox, Textbox } from '../../../components';
+import { useState } from 'react';
+import { ComboBox, RadioList, Textbox } from '../../../components';
 import { ErrorModel } from '../../../models';
 import { ifErrorThenGetErrorText } from '../../../utils/ifErrorThenGetErrorText';
-import { EDUCATION_FORM_DATA_IDS } from '../otherJson';
+import { EDUCATION_FORM_DATA_IDS, HAS_VOLUNTEERS_OPTIONS } from '../otherJson';
 
 export function EducationFormFields({ recipientOptions, topicOptions, errors, handleRecipientChange, handleTopicChange }:
     {
@@ -12,6 +13,8 @@ export function EducationFormFields({ recipientOptions, topicOptions, errors, ha
         handleTopicChange?: (value: string) => void
     }
 ) {
+    const [hasVolunteers, setHasVolunteers] = useState<string>('no');
+
     return (
         <div className="flex flex-col gap-4 mt-3">
             <Textbox
@@ -62,25 +65,37 @@ export function EducationFormFields({ recipientOptions, topicOptions, errors, ha
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, EDUCATION_FORM_DATA_IDS.studentCount)}>
             </Textbox>
-            <Textbox
-                inputId={EDUCATION_FORM_DATA_IDS.volunteerCount}
-                inputType="number"
-                labelText="Number of Volunteers"
-                descriptionText="Please enter the number of volunteers present at the event, including any parents who acted as chaperones."
-                width="sm:w-24"
+            <RadioList
+                label="Were there any volunteers?"
+                listName={EDUCATION_FORM_DATA_IDS.hasVolunteers}
+                options={JSON.stringify(HAS_VOLUNTEERS_OPTIONS)}
                 isRequired={true}
-                errorText={ifErrorThenGetErrorText(errors, EDUCATION_FORM_DATA_IDS.volunteerCount)}>
-            </Textbox>
-            <Textbox
-                inputId={EDUCATION_FORM_DATA_IDS.volunteerHours}
-                inputType="number"
-                labelText="Volunteer Hours"
-                descriptionText="Please enter the combined volunteer hours of all volunteers at the event. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
-                step={0.25}
-                width="sm:w-24"
-                isRequired={true}
-                errorText={ifErrorThenGetErrorText(errors, EDUCATION_FORM_DATA_IDS.volunteerHours)}>
-            </Textbox>
+                selectedValue={hasVolunteers}
+                handleChange={(event: any) => setHasVolunteers(event.target.value)}>
+            </RadioList>
+            { hasVolunteers === 'yes' &&
+                <div className="flex flex-col gap-4">
+                    <Textbox
+                        inputId={EDUCATION_FORM_DATA_IDS.volunteerCount}
+                        inputType="number"
+                        labelText="Number of Volunteers"
+                        descriptionText="Please enter the number of volunteers present at the event, including any parents who acted as chaperones."
+                        width="sm:w-24"
+                        isRequired={true}
+                        errorText={ifErrorThenGetErrorText(errors, EDUCATION_FORM_DATA_IDS.volunteerCount)}>
+                    </Textbox>
+                    <Textbox
+                        inputId={EDUCATION_FORM_DATA_IDS.volunteerHours}
+                        inputType="number"
+                        labelText="Volunteer Hours"
+                        descriptionText="Please enter the combined volunteer hours of all volunteers at the event. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
+                        step={0.25}
+                        width="sm:w-24"
+                        isRequired={true}
+                        errorText={ifErrorThenGetErrorText(errors, EDUCATION_FORM_DATA_IDS.volunteerHours)}>
+                    </Textbox>
+                </div>
+            }
         </div>
     );
 }

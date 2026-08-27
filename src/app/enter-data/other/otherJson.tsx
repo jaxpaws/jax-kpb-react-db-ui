@@ -21,6 +21,7 @@ export const EDUCATION_FORM_DATA_IDS = {
     topic: `${EDUCATION_CODE}-topic`,
     duration: `${EDUCATION_CODE}-duration`,
     studentCount: `${EDUCATION_CODE}-stud-count`,
+    hasVolunteers: `${EDUCATION_CODE}-has-vol`,
     volunteerCount: `${EDUCATION_CODE}-vol-count`,
     volunteerHours: `${EDUCATION_CODE}-vol-hours`
 };

@@ -1,7 +1,12 @@
 import { EducationEventModel, ErrorModel, GroupModel, ReferenceDataModel } from '../../../models';
 import { EducationRecipientGroupDAO } from '../../../dao/group';
 import { EducationTopicReferenceDataDAO } from '../../../dao/referenceData';
-import { validateComboBox, validateCount, validateDate } from '../../../utils/commonFormValidation';
+import {
+    isFormDataEntryValueNullOrBlank,
+    validateComboBox,
+    validateCount,
+    validateDate
+} from '../../../utils/commonFormValidation';
 import { EDUCATION_FORM_DATA_IDS } from '../otherJson';
 import { DECIMAL_2_DOT_2_MAX, DECIMAL_3_DOT_2_MAX, UNSIGNED_SMALL_INT_MAX } from '../../../constValues';
 
@@ -62,28 +67,42 @@ export async function validateEducationData(formData: FormData, recipientId: str
     );
     errors = studentCountValidation.errors;
 
-    const volunteerCountValidation = validateCount(
-        errors,
-        formData.get(EDUCATION_FORM_DATA_IDS.volunteerCount),
-        EDUCATION_FORM_DATA_IDS.volunteerCount,
-        'Number of Volunteers',
-        UNSIGNED_SMALL_INT_MAX,
-        'count',
-        true
-    );
-    errors = volunteerCountValidation.errors;
+    let volunteerCountValidation: { count: number | null, errors: Map<string, ErrorModel> } =
+        { count: null, errors: errors};
+    let volunteerHoursValidation: { count: number | null, errors: Map<string, ErrorModel> } =
+        { count: null, errors: errors};
+    const hasVolunteers: FormDataEntryValue | null = formData.get(EDUCATION_FORM_DATA_IDS.hasVolunteers);
+    if (isFormDataEntryValueNullOrBlank(hasVolunteers)) {
+        const error: ErrorModel = {
+            inputId: `has-volunteers-no`,
+            fieldName: 'Were there any volunteers',
+            message: 'Please select whether there were volunteers at the event or not.'
+        };
+        errors.set(`${EDUCATION_FORM_DATA_IDS.hasVolunteers}-no`, error);
+    } else if (hasVolunteers && hasVolunteers.toString() === 'yes') {
+        volunteerCountValidation = validateCount(
+            errors,
+            formData.get(EDUCATION_FORM_DATA_IDS.volunteerCount),
+            EDUCATION_FORM_DATA_IDS.volunteerCount,
+            'Number of Volunteers',
+            UNSIGNED_SMALL_INT_MAX,
+            'count',
+            true
+        );
+        errors = volunteerCountValidation.errors;
 
-    const volunteerHoursValidation = validateCount(
-        errors,
-        formData.get(EDUCATION_FORM_DATA_IDS.volunteerHours),
-        EDUCATION_FORM_DATA_IDS.volunteerHours,
-        'Volunteer Hours',
-        DECIMAL_3_DOT_2_MAX,
-        'hours',
-        true,
-        2
-    );
-    errors = volunteerHoursValidation.errors;
+        volunteerHoursValidation = validateCount(
+            errors,
+            formData.get(EDUCATION_FORM_DATA_IDS.volunteerHours),
+            EDUCATION_FORM_DATA_IDS.volunteerHours,
+            'Volunteer Hours',
+            DECIMAL_3_DOT_2_MAX,
+            'hours',
+            true,
+            2
+        );
+        errors = volunteerHoursValidation.errors;
+    }
 
     console.log(recipientValidation);
     console.log(topicValidation);
@@ -94,8 +113,13 @@ export async function validateEducationData(formData: FormData, recipientId: str
         topicValidation.selection &&
         durationValidation.count &&
         studentCountValidation.count &&
-        (volunteerCountValidation.count || volunteerCountValidation.count === 0) &&
-        (volunteerHoursValidation.count || volunteerHoursValidation.count === 0)
+        (
+            hasVolunteers && hasVolunteers.toString() === 'no' ||
+            (
+                (volunteerCountValidation.count || volunteerCountValidation.count === 0) &&
+                (volunteerHoursValidation.count || volunteerHoursValidation.count === 0)
+            )
+        )
     ) {
         data = {
             date: dateValidation.date,
@@ -103,8 +127,8 @@ export async function validateEducationData(formData: FormData, recipientId: str
             topic: topicValidation.selection,
             duration: durationValidation.count,
             studentCount: studentCountValidation.count,
-            volunteerCount: volunteerCountValidation.count,
-            volunteerHours: volunteerHoursValidation.count
+            volunteerCount: volunteerCountValidation.count ? volunteerCountValidation.count : 0,
+            volunteerHours: volunteerHoursValidation.count ? volunteerHoursValidation.count : 0.00
         };
     }
     return { data: data, errors: errors };
