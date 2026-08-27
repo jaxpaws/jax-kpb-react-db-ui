@@ -1,5 +1,5 @@
 import { ReferenceDataModel } from './referenceData.model';
-import { CountyCleanupEventModel } from './countyCleanupEvent.model';
+import { CountyCleanupEventModel } from './event/countyCleanupEvent.model';
 
 export interface CountyCleanupsBulkyItemModel {
     id: number;

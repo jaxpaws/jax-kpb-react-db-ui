@@ -1,4 +1,5 @@
-import { BulkyItemModel, ErrorModel, CountyCleanupEventModel } from '../../models';
+import { CountyCleanupEventModel } from '../../models/event';
+import { BulkyItemModel, ErrorModel } from '../../models';
 import { COUNTY_CLEANUP_FORM_DATA_IDS } from './servicesJson';
 import { 
     isFormDataEntryValueNullOrBlank,

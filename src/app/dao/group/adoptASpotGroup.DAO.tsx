@@ -1,5 +1,5 @@
-import { AdoptASpotGroupEntity } from '../../entities/adoptASpotGroup.entity';
-import { GroupModel } from '../../models';
+import { AdoptASpotGroupEntity } from '../../entities/group/adoptASpotGroup.entity';
+import { GroupModel } from '../../models/group';
 import { GroupDAO } from './group.DAO';
 import { getAdoptASpotAssignmentById, getAdoptASpotAssignments } from '../../lib/group.sql';
 

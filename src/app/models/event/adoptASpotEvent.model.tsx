@@ -1,4 +1,4 @@
-import { AdoptASpotGroupModel } from './adoptASpotGroup.model';
+import { AdoptASpotGroupModel } from '../group/adoptASpotGroup.model';
 import { EventModel } from './event.model';
 
 export interface AdoptASpotEventModel extends EventModel {

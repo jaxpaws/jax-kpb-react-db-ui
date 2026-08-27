@@ -1,7 +1,7 @@
 import { EventDAO } from './event.DAO';
 import { EventModel } from '../../models';
-import { TreePlantingEventEntity } from '../../entities/treePlantingEvent.entity';
-import { EventEntity } from '../../entities/event.entity';
+import { TreePlantingEventEntity } from '../../entities/event/treePlantingEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
 import { isTreePlantingEvent } from '../../utils/eventTypeGuards';
 import { insertTreePlantingEvent, updateTreePlantingEvent } from '../../lib/event.sql';
 

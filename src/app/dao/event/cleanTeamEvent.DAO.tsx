@@ -1,6 +1,6 @@
 import { EventDAO } from './';
-import { EventEntity } from '../../entities/event.entity';
-import { CleanTeamEventEntity } from '../../entities/cleanTeamEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
+import { CleanTeamEventEntity } from '../../entities/event/cleanTeamEvent.entity';
 import { EventModel } from '../../models';
 import { isCleanTeamEvent } from '../../utils/eventTypeGuards';
 import { insertCleanTeamEvent, updateCleanTeamEvent } from '../../lib/event.sql';

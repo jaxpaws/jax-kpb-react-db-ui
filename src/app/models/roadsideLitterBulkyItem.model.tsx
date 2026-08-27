@@ -1,5 +1,5 @@
 import { ReferenceDataModel } from './referenceData.model';
-import { RoadsideLitterEventModel } from './roadsideLitterEvent.model';
+import { RoadsideLitterEventModel } from './event/roadsideLitterEvent.model';
 
 export interface RoadsideLitterBulkyItemModel {
     id: number;

@@ -1,4 +1,5 @@
-import { TrashRoutesEventModel, ErrorModel } from '../../models';
+import { TrashRoutesEventModel } from '../../models/event';
+import { ErrorModel } from '../../models';
 import { TRASH_ROUTES_FORM_DATA_IDS } from './servicesJson';
 import { validateDate, validatePounds } from '../../utils/commonFormValidation';
 import { UNSIGNED_SMALL_INT_MAX } from '../../constValues';

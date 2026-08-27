@@ -1,4 +1,4 @@
-import { BulkyItemModel } from '.';
+import { BulkyItemModel } from '../bulkyItem.model';
 import { EventModel } from './event.model';
 
 export interface CountyCleanupEventModel extends EventModel {

@@ -1,7 +1,7 @@
-import { AdoptASpotEventModel, AdoptASpotGroupModel, ErrorModel } from '../../models';
+import { AdoptASpotEventModel } from '../../models/event';
+import { ErrorModel } from '../../models';
 import { ADOPT_A_SPOT_FORM_DATA_IDS } from './volunteerCleanupJson';
 import { 
-    isFormDataEntryValueNullOrBlank,
     validateComboBox,
     validateDate,
     validatePounds,

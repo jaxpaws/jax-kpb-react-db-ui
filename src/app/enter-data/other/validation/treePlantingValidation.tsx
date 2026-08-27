@@ -1,4 +1,5 @@
-import { TreePlantingEventModel, ErrorModel } from '../../../models';
+import { TreePlantingEventModel } from '../../../models/event';
+import { ErrorModel } from '../../../models';
 import { 
     isFormDataEntryValueNullOrBlank,
     validateCount,

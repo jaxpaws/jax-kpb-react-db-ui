@@ -1,4 +1,5 @@
-import { BulkyItemModel, DistrictModel, ErrorModel, RoadsideLitterEventModel } from '../../models';
+import { RoadsideLitterEventModel } from '../../models/event';
+import { BulkyItemModel, DistrictModel, ErrorModel } from '../../models';
 import { ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
 import { ReferenceDataModel } from '../../models';
 import { ReferenceDataDAO, DistrictReferenceDataDAO } from '../../dao/referenceData';

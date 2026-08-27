@@ -1,6 +1,6 @@
 import { EventDAO } from './';
-import { EventEntity } from '../../entities/event.entity';
-import { GroupCleanupEventEntity } from '../../entities/groupCleanupEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
+import { GroupCleanupEventEntity } from '../../entities/event/groupCleanupEvent.entity';
 import { EventModel } from '../../models';
 import { isGroupCleanupEvent } from '../../utils/eventTypeGuards';
 import { insertGroupCleanupEvent, updateGroupCleanupEvent } from '../../lib/event.sql';

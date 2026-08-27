@@ -1,5 +1,5 @@
-import { EventEntity } from '../../entities/event.entity';
-import { EventModel } from '../../models/event.model';
+import { EventEntity } from '../../entities/event/event.entity';
+import { EventModel } from '../../models/event/event.model';
 
 export interface EventDAO {
     getById(id: number): Promise<EventEntity | null>;
