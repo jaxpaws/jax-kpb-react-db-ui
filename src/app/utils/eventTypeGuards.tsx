@@ -1,5 +1,6 @@
 import {
     AdoptASpotEventModel,
+    BagSwapEventModel,
     CleanTeamEventModel,
     CountyCleanupEventModel,
     GroupCleanupEventModel,
@@ -14,6 +15,14 @@ export function isAdoptASpotEvent(event: any): event is AdoptASpotEventModel {
         'volunteerHours' in event &&
         'litterCollected' in event &&
         'recyclingCollected' in event;
+}
+
+export function isBagSwapEvent(event: any): event is BagSwapEventModel {
+    return typeof event === 'object' && event !== null &&
+        'bagsCollected' in event &&
+        'eventDescription' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event;
 }
 
 export function isCleanTeamEvent(event: any): event is CleanTeamEventModel {

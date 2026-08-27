@@ -10,6 +10,7 @@ import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListIte
 import { validateBagSwapData } from './validation/bagSwapValidation';
 import { validateEducationData } from './validation/educationValidation';
 import { validateTreePlantingData } from './validation/treePlantingValidation';
+import { BagSwapEventDAO } from '../../dao/event';
 import { EducationRecipientGroupDAO } from '../../dao/group';
 import { EducationTopicReferenceDataDAO } from '../../dao/referenceData';
 import { GroupEntity } from '../../entities/group.entity';
@@ -66,7 +67,8 @@ export async function saveBagSwapData(formData: FormData, isUpdate: boolean): Pr
     let validation: { data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } =
         await validateBagSwapData(formData);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
-        console.log('Saving...'); // TO-DO: Implement and call DAO
+        const bagSwapDAO: BagSwapEventDAO = new BagSwapEventDAO();
+        bagSwapDAO.save(validation.data, isUpdate);
     }
     return validation.errors;
 }

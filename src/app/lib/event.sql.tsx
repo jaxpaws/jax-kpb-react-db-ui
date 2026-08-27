@@ -1,12 +1,14 @@
 import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
 import { AdoptASpotEventEntity } from '../entities/adoptASpotEvent.entity';
+import { BagSwapEventEntity } from '../entities/bagSwapEvent.entity';
 import { BulkyItemEntity } from '../entities/bulkyItem.entity';
 import { CleanTeamEventEntity } from '../entities/cleanTeamEvent.entity';
 import { CountyCleanupEventEntity } from '../entities/countyCleanupEvent.entity';
 import { DistrictEntity } from '../entities/district.entity';
+import { GroupCleanupEventEntity } from '../entities/groupCleanupEvent.entity';
 import { RoadsideLitterEventEntity } from '../entities/roadsideLitterEvent.entity';
 import { TrashRoutesEventEntity } from '../entities/trashRoutesEvent.entity';
-import { GroupCleanupEventEntity } from '../entities/groupCleanupEvent.entity';
+
 
 export async function insertAdoptASpotEvent(event: AdoptASpotEventEntity): Promise<number> {
     let conn = null;
@@ -21,6 +23,23 @@ export async function insertAdoptASpotEvent(event: AdoptASpotEventEntity): Promi
         return result.insertId;
     } catch (err) {
         console.error(`Error: Unable to insert Adopt-a-Spot event: ${err}`);
+        return -1;
+    }
+}
+
+export async function insertBagSwapEvent(event: BagSwapEventEntity): Promise<number> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO bag_swap_events (date, bag_count, event_desc, volunteer_count, volunteer_hours) ' +
+            'VALUES (?, ?, ?, ?, ?)',
+            [ event.date, event.bagCount, event.eventDesc, event.volunteerCount, event.volunteerHours ]
+        );
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Bag Swap event: ${err}`);
         return -1;
     }
 }
@@ -188,6 +207,11 @@ export async function updateAdoptASpotEvent(event: AdoptASpotEventEntity): Promi
         console.error(`Error: Unable to insert Adopt-a-Spot event: ${err}`);
         return -1;
     }
+}
+
+export async function updateBagSwapEvent(event: BagSwapEventEntity): Promise<number> {
+    console.log('Updating Bag Swap Event...');
+    return -1;
 }
 
 // TODO: Implement UPDATE logic
