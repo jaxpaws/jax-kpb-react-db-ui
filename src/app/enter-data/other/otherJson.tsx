@@ -31,6 +31,7 @@ export const TREE_PLANTING_FORM_DATA_IDS = {
     date: `${TREE_PLANTING_CODE}-date`,
     treesPlanted: `${TREE_PLANTING_CODE}-trees`,
     description: `${TREE_PLANTING_CODE}-desc`,
+    hasVolunteers: `${TREE_PLANTING_CODE}-has-vol`,
     volunteerCount: `${TREE_PLANTING_CODE}-vol-count`,
     volunteerHours: `${TREE_PLANTING_CODE}-vol-hours`
 };
