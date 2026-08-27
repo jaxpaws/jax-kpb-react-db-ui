@@ -133,6 +133,8 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
     const handleReportingDataTypeChange: any = useCallback((event: any) => {
         setReportingDataType(event.target.value);
         setSelectedAdoptASpot('');
+        setSelectedCleanupLoc('');
+        setSelectedCleanupOrg('');
         setErrors(new Map<string, ErrorModel>());
     }, []);
 
