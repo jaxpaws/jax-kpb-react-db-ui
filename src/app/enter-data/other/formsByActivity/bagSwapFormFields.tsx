@@ -1,9 +1,12 @@
-import { Textbox } from '../../../components';
+import { useState } from 'react';
+import { RadioList, Textbox } from '../../../components';
 import { ErrorModel } from '../../../models';
 import { ifErrorThenGetErrorText } from '../../../utils/ifErrorThenGetErrorText';
-import { BAG_SWAP_FORM_DATA_IDS } from '../otherJson';
+import { BAG_SWAP_FORM_DATA_IDS, HAS_VOLUNTEERS_OPTIONS } from '../otherJson';
 
 export function BagSwapFormFields({ errors }: { errors: Map<string, ErrorModel> }) {
+    const [hasVolunteers, setHasVolunteers] = useState<string>('no');
+
     return (
         <div className="flex flex-col gap-4 mt-3">
             <Textbox
@@ -31,24 +34,36 @@ export function BagSwapFormFields({ errors }: { errors: Map<string, ErrorModel> 
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, BAG_SWAP_FORM_DATA_IDS.description)}>
             </Textbox>
-            <Textbox
-                inputId={BAG_SWAP_FORM_DATA_IDS.volunteerCount}
-                inputType="number"
-                labelText="Number of Volunteers"
-                width="sm:w-24"
+            <RadioList
+                label="Were there any volunteers?"
+                listName={BAG_SWAP_FORM_DATA_IDS.hasVolunteers}
+                options={JSON.stringify(HAS_VOLUNTEERS_OPTIONS)}
                 isRequired={true}
-                errorText={ifErrorThenGetErrorText(errors, BAG_SWAP_FORM_DATA_IDS.volunteerCount)}>
-            </Textbox>
-            <Textbox
-                inputId={BAG_SWAP_FORM_DATA_IDS.volunteerHours}
-                inputType="number"
-                labelText="Volunteer Hours"
-                descriptionText="Please enter the combined volunteer hours of all volunteers at the event. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
-                step={0.25}
-                width="sm:w-24"
-                isRequired={true}
-                errorText={ifErrorThenGetErrorText(errors, BAG_SWAP_FORM_DATA_IDS.volunteerHours)}>
-            </Textbox>
+                selectedValue={hasVolunteers}
+                handleChange={(event: any) => setHasVolunteers(event.target.value)}>
+            </RadioList>
+            { hasVolunteers === 'yes' &&
+                <div className="flex flex-col gap-4">
+                    <Textbox
+                        inputId={BAG_SWAP_FORM_DATA_IDS.volunteerCount}
+                        inputType="number"
+                        labelText="Number of Volunteers"
+                        width="sm:w-24"
+                        isRequired={true}
+                        errorText={ifErrorThenGetErrorText(errors, BAG_SWAP_FORM_DATA_IDS.volunteerCount)}>
+                    </Textbox>
+                    <Textbox
+                        inputId={BAG_SWAP_FORM_DATA_IDS.volunteerHours}
+                        inputType="number"
+                        labelText="Volunteer Hours"
+                        descriptionText="Please enter the combined volunteer hours of all volunteers at the event. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
+                        step={0.25}
+                        width="sm:w-24"
+                        isRequired={true}
+                        errorText={ifErrorThenGetErrorText(errors, BAG_SWAP_FORM_DATA_IDS.volunteerHours)}>
+                    </Textbox>
+                </div>
+            }
         </div>
     );
 }
