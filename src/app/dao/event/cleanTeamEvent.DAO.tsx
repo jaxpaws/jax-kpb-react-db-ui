@@ -6,7 +6,7 @@ import { isCleanTeamEvent } from '../../utils/eventTypeGuards';
 import { insertCleanTeamEvent, updateCleanTeamEvent } from '../../lib/event.sql';
 
 export class CleanTeamEventDAO implements EventDAO {
-    getById(id: number): EventEntity | null {
+    async getById(id: number): Promise<EventEntity | null> {
         return null;
     }
 

@@ -8,7 +8,7 @@ import { isRoadsideLitterEvent } from '../../utils/eventTypeGuards';
 import { insertRoadsideLitterEvent, updateRoadsideLitterEvent } from '../../lib/event.sql';
 
 export class RoadsideLitterEventDAO implements EventDAO {
-    getById(id: number): EventEntity | null {
+    async getById(id: number): Promise<EventEntity | null> {
         return null;
     }
 

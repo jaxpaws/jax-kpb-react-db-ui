@@ -12,7 +12,7 @@ export class CountyCleanupEventDAO implements EventDAO {
     private static TIRE_WEIGHT_CODE = 'TIRE';
     private static PAINT_CAN_HOUSEHOLD_CHEMICAL_WEIGHT_CODE = 'PCHC';
 
-    getById(id: number): EventEntity | null {
+    async getById(id: number): Promise<EventEntity | null> {
         return null;
     }
 

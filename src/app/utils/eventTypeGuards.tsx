@@ -1,10 +1,13 @@
 import {
     AdoptASpotEventModel,
+    BagSwapEventModel,
     CleanTeamEventModel,
     CountyCleanupEventModel,
+    EducationEventModel,
     GroupCleanupEventModel,
     RoadsideLitterEventModel,
-    TrashRoutesEventModel
+    TrashRoutesEventModel,
+    TreePlantingEventModel
 } from '../models';
 
 export function isAdoptASpotEvent(event: any): event is AdoptASpotEventModel {
@@ -14,6 +17,14 @@ export function isAdoptASpotEvent(event: any): event is AdoptASpotEventModel {
         'volunteerHours' in event &&
         'litterCollected' in event &&
         'recyclingCollected' in event;
+}
+
+export function isBagSwapEvent(event: any): event is BagSwapEventModel {
+    return typeof event === 'object' && event !== null &&
+        'bagsCollected' in event &&
+        'eventDescription' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event;
 }
 
 export function isCleanTeamEvent(event: any): event is CleanTeamEventModel {
@@ -29,6 +40,16 @@ export function isCountyCleanupEvent(event: any): event is CountyCleanupEventMod
         'paintCanAndHouseholdChemicalCount' in event &&
         'otherBulkyItems' in event &&
         'otherBulkyItemPounds' in event;
+}
+
+export function isEducationEvent(event: any): event is EducationEventModel {
+    return typeof event === 'object' && event !== null &&
+        'recipient' in event &&
+        'topic' in event &&
+        'duration' in event &&
+        'studentCount' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event;
 }
 
 export function isGroupCleanupEvent(event: any): event is GroupCleanupEventModel {
@@ -54,4 +75,12 @@ export function isTrashRoutesEvent(event: any): event is TrashRoutesEventModel {
     return typeof event === 'object' && event !== null &&
         'trashPounds' in event &&
         'recyclingPounds' in event;
+}
+
+export function isTreePlantingEvent(event: any): event is TreePlantingEventModel {
+    return typeof event === 'object' && event !== null &&
+        'treesPlanted' in event &&
+        'eventDescription' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event;
 }
