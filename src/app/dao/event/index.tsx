@@ -6,3 +6,4 @@ export { CountyCleanupEventDAO } from './countyCleanupEvent.DAO';
 export { EducationEventDAO } from './educationEvent.DAO';
 export { RoadsideLitterEventDAO } from './roadsideLitterEvent.DAO';
 export { TrashRoutesEventDAO } from './trashRoutesEvent.DAO';
+export { TreePlantingEventDAO } from './treePlantingEvent.DAO';

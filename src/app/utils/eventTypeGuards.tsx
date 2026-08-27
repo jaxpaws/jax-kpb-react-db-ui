@@ -6,7 +6,8 @@ import {
     EducationEventModel,
     GroupCleanupEventModel,
     RoadsideLitterEventModel,
-    TrashRoutesEventModel
+    TrashRoutesEventModel,
+    TreePlantingEventModel
 } from '../models';
 
 export function isAdoptASpotEvent(event: any): event is AdoptASpotEventModel {
@@ -74,4 +75,12 @@ export function isTrashRoutesEvent(event: any): event is TrashRoutesEventModel {
     return typeof event === 'object' && event !== null &&
         'trashPounds' in event &&
         'recyclingPounds' in event;
+}
+
+export function isTreePlantingEvent(event: any): event is TreePlantingEventModel {
+    return typeof event === 'object' && event !== null &&
+        'treesPlanted' in event &&
+        'eventDescription' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event;
 }

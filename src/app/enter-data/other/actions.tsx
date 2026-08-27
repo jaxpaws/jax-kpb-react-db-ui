@@ -10,7 +10,7 @@ import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListIte
 import { validateBagSwapData } from './validation/bagSwapValidation';
 import { validateEducationData } from './validation/educationValidation';
 import { validateTreePlantingData } from './validation/treePlantingValidation';
-import { BagSwapEventDAO } from '../../dao/event';
+import { BagSwapEventDAO, TreePlantingEventDAO } from '../../dao/event';
 import { EducationEventDAO } from '../../dao/event';
 import { EducationRecipientGroupDAO } from '../../dao/group';
 import { EducationTopicReferenceDataDAO } from '../../dao/referenceData';
@@ -65,8 +65,7 @@ export async function getEducationTopics(): Promise<string> {
 }
 
 export async function saveBagSwapData(formData: FormData, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
-    let validation: { data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } =
-        await validateBagSwapData(formData);
+    let validation: { data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } = validateBagSwapData(formData);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
         const bagSwapDAO: BagSwapEventDAO = new BagSwapEventDAO();
         bagSwapDAO.save(validation.data, isUpdate);
@@ -85,10 +84,10 @@ export async function saveEducationData(formData: FormData, recipientId: string,
 }
 
 export async function saveTreePlantingData(formData: FormData, isUpdate: boolean) {
-    let validation: { data: TreePlantingEventModel | null, errors: Map<string, ErrorModel> } =
-        await validateTreePlantingData(formData);
+    let validation: { data: TreePlantingEventModel | null, errors: Map<string, ErrorModel> } = validateTreePlantingData(formData);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
-        console.log('Saving...'); // TO-DO: Implement and call DAO
+        const treePlantingDAO: TreePlantingEventDAO = new TreePlantingEventDAO();
+        treePlantingDAO.save(validation.data, isUpdate);
     }
     return validation.errors;
 }

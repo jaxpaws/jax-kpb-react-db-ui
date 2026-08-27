@@ -9,6 +9,7 @@ import { EducationEventEntity } from '../entities/educationEvent.entity';
 import { GroupCleanupEventEntity } from '../entities/groupCleanupEvent.entity';
 import { RoadsideLitterEventEntity } from '../entities/roadsideLitterEvent.entity';
 import { TrashRoutesEventEntity } from '../entities/trashRoutesEvent.entity';
+import { TreePlantingEventEntity } from '../entities/treePlantingEvent.entity';
 
 
 export async function insertAdoptASpotEvent(event: AdoptASpotEventEntity): Promise<number> {
@@ -209,6 +210,23 @@ export async function insertTrashRoutesEvent(event: TrashRoutesEventEntity): Pro
     }
 }
 
+export async function insertTreePlantingEvent(event: TreePlantingEventEntity): Promise<number> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO tree_planting_events (date, tree_count, event_desc, volunteer_count, volunteer_hours) ' +
+            'VALUES (?, ?, ?, ?, ?)',
+            [ event.date, event.treeCount, event.eventDesc, event.volunteerCount, event.volunteerHours ]
+        );
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Tree Planting event: ${err}`);
+        return -1;
+    }
+}
+
 // TODO: Implement UPDATE logic
 export async function updateAdoptASpotEvent(event: AdoptASpotEventEntity): Promise<number> {
     let conn = null;
@@ -359,4 +377,10 @@ export async function updateTrashRoutesEvent(event: TrashRoutesEventEntity): Pro
     } catch (err) {
         console.error(`Error: Unable to insert Trash Routes event: ${err}`);
     }
+}
+
+// TODO: Implement UPDATE logic
+export async function updateTreePlantingEvent(event: TreePlantingEventEntity): Promise<number> {
+    console.log('Updating Tree Planting Event...');
+    return -1;
 }
