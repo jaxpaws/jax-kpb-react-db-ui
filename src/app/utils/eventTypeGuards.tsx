@@ -3,6 +3,7 @@ import {
     BagSwapEventModel,
     CleanTeamEventModel,
     CountyCleanupEventModel,
+    EducationEventModel,
     GroupCleanupEventModel,
     RoadsideLitterEventModel,
     TrashRoutesEventModel
@@ -38,6 +39,16 @@ export function isCountyCleanupEvent(event: any): event is CountyCleanupEventMod
         'paintCanAndHouseholdChemicalCount' in event &&
         'otherBulkyItems' in event &&
         'otherBulkyItemPounds' in event;
+}
+
+export function isEducationEvent(event: any): event is EducationEventModel {
+    return typeof event === 'object' && event !== null &&
+        'recipient' in event &&
+        'topic' in event &&
+        'duration' in event &&
+        'studentCount' in event &&
+        'volunteerCount' in event &&
+        'volunteerHours' in event;
 }
 
 export function isGroupCleanupEvent(event: any): event is GroupCleanupEventModel {

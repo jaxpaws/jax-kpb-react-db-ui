@@ -5,6 +5,7 @@ import { BulkyItemEntity } from '../entities/bulkyItem.entity';
 import { CleanTeamEventEntity } from '../entities/cleanTeamEvent.entity';
 import { CountyCleanupEventEntity } from '../entities/countyCleanupEvent.entity';
 import { DistrictEntity } from '../entities/district.entity';
+import { EducationEventEntity } from '../entities/educationEvent.entity';
 import { GroupCleanupEventEntity } from '../entities/groupCleanupEvent.entity';
 import { RoadsideLitterEventEntity } from '../entities/roadsideLitterEvent.entity';
 import { TrashRoutesEventEntity } from '../entities/trashRoutesEvent.entity';
@@ -100,6 +101,23 @@ export async function insertCountyCleanupEvent(event: CountyCleanupEventEntity, 
         if (conn) {
             conn.query('ROLLBACK');
         }
+        return -1;
+    }
+}
+
+export async function insertEducationEvent(event: EducationEventEntity): Promise<number> {
+    let conn = null;
+    try {
+        conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO education_events (topic_id, recipient_id, date, event_length, student_count, volunteer_count, volunteer_hours) ' +
+            'VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [ event.topicId, event.recipientId, event.date, event.eventLength, event.studentCount, event.volunteerCount, event.volunteerHours ]
+        );
+        conn.release();
+        return result.insertId;
+    } catch (err) {
+        console.error(`Error: Unable to insert Education event: ${err}`);
         return -1;
     }
 }
@@ -209,6 +227,7 @@ export async function updateAdoptASpotEvent(event: AdoptASpotEventEntity): Promi
     }
 }
 
+// TODO: Implement UPDATE logic
 export async function updateBagSwapEvent(event: BagSwapEventEntity): Promise<number> {
     console.log('Updating Bag Swap Event...');
     return -1;
@@ -277,6 +296,12 @@ export async function updateCountyCleanupEvent(event: CountyCleanupEventEntity, 
             conn.query('ROLLBACK');
         }
     }
+}
+
+// TODO: Implement UPDATE logic
+export async function updateEducationEvent(event: EducationEventEntity): Promise<number> {
+    console.log('Updating Education Event...');
+    return -1;
 }
 
 // TODO: Implement UPDATE logic

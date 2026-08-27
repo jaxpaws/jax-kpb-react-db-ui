@@ -3,5 +3,6 @@ export { AdoptASpotEventDAO } from './adoptASpotEvent.DAO';
 export { BagSwapEventDAO } from './bagSwapEvent.DAO';
 export { CleanTeamEventDAO } from './cleanTeamEvent.DAO';
 export { CountyCleanupEventDAO } from './countyCleanupEvent.DAO';
+export { EducationEventDAO } from './educationEvent.DAO';
 export { RoadsideLitterEventDAO } from './roadsideLitterEvent.DAO';
 export { TrashRoutesEventDAO } from './trashRoutesEvent.DAO';
