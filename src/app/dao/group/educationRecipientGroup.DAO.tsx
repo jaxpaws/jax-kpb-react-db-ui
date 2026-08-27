@@ -1,5 +1,5 @@
-import { GroupEntity } from '../../entities/group.entity';
-import { GroupModel } from '../../models';
+import { GroupEntity } from '../../entities/group/group.entity';
+import { GroupModel } from '../../models/group';
 import { GroupDAO } from './group.DAO';
 import { getEducationRecipientById, getEducationRecipients } from '../../lib/group.sql';
 

@@ -1,15 +1,15 @@
 import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
-import { AdoptASpotEventEntity } from '../entities/adoptASpotEvent.entity';
-import { BagSwapEventEntity } from '../entities/bagSwapEvent.entity';
+import { AdoptASpotEventEntity } from '../entities/event/adoptASpotEvent.entity';
+import { BagSwapEventEntity } from '../entities/event/bagSwapEvent.entity';
 import { BulkyItemEntity } from '../entities/bulkyItem.entity';
-import { CleanTeamEventEntity } from '../entities/cleanTeamEvent.entity';
-import { CountyCleanupEventEntity } from '../entities/countyCleanupEvent.entity';
+import { CleanTeamEventEntity } from '../entities/event/cleanTeamEvent.entity';
+import { CountyCleanupEventEntity } from '../entities/event/countyCleanupEvent.entity';
 import { DistrictEntity } from '../entities/district.entity';
-import { EducationEventEntity } from '../entities/educationEvent.entity';
-import { GroupCleanupEventEntity } from '../entities/groupCleanupEvent.entity';
-import { RoadsideLitterEventEntity } from '../entities/roadsideLitterEvent.entity';
-import { TrashRoutesEventEntity } from '../entities/trashRoutesEvent.entity';
-import { TreePlantingEventEntity } from '../entities/treePlantingEvent.entity';
+import { EducationEventEntity } from '../entities/event/educationEvent.entity';
+import { GroupCleanupEventEntity } from '../entities/event/groupCleanupEvent.entity';
+import { RoadsideLitterEventEntity } from '../entities/event/roadsideLitterEvent.entity';
+import { TrashRoutesEventEntity } from '../entities/event/trashRoutesEvent.entity';
+import { TreePlantingEventEntity } from '../entities/event/treePlantingEvent.entity';
 
 
 export async function insertAdoptASpotEvent(event: AdoptASpotEventEntity): Promise<number> {

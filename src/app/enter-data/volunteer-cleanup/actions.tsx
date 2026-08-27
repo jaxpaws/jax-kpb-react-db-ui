@@ -1,18 +1,14 @@
 'use server'
 
-import {
-    AdoptASpotEventModel,
-    ErrorModel,
-    GroupModel,
-    GroupCleanupEventModel,
-    ReferenceDataModel
-} from '../../models';
+import { AdoptASpotEventModel, GroupCleanupEventModel } from '../../models/event';
+import { ErrorModel, ReferenceDataModel } from '../../models';
+import { GroupModel } from '../../models/group';
 import { validateAdoptASpotData } from './adoptASpotValidation';
 import { validateGroupCleanupData } from './groupCleanupValidation';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { AdoptASpotGroupDAO } from '../../dao/group';
 import { AdoptASpotEventDAO } from '../../dao/event';
-import { AdoptASpotGroupEntity } from '../../entities/adoptASpotGroup.entity';
+import { AdoptASpotGroupEntity } from '../../entities/group/adoptASpotGroup.entity';
 import { CleanupLocationReferenceDataDAO } from '../../dao/referenceData/cleanupLocationReferenceData.DAO';
 import { CleanupOrganizationGroupDAO } from '../../dao/group/cleanupOrganizationGroup.DAO';
 import { GroupCleanupEventDAO } from '../../dao/event/groupCleanupEvent.DAO';

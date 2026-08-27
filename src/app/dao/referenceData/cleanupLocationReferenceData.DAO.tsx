@@ -1,5 +1,5 @@
 import { ReferenceDataDAO } from '.';
-import { ReferenceDataEntity } from '../../entities/referenceData.entity';
+import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
 import { ReferenceDataModel } from '../../models/referenceData.model';
 import { getCleanupLocationById, getCleanupLocationReference } from '../../lib/referenceData.sql';
 

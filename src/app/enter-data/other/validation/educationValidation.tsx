@@ -1,4 +1,6 @@
-import { EducationEventModel, ErrorModel, GroupModel, ReferenceDataModel } from '../../../models';
+import { EducationEventModel } from '../../../models/event';
+import { GroupModel } from '../../../models/group';
+import { ErrorModel, ReferenceDataModel } from '../../../models';
 import { EducationRecipientGroupDAO } from '../../../dao/group';
 import { EducationTopicReferenceDataDAO } from '../../../dao/referenceData';
 import {

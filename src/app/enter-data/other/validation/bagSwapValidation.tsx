@@ -1,4 +1,5 @@
-import { BagSwapEventModel, ErrorModel } from '../../../models';
+import { BagSwapEventModel } from '../../../models/event';
+import { ErrorModel } from '../../../models';
 import {
     isFormDataEntryValueNullOrBlank,
     validateCount,

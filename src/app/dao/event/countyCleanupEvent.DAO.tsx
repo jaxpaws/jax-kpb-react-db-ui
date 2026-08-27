@@ -1,8 +1,8 @@
 import { EventDAO } from './';
 import { BulkyItemEntity } from '../../entities/bulkyItem.entity';
-import { CountyCleanupEventEntity } from '../../entities/countyCleanupEvent.entity';
-import { EventEntity } from '../../entities/event.entity';
-import { ItemWeightReferenceDataEntity } from '../../entities/itemWeightReferenceData.entity';
+import { CountyCleanupEventEntity } from '../../entities/event/countyCleanupEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
+import { ItemWeightReferenceDataEntity } from '../../entities/referenceData/itemWeightReferenceData.entity';
 import { BulkyItemModel, EventModel } from '../../models';
 import { isCountyCleanupEvent } from '../../utils/eventTypeGuards';
 import { insertCountyCleanupEvent, updateCountyCleanupEvent } from '../../lib/event.sql';

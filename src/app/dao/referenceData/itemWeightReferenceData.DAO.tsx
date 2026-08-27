@@ -1,6 +1,6 @@
 import { ReferenceDataDAO } from '.';
-import { ReferenceDataEntity } from '../../entities/referenceData.entity';
-import { ItemWeightReferenceDataEntity } from '../../entities/itemWeightReferenceData.entity';
+import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
+import { ItemWeightReferenceDataEntity } from '../../entities/referenceData/itemWeightReferenceData.entity';
 import { ReferenceDataModel } from '../../models/referenceData.model';
 import { getItemWeightReference } from '../../lib/referenceData.sql';
 

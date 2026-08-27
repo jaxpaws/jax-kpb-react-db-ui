@@ -1,6 +1,7 @@
-import { ErrorModel, GroupCleanupEventModel } from '../../models';
-import { GroupEntity } from '../../entities/group.entity';
-import { ReferenceDataEntity } from '../../entities/referenceData.entity';
+import { ErrorModel } from '../../models';
+import { GroupCleanupEventModel } from '../../models/event';
+import { GroupEntity } from '../../entities/group/group.entity';
+import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
 import {
     validateComboBox,
     validateDate,

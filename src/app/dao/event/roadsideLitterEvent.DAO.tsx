@@ -1,8 +1,8 @@
 import { EventDAO } from './';
 import { BulkyItemEntity } from '../../entities/bulkyItem.entity';
 import { DistrictEntity } from '../../entities/district.entity';
-import { EventEntity } from '../../entities/event.entity';
-import { RoadsideLitterEventEntity } from '../../entities/roadsideLitterEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
+import { RoadsideLitterEventEntity } from '../../entities/event/roadsideLitterEvent.entity';
 import { BulkyItemModel, DistrictModel, EventModel } from '../../models';
 import { isRoadsideLitterEvent } from '../../utils/eventTypeGuards';
 import { insertRoadsideLitterEvent, updateRoadsideLitterEvent } from '../../lib/event.sql';

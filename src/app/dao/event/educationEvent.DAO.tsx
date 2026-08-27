@@ -1,6 +1,6 @@
 import { EventDAO } from './';
-import { EventEntity } from '../../entities/event.entity';
-import { EducationEventEntity } from '../../entities/educationEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
+import { EducationEventEntity } from '../../entities/event/educationEvent.entity';
 import { EventModel } from '../../models';
 import { isEducationEvent } from '../../utils/eventTypeGuards';
 import { insertEducationEvent, updateEducationEvent } from '../../lib/event.sql';

@@ -1,7 +1,7 @@
 import { EventDAO } from './event.DAO';
 import { EventModel } from '../../models';
-import { BagSwapEventEntity } from '../../entities/bagSwapEvent.entity';
-import { EventEntity } from '../../entities/event.entity';
+import { BagSwapEventEntity } from '../../entities/event/bagSwapEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
 import { isBagSwapEvent } from '../../utils/eventTypeGuards';
 import { insertBagSwapEvent, updateBagSwapEvent } from '../../lib/event.sql';
 

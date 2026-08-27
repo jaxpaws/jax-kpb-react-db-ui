@@ -1,4 +1,4 @@
-import { ReferenceDataEntity } from '../../entities/referenceData.entity';
+import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
 import { ReferenceDataModel } from '../../models/referenceData.model';
 
 export interface ReferenceDataDAO {

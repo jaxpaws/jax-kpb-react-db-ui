@@ -1,6 +1,6 @@
 import { EventDAO } from './';
-import { EventEntity } from '../../entities/event.entity';
-import { AdoptASpotEventEntity } from '../../entities/adoptASpotEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
+import { AdoptASpotEventEntity } from '../../entities/event/adoptASpotEvent.entity';
 import { EventModel } from '../../models';
 import { isAdoptASpotEvent } from '../../utils/eventTypeGuards';
 import { insertAdoptASpotEvent, updateAdoptASpotEvent } from '../../lib/event.sql';

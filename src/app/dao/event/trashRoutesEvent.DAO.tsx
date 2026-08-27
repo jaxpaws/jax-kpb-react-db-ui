@@ -1,6 +1,6 @@
 import { EventDAO } from './';
-import { EventEntity } from '../../entities/event.entity';
-import { TrashRoutesEventEntity } from '../../entities/trashRoutesEvent.entity';
+import { EventEntity } from '../../entities/event/event.entity';
+import { TrashRoutesEventEntity } from '../../entities/event/trashRoutesEvent.entity';
 import { EventModel } from '../../models';
 import { isTrashRoutesEvent } from '../../utils/eventTypeGuards';
 import { insertTrashRoutesEvent, updateTrashRoutesEvent } from '../../lib/event.sql';

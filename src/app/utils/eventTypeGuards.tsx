@@ -8,7 +8,7 @@ import {
     RoadsideLitterEventModel,
     TrashRoutesEventModel,
     TreePlantingEventModel
-} from '../models';
+} from '../models/event';
 
 export function isAdoptASpotEvent(event: any): event is AdoptASpotEventModel {
     return typeof event === 'object' && event !== null &&

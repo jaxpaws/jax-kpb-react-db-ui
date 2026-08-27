@@ -3,11 +3,10 @@
 import {
     CleanTeamEventModel,
     CountyCleanupEventModel,
-    ErrorModel,
-    ReferenceDataModel,
     RoadsideLitterEventModel,
     TrashRoutesEventModel
-} from '../../models';
+} from '../../models/event';
+import { ErrorModel, ReferenceDataModel } from '../../models';
 import {
     CleanTeamEventDAO,
     CountyCleanupEventDAO,

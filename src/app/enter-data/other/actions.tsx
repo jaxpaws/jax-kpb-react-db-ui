@@ -1,11 +1,7 @@
 'use server'
 
-import {
-    BagSwapEventModel,
-    EducationEventModel,
-    ErrorModel,
-    TreePlantingEventModel
-} from '../../models';
+import { BagSwapEventModel, EducationEventModel, TreePlantingEventModel } from '../../models/event';
+import { ErrorModel } from '../../models';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { validateBagSwapData } from './validation/bagSwapValidation';
 import { validateEducationData } from './validation/educationValidation';
@@ -14,8 +10,8 @@ import { BagSwapEventDAO, TreePlantingEventDAO } from '../../dao/event';
 import { EducationEventDAO } from '../../dao/event';
 import { EducationRecipientGroupDAO } from '../../dao/group';
 import { EducationTopicReferenceDataDAO } from '../../dao/referenceData';
-import { GroupEntity } from '../../entities/group.entity';
-import { ReferenceDataEntity } from '../../entities/referenceData.entity';
+import { GroupEntity } from '../../entities/group/group.entity';
+import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
 
 export async function getEducationRecipients(): Promise<string> {
     let recipientOptions: ComboBoxListItemModel[] = [];
