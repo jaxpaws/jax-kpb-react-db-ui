@@ -73,6 +73,7 @@ export function RoadsideLitterFormFields({ bulkyItemsReferenceString, districtsR
                 textareaId={ROADSIDE_LITTER_FORM_DATA_IDS.locations}
                 labelText="Locations"
                 descriptionText="Please enter the street locations where litter was collected. Please separate each street with a comma."
+                maxlength={300}
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, ROADSIDE_LITTER_FORM_DATA_IDS.locations)}>
             </Textarea>

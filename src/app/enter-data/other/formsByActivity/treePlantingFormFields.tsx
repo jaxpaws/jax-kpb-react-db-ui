@@ -30,6 +30,7 @@ export function TreePlantingFormFields({ errors }: { errors: Map<string, ErrorMo
                 inputType="text"
                 labelText="Event Description"
                 descriptionText="Please enter a brief description of the tree planting event, including the location."
+                maxlength={70}
                 width="sm:w-150"
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, TREE_PLANTING_FORM_DATA_IDS.description)}>
