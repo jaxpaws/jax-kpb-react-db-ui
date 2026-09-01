@@ -620,7 +620,9 @@ export function ComboBox({
                     }
                 `}
             </style>
-            <label htmlFor={searchInputId} className="text-[1.06rem] font-semibold">{label}{isRequired ? ' (required)' : ''}</label>
+            <label id={`${searchInputId}-label`} htmlFor={searchInputId} className="text-[1.06rem] font-semibold">
+                {label}{isRequired ? ' (required)' : ''}
+            </label>
             { !isBlank(descriptionText) &&
                 <div id={`${searchInputId}-description`}>{ descriptionText }</div>
             }
@@ -647,6 +649,7 @@ export function ComboBox({
                             onClick={onComboboxClick}
                             onFocus={onComboboxFocus}
                             onBlur={onComboboxBlur}
+                            aria-describedby={`${`${searchInputId}-label`} ${descriptionText ? `${searchInputId}-description` : ''} ${errorText ? `${searchInputId}-error` : ''}`}
                             aria-activedescendant={comboBoxNodeActiveDescendant}
                             ref={comboBoxNodeRef}>
                         </input>
@@ -722,7 +725,7 @@ export function ComboBox({
             </div>
             { !isBlank(errorText) &&
                 <div id={`${searchInputId}-error`} className="mt-1">
-                    <span className="border-2 border-white-500 bg-red-500 text-white pl-[7px] pr-[7px] p-[3px] rounded-[100px] font-bold text-lg">X</span>
+                    <span className="border-2 border-white-500 bg-red-500 text-white pl-[7px] pr-[7px] p-[3px] rounded-[100px] font-bold text-lg" aria-label="Error: ">X</span>
                     <span className="text-red-700 font-semibold ml-1">{ errorText }</span>
                 </div>
             }
