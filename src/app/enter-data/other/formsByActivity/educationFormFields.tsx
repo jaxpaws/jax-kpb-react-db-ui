@@ -30,48 +30,44 @@ export function EducationFormFields(
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, EDUCATION_FORM_DATA_IDS.date)}>
             </Textbox>
-            <div className="flex flex-row gap-3 flex-wrap">
-                <ComboBox
-                    label="Recipient"
-                    searchInputId={`${EDUCATION_FORM_DATA_IDS.recipient}-input`}
-                    listboxId={`${EDUCATION_FORM_DATA_IDS.recipient}-list`}
-                    buttonId={`${EDUCATION_FORM_DATA_IDS.recipient}-toggle`}
-                    value={selectedRecipient}
-                    options={recipientOptions} 
-                    isRequired={true}
-                    autocomplete="list"
-                    errorText={ifErrorThenGetErrorText(errors, `${EDUCATION_FORM_DATA_IDS.recipient}-input`)}
-                    handleChange={handleRecipientChange}>
-                </ComboBox>
-                <button
-                    type="button"
-                    onClick={onAddRecipient}
-                    className="border-none cursor-pointer underline mb-2 self-end"
-                    >
-                    Add a New Recipient
-                </button>
-            </div>
-            <div className="flex flex-row gap-3 flex-wrap">
-                <ComboBox
-                    label="Educational Topic"
-                    searchInputId={`${EDUCATION_FORM_DATA_IDS.topic}-input`}
-                    listboxId={`${EDUCATION_FORM_DATA_IDS.topic}-list`}
-                    buttonId={`${EDUCATION_FORM_DATA_IDS.topic}-toggle`}
-                    value={selectedTopic}
-                    options={topicOptions}
-                    isRequired={true}
-                    autocomplete="list"
-                    errorText={ifErrorThenGetErrorText(errors, `${EDUCATION_FORM_DATA_IDS.topic}-input`)}
-                    handleChange={handleTopicChange}>
-                </ComboBox>
-                <button
-                    type="button"
-                    onClick={onAddTopic}
-                    className="border-none cursor-pointer underline mb-2 self-end"
-                    >
-                    Add a New Topic
-                </button>
-            </div>
+            <ComboBox
+                label="Recipient"
+                descriptionText="Please select the organization or group that the educational event was provided to.
+                    If the organization or group is not listed, please select 'Add a New Recipient' below."
+                searchInputId={`${EDUCATION_FORM_DATA_IDS.recipient}-input`}
+                listboxId={`${EDUCATION_FORM_DATA_IDS.recipient}-list`}
+                buttonId={`${EDUCATION_FORM_DATA_IDS.recipient}-toggle`}
+                value={selectedRecipient}
+                options={recipientOptions} 
+                isRequired={true}
+                autocomplete="list"
+                errorText={ifErrorThenGetErrorText(errors, `${EDUCATION_FORM_DATA_IDS.recipient}-input`)}
+                handleChange={handleRecipientChange}
+                addOptionBtn={
+                    <button type="button" onClick={onAddRecipient} className="border-none cursor-pointer underline mb-2 self-end">
+                        Add a New Recipient
+                    </button>
+                }>
+            </ComboBox>  
+            <ComboBox
+                label="Educational Topic"
+                descriptionText="Please select the topic of the educational content at the event.
+                    If no existing topic is a good match, please select 'Add a New Topic' below."
+                searchInputId={`${EDUCATION_FORM_DATA_IDS.topic}-input`}
+                listboxId={`${EDUCATION_FORM_DATA_IDS.topic}-list`}
+                buttonId={`${EDUCATION_FORM_DATA_IDS.topic}-toggle`}
+                value={selectedTopic}
+                options={topicOptions}
+                isRequired={true}
+                autocomplete="list"
+                errorText={ifErrorThenGetErrorText(errors, `${EDUCATION_FORM_DATA_IDS.topic}-input`)}
+                handleChange={handleTopicChange}
+                addOptionBtn={
+                    <button type="button" onClick={onAddTopic} className="border-none cursor-pointer underline mb-2 self-end">
+                        Add a New Topic
+                    </button>
+                }>
+            </ComboBox>
             <Textbox
                 inputId={EDUCATION_FORM_DATA_IDS.duration}
                 inputType="number"
