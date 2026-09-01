@@ -10,7 +10,7 @@ export class AdoptASpotEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isAdoptASpotEvent(event)) {
             const eventEntity: AdoptASpotEventEntity = {
                 id: event.id ? event.id : -1,
@@ -23,13 +23,14 @@ export class AdoptASpotEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                await updateAdoptASpotEvent(eventEntity);
+                return await updateAdoptASpotEvent(eventEntity);
             } else {
-                await insertAdoptASpotEvent(eventEntity);
+                return await insertAdoptASpotEvent(eventEntity);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to AdoptASpotModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {

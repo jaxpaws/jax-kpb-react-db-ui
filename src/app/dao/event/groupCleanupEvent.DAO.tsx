@@ -10,7 +10,7 @@ export class GroupCleanupEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isGroupCleanupEvent(event)) {
             const locationId: number = Number.isNaN(Number(event.location.code)) ? -1 : Number(event.location.code);
             const eventEntity: GroupCleanupEventEntity = {
@@ -25,13 +25,14 @@ export class GroupCleanupEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                await updateGroupCleanupEvent(eventEntity);
+                return await updateGroupCleanupEvent(eventEntity);
             } else {
-                await insertGroupCleanupEvent(eventEntity);
+                return await insertGroupCleanupEvent(eventEntity);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to GroupCleanupModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {

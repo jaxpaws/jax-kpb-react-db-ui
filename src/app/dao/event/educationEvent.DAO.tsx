@@ -10,7 +10,7 @@ export class EducationEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isEducationEvent(event)) {
             const recipientId: number = Number.isNaN(Number(event.topic.code)) ? -1 : Number(event.topic.code);
             const eventEntity: EducationEventEntity = {
@@ -25,13 +25,14 @@ export class EducationEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                await updateEducationEvent(eventEntity);
+                return await updateEducationEvent(eventEntity);
             } else {
-                await insertEducationEvent(eventEntity);
+                return await insertEducationEvent(eventEntity);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to EducationEventModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {

@@ -10,7 +10,7 @@ export class BagSwapEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isBagSwapEvent(event)) {
             const eventEntity: BagSwapEventEntity = {
                 id: event.id ? event.id : -1,
@@ -22,13 +22,14 @@ export class BagSwapEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                await updateBagSwapEvent(eventEntity);
+                return await updateBagSwapEvent(eventEntity);
             } else {
-                await insertBagSwapEvent(eventEntity);
+                return await insertBagSwapEvent(eventEntity);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to BagSwapEventModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {

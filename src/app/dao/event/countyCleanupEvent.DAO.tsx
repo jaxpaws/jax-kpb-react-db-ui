@@ -16,7 +16,7 @@ export class CountyCleanupEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isCountyCleanupEvent(event)) {
             const itemWeightDAO: ItemWeightReferenceDataDAO = new ItemWeightReferenceDataDAO();
             const itemWeights: ItemWeightReferenceDataEntity[] = await itemWeightDAO.getAll();
@@ -51,13 +51,14 @@ export class CountyCleanupEventDAO implements EventDAO {
             });
 
             if (isUpdate) {
-                await updateCountyCleanupEvent(eventEntity, bulkyItemEntities);
+                return await updateCountyCleanupEvent(eventEntity, bulkyItemEntities);
             } else {
-                await insertCountyCleanupEvent(eventEntity, bulkyItemEntities);
+                return await insertCountyCleanupEvent(eventEntity, bulkyItemEntities);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to CountyCleanupModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {
