@@ -30,6 +30,7 @@ export function BagSwapFormFields({ errors }: { errors: Map<string, ErrorModel> 
                 inputType="text"
                 labelText="Event Description"
                 descriptionText="Please enter a brief description of the bag swap event, including the location."
+                maxlength={70}
                 width="sm:w-150"
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, BAG_SWAP_FORM_DATA_IDS.description)}>
@@ -56,7 +57,8 @@ export function BagSwapFormFields({ errors }: { errors: Map<string, ErrorModel> 
                         inputId={BAG_SWAP_FORM_DATA_IDS.volunteerHours}
                         inputType="number"
                         labelText="Volunteer Hours"
-                        descriptionText="Please enter the combined volunteer hours of all volunteers at the event. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
+                        descriptionText="Please enter the combined volunteer hours of all volunteers at the event.
+                            Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
                         step={0.25}
                         width="sm:w-24"
                         isRequired={true}
