@@ -1,7 +1,7 @@
 import { GroupEntity } from '../../entities/group/group.entity';
 import { GroupModel } from '../../models/group';
 import { GroupDAO } from './group.DAO';
-import { getCleanupOrganizationById, getCleanupOrganizations } from '../../lib/group.sql';
+import { getCleanupOrganizationById, getCleanupOrganizations, insertCleanupOrganization } from '../../lib/group.sql';
 
 export class CleanupOrganizationGroupDAO implements GroupDAO {
     async getById(id: number): Promise<GroupEntity | null> {
@@ -21,7 +21,15 @@ export class CleanupOrganizationGroupDAO implements GroupDAO {
         return organizations;
     }
 
-    async save(group: GroupModel): Promise<void> {}
+    async save(organization: GroupModel): Promise<number> {
+        const groupEntity: GroupEntity = {
+            id: organization.id ? organization.id : -1,
+            name: organization.name
+        };
+        const result: number = await insertCleanupOrganization(groupEntity);
+        console.log(result);
+        return result;
+    }
 
     delete(id: number): void {}
 }

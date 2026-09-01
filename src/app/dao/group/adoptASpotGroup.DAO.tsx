@@ -1,7 +1,7 @@
 import { AdoptASpotGroupEntity } from '../../entities/group/adoptASpotGroup.entity';
-import { GroupModel } from '../../models/group';
+import { AdoptASpotGroupModel, GroupModel } from '../../models/group';
 import { GroupDAO } from './group.DAO';
-import { getAdoptASpotAssignmentById, getAdoptASpotAssignments } from '../../lib/group.sql';
+import { getAdoptASpotAssignmentById, getAdoptASpotAssignments, insertAdoptASpotAssignment } from '../../lib/group.sql';
 
 export class AdoptASpotGroupDAO implements GroupDAO {
     async getById(id: number): Promise<AdoptASpotGroupEntity | null> {
@@ -21,7 +21,16 @@ export class AdoptASpotGroupDAO implements GroupDAO {
         return assignments;
     }
 
-    async save(group: GroupModel): Promise<void> {}
+    async save(assignment: AdoptASpotGroupModel): Promise<number> {
+        const groupEntity: AdoptASpotGroupEntity = {
+            id: assignment.id ? assignment.id : -1,
+            name: assignment.name,
+            location: assignment.location
+        };
+        const result: number = await insertAdoptASpotAssignment(groupEntity);
+        console.log(result);
+        return result;
+    }
 
     delete(id: number): void {}
 }

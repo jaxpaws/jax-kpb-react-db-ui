@@ -1,7 +1,7 @@
 import { GroupEntity } from '../../entities/group/group.entity';
 import { GroupModel } from '../../models/group';
 import { GroupDAO } from './group.DAO';
-import { getEducationRecipientById, getEducationRecipients } from '../../lib/group.sql';
+import { getEducationRecipientById, getEducationRecipients, insertEducationRecipient } from '../../lib/group.sql';
 
 export class EducationRecipientGroupDAO implements GroupDAO {
     async getById(id: number): Promise<GroupEntity | null> {
@@ -22,7 +22,15 @@ export class EducationRecipientGroupDAO implements GroupDAO {
         return recipients;
     }
 
-    async save(group: GroupModel): Promise<void> {}
+    async save(recipient: GroupModel): Promise<number> {
+        const groupEntity: GroupEntity = {
+            id: recipient.id ? recipient.id : -1,
+            name: recipient.name
+        };
+        const result: number = await insertEducationRecipient(groupEntity);
+        console.log(result);
+        return result;
+    }
 
     delete(id: number): void {}
 }
