@@ -17,8 +17,9 @@ export class BulkyItemReferenceDataDAO implements ReferenceDataDAO {
         return bulkyItems;
     }
 
-    save(event: ReferenceDataModel): void {
+    async save(event: ReferenceDataModel): Promise<number> {
         console.log('Saving');
+        return -1;
     }
 
     delete(code: number | string): void {

@@ -1,11 +1,13 @@
 import { AdoptASpotEventModel } from '../../models/event';
+import { AdoptASpotGroupModel } from '../../models/group';
 import { ErrorModel } from '../../models';
 import { ADOPT_A_SPOT_FORM_DATA_IDS } from './volunteerCleanupJson';
 import { 
     validateComboBox,
     validateDate,
     validatePounds,
-    validateCount
+    validateCount,
+    validateSimpleTextField
 } from '../../utils/commonFormValidation';
 import { DECIMAL_3_DOT_2_MAX, UNSIGNED_TINY_INT_MAX, UNSIGNED_SMALL_INT_MAX } from '../../constValues';
 import { AdoptASpotGroupDAO } from '../../dao/group';
@@ -94,6 +96,53 @@ export async function validateAdoptASpotData(
             litterCollected: litterValidation.pounds,
             recyclingCollected: recyclingValidation.pounds
         };
+    }
+    return { data: data, errors: errors };
+}
+
+export function validateAdoptASpotAssignment(
+    formData: FormData,
+    nameInputId: string,
+    nameInputLabel: string,
+    spotInputId: string,
+    spotInputLabel: string,
+    existingAssignments: Map<string, string>
+): { data: AdoptASpotGroupModel | null, errors: Map<string, ErrorModel> } {
+    let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
+    const nameValidation = validateSimpleTextField(
+        errors,
+        formData.get(nameInputId),
+        nameInputId,
+        nameInputLabel,
+        50
+    );
+    errors = nameValidation.errors;
+
+    const spotValidation = validateSimpleTextField(
+        errors,
+        formData.get(spotInputId),
+        spotInputId,
+        spotInputLabel,
+        50
+    );
+    errors = spotValidation.errors;
+
+    let data: AdoptASpotGroupModel | null = null;
+    if ((!errors || errors.size === 0) && nameValidation.text && spotValidation.text) {
+        if (existingAssignments && existingAssignments.size > 0 &&
+            existingAssignments.has(`${spotValidation.text.trim()} - ${nameValidation.text.trim()}`)) {
+            const nameError: ErrorModel = {
+                inputId: nameInputId,
+                fieldName: nameInputLabel,
+                message: `This Group/Individual is already assigned the selected Spot. Please select a different group/individual or a different spot location.`
+            };
+            errors.set(nameInputId, nameError);
+        } else {
+            data = {
+                name: nameValidation.text.trim(),
+                location: spotValidation.text.trim()
+            }
+        }
     }
     return { data: data, errors: errors };
 }

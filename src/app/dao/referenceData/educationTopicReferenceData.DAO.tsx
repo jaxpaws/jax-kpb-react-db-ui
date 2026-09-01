@@ -1,7 +1,7 @@
 import { ReferenceDataDAO } from '.';
 import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
 import { ReferenceDataModel } from '../../models/referenceData.model';
-import { getEducationTopicReferenceById, getEducationTopicReference } from '../../lib/referenceData.sql';
+import { getEducationTopicReferenceById, getEducationTopicReference, insertEducationTopic } from '../../lib/referenceData.sql';
 
 export class EducationTopicReferenceDataDAO implements ReferenceDataDAO {
     async getByCode(code: number | string): Promise<ReferenceDataEntity | null> {
@@ -28,8 +28,22 @@ export class EducationTopicReferenceDataDAO implements ReferenceDataDAO {
         return topics;
     }
 
-    save(event: ReferenceDataModel): void {
-        
+    async save(refData: ReferenceDataModel): Promise<number> {
+        let id: number = -1;
+        if (refData.code) {
+            if (typeof refData?.code === 'number') {
+                id = refData.code;
+            } else if (refData.code && typeof refData.code !== 'number' && !Number.isNaN(Number(refData.code))) {
+                id = Number(refData.code);
+            }
+        }
+        const refDataEntity: ReferenceDataEntity = {
+            code: id,
+            description: refData.description
+        };
+        const result: number = await insertEducationTopic(refDataEntity);
+        console.log(result);
+	    return result;
     }
 
     delete(code: number | string): void {

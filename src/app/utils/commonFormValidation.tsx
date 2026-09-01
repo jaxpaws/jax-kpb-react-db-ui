@@ -42,39 +42,6 @@ export async function validateComboBox(
     }
 }
 
-/*
-async function validateSpot(
-    errors: Map<string, ErrorModel>, spotId: string, inputId: string
-): Promise<{ spot: AdoptASpotGroupModel | null, errors: Map<string, ErrorModel> }> {
-    if (isFormDataEntryValueNullOrBlank(spotId)) {
-        const error: ErrorModel = {
-            inputId: inputId,
-            fieldName: 'Adopt-a-Spot Spot',
-            message: 'Please select a spot'
-        };
-        errors.set(inputId, error);
-        return { spot: null, errors: errors };
-    } else {
-        const adoptASpotDAO: AdoptASpotGroupDAO = new AdoptASpotGroupDAO();
-        let spot: AdoptASpotGroupModel | null = null;
-        if (!Number.isNaN(Number(spotId.trim()))) {
-            spot = await adoptASpotDAO.getById(Number(spotId.trim()));
-        }
-        if (!spot) {
-            const error: ErrorModel = {
-                inputId: inputId,
-                fieldName: 'Adopt-a-Spot Spot',
-                message: `Invalid spot selected with id: '${spotId.toString().trim()}'`
-            };
-            errors.set(inputId, error);
-            return { spot: null, errors: errors };
-        } else {
-            return { spot: { id: Number(spotId.trim()), name: spot.name, location: spot.location }, errors: errors };
-        }
-    }
-}
-*/
-
 export function validateDate(
     errors: Map<string, ErrorModel>,
     value: FormDataEntryValue | null,
@@ -245,7 +212,7 @@ export function validateSimpleTextField(
         const error: ErrorModel = {
             inputId: inputId,
             fieldName: fieldDescription,
-            message: `Please reduce the character count by at least ${`${value}`.length - maxLength} characters`
+            message: `Max character count is ${maxLength}, please reduce by at least ${`${value}`.length - maxLength} characters`
         };
         errors.set(inputId, error);
     } else {
@@ -262,12 +229,9 @@ export async function validateBulkyItems(
     maxQuantity: number,
     searchId?: string
 ): Promise<{ bulkyItems: BulkyItemModel[] | null, errors: Map<string, ErrorModel> }> {
-    // let quantityErrors: ErrorModel[] = [];
     let quantityErrors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
-    let quantityField: FormDataEntryValue | null;
     const startingErrorCount: number = errors.size;
     let validBulkyItems: BulkyItemModel[] = [];
-    // const selectedBulkyItems: FormDataEntryValue[] = formData.getAll(inputId);
     if (isFormDataEntryValueArrayNullOrEmpty(selectedBulkyItemValues)) {
         const error: ErrorModel = {
             inputId: searchId ? searchId : `${inputId}-1`,

@@ -5,17 +5,25 @@ import { BagSwapFormFields, EducationFormFields, TreePlantingFormFields } from '
 export function OtherFormByActivity({
     activity,
     educationRecipients,
+    selectedEducationRecipient,
     educationTopics,
+    selectedEducationTopic,
     errors,
     handleEdRecipientChange,
-    handleEdTopicChange
+    handleEdTopicChange,
+    onAddRecipient,
+    onAddTopic
 }: {
     activity: string,
     educationRecipients: string,
+    selectedEducationRecipient?: string,
     educationTopics: string,
+    selectedEducationTopic?: string,
     errors: Map<string, ErrorModel>,
     handleEdRecipientChange: (value: string) => void,
-    handleEdTopicChange: (value: string) => void
+    handleEdTopicChange: (value: string) => void,
+    onAddRecipient?: (event: any) => void,
+    onAddTopic?: (event: any) => void
 }) {
     switch (activity) {
         case REPORTING_DATA_VALUES.bagSwap:
@@ -24,10 +32,14 @@ export function OtherFormByActivity({
             return (
                 <EducationFormFields
                     recipientOptions={educationRecipients}
+                    selectedRecipient={selectedEducationRecipient}
                     topicOptions={educationTopics}
+                    selectedTopic={selectedEducationTopic}
                     errors={errors}
                     handleRecipientChange={handleEdRecipientChange}
-                    handleTopicChange={handleEdTopicChange}>
+                    handleTopicChange={handleEdTopicChange}
+                    onAddRecipient={onAddRecipient}
+                    onAddTopic={onAddTopic}>
                 </EducationFormFields>
             );
         case REPORTING_DATA_VALUES.treePlanting:

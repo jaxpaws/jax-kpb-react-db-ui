@@ -33,7 +33,7 @@ export function Textbox({
             </input>
             { !isBlank(errorText) &&
                 <div id={`${inputId}-error`} className="mt-1">
-                    <span className="border-2 border-white-500 bg-red-500 text-white pl-[7px] pr-[7px] p-[3px] rounded-[100px] font-bold text-lg">X</span>
+                    <span className="border-2 border-white-500 bg-red-500 text-white pl-[7px] pr-[7px] p-[3px] rounded-[100px] font-bold text-lg" aria-label="Error: ">X</span>
                     <span className="text-red-700 font-semibold ml-1">{ errorText }</span>
                 </div>
             }

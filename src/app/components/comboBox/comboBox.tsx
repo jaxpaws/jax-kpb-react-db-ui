@@ -6,7 +6,9 @@ import { ComboBoxListItemModel } from './comboBoxListItem.model';
 import { parseJsonStringOptions } from '../../utils/parseJsonStringOptions';
 import { isBlank } from '../../utils/isBlank';
 
-export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLabel, options, isRequired, autocomplete, errorText, handleChange }: ComboBoxModel) {
+export function ComboBox(
+    { label, searchInputId, listboxId, buttonId, value, listAriaLabel, options, isRequired, autocomplete, errorText, handleChange }: ComboBoxModel
+) {
     const [comboBoxNodeActiveDescendant, setComboBoxNodeActiveDescendant] = useState<string>('');
     const [comboBoxNodeValue, setComboBoxNodeValue] = useState<string>('');
     const [comboBoxHasVisualFocus, setComboBoxHasVisualFocus] = useState<boolean>(false);
@@ -23,10 +25,13 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
 
     useEffect(() => {
         document.body.addEventListener('pointerup', onBackgroundPointerUp, true);
+        if (value) {
+            setComboBoxNodeValue(value);
+        }
         return () => {
             document.body.removeEventListener('pointerup', onBackgroundPointerUp, true);
         }
-    })
+    }, [options])
     
     let hasHover: boolean = false;
     let isNone: boolean = (autocomplete === 'none' || autocomplete === undefined);
@@ -613,6 +618,7 @@ export function ComboBox({ label, searchInputId, listboxId, buttonId, listAriaLa
                         value={comboBoxNodeValue}
                         onChange={(event) => setComboBoxNodeValue(event.target.value)}
                         role="comboBox"
+                        autoComplete="off"
                         aria-autocomplete="list"
                         aria-expanded={isListboxExpanded}
                         aria-controls={listboxId}

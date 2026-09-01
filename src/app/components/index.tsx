@@ -1,4 +1,7 @@
 export { ComboBox } from './comboBox/comboBox';
+export { Dialog } from './dialog/dialog';
+export { AddOptionDialog } from './dialog/addOptionDialog';
+export { StatusDialog } from './dialog/statusDialog';
 export { ErrorSummary } from './errorSummary';
 export { Footer } from './footer';
 export { Header } from './header';
