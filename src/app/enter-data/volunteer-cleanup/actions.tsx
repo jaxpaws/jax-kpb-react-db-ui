@@ -3,8 +3,8 @@
 import { AdoptASpotEventModel, GroupCleanupEventModel } from '../../models/event';
 import { ErrorModel, ReferenceDataModel } from '../../models';
 import { AdoptASpotGroupModel, GroupModel } from '../../models/group';
-import { validateAdoptASpotData, validateAdoptASpotAssignment } from './adoptASpotValidation';
-import { validateGroupCleanupData, validateGroupCleanupLocation, validateGroupCleanupOrganization} from './groupCleanupValidation';
+import { validateAdoptASpotData, validateAdoptASpotAssignment } from './validation/adoptASpotValidation';
+import { validateGroupCleanupData, validateGroupCleanupLocation, validateGroupCleanupOrganization} from './validation/groupCleanupValidation';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { AdoptASpotGroupDAO } from '../../dao/group';
 import { AdoptASpotEventDAO } from '../../dao/event';

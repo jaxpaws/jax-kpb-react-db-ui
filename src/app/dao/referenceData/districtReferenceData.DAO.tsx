@@ -17,12 +17,12 @@ export class DistrictReferenceDataDAO implements ReferenceDataDAO {
         return districts;
     }
 
-    async save(event: ReferenceDataModel): Promise<number> {
+    async save(refData: ReferenceDataModel): Promise<number> {
         console.log('Saving');
         return -1;
     }
 
     delete(code: number | string): void {
-
+        console.log('Deleting');
     }
 }

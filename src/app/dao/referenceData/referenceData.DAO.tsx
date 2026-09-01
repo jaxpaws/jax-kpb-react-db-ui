@@ -4,6 +4,6 @@ import { ReferenceDataModel } from '../../models/referenceData.model';
 export interface ReferenceDataDAO {
     getByCode(code: number | string): Promise<ReferenceDataEntity | null>;
     getAll(): Promise<ReferenceDataEntity[]>;
-    save(event: ReferenceDataModel): Promise<number>;
+    save(refData: ReferenceDataModel): Promise<number>;
     delete(code: number | string): void;
 }

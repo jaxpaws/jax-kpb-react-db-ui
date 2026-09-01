@@ -20,7 +20,6 @@ export class TrashRoutesEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                // TODO: Implement UPDATE method
                 await updateTrashRoutesEvent(eventEntity);
             } else {
                 await insertTrashRoutesEvent(eventEntity);
@@ -31,6 +30,6 @@ export class TrashRoutesEventDAO implements EventDAO {
     }
 
     delete(id: number): void {
-
+        console.log('Deleting');
     }
 }

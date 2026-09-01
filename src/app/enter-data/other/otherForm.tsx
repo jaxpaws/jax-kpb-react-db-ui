@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState, useRef } from 'react';
 import { ErrorSummary, RadioList } from '../../components';
 import { ErrorModel } from '../../models';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
-import { OtherFormByActivity } from './otherFormByActivity';
 import {
     getEducationRecipients,
     getEducationTopics,
@@ -12,9 +11,9 @@ import {
     saveEducationData,
     saveTreePlantingData
 } from './actions';
+import { BagSwapFormFields, EducationFormFields, TreePlantingFormFields } from './formsByActivity';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './otherJson';
 import { isBlank } from '../../utils/isBlank';
-import { DialogType } from '../../components/dialog/dialogType.model';
 import { OtherDialogs } from './otherDialogs';
 
 export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
@@ -22,13 +21,12 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
     const [isTopicDialogOpen, setIsTopicDialogOpen] = useState<boolean>(false);
     const [reportingDataType, setReportingDataType] = useState<string>(selectedDataType);
     const [errors, setErrors] = useState<Map<string, ErrorModel>>(new Map<string, ErrorModel>());
+    const [hasReferenceDataBeenRequested, setHasReferenceDataBeenRequested] = useState<boolean>(false);
 
     const [edRecipientOptions, setEdRecipientOptions] = useState<string>('[]');
-    const [areEdRecipientsRetrieved, setAreEdRecipientsRetrieved] = useState<boolean>(false);
     const [edRecipientValueToIdMap, setEdRecipientValueToIdMap] = useState<Map<string, string>>(new Map<string, string>());
 
     const [edTopicOptions, setEdTopicOptions] = useState<string>('[]');
-    const [areEdTopicsRetrieved, setAreEdTopicsRetrieved] = useState<boolean>(false);
     const [edTopicValueToIdMap, setEdTopicValueToIdMap] = useState<Map<string, string>>(new Map<string, string>());
 
     const [selectedEdRecipient, setSelectedEdRecipient] = useState<string>('');
@@ -36,13 +34,9 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
     const formRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {
-        if (!areEdRecipientsRetrieved) {
-            setAreEdRecipientsRetrieved(true);
+        if (!hasReferenceDataBeenRequested) {
+            setHasReferenceDataBeenRequested(true);
             getEdRecipients();
-        }
-
-        if (!areEdTopicsRetrieved) {
-            setAreEdTopicsRetrieved(true);
             getEdTopics();
         }
 
@@ -53,7 +47,7 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
                 }
             });
         }
-    }, [areEdRecipientsRetrieved, areEdTopicsRetrieved]);
+    }, [hasReferenceDataBeenRequested]);
 
     const getEdRecipients: any = useCallback((onSuccessFn?: () => void) => {
         getEducationRecipients().then((recipients) => {
@@ -91,6 +85,29 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
         setReportingDataType(event.target.value);
         setErrors(new Map<string, ErrorModel>());
     }, []);
+
+    const getFormByActivity: any = (activity: string) => {
+        switch (activity) {
+            case REPORTING_DATA_VALUES.bagSwap:
+                return (<BagSwapFormFields errors={errors}></BagSwapFormFields>);
+            case REPORTING_DATA_VALUES.education:
+                return (
+                    <EducationFormFields
+                        recipientOptions={edRecipientOptions}
+                        selectedRecipient={selectedEdRecipient}
+                        topicOptions={edTopicOptions}
+                        selectedTopic={selectedEdTopic}
+                        errors={errors}
+                        handleRecipientChange={setSelectedEdRecipient}
+                        handleTopicChange={setSelectedEdTopic}
+                        onAddRecipient={() => setIsRecipientDialogOpen(true)}
+                        onAddTopic={() => setIsTopicDialogOpen(true)}>
+                    </EducationFormFields>
+                );
+            case REPORTING_DATA_VALUES.treePlanting:
+                return (<TreePlantingFormFields errors={errors}></TreePlantingFormFields>);
+        }
+    }
 
     async function handleSubmit(e: any) {
         e.preventDefault();
@@ -187,18 +204,7 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
                         handleChange={handleReportingDataTypeChange}>
                     </RadioList>
                 }
-                <OtherFormByActivity
-                    activity={reportingDataType}
-                    educationRecipients={edRecipientOptions}
-                    selectedEducationRecipient={selectedEdRecipient}
-                    educationTopics={edTopicOptions}
-                    selectedEducationTopic={selectedEdTopic}
-                    errors={errors}
-                    handleEdRecipientChange={setSelectedEdRecipient}
-                    handleEdTopicChange={setSelectedEdTopic}
-                    onAddRecipient={() => setIsRecipientDialogOpen(true)}
-                    onAddTopic={() => setIsTopicDialogOpen(true)}>
-                </OtherFormByActivity>
+                { getFormByActivity(reportingDataType) }
                 {reportingDataType !== '' &&
                     <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4 mb-4">
                         Submit

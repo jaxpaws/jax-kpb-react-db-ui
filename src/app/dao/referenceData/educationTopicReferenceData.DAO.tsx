@@ -47,6 +47,6 @@ export class EducationTopicReferenceDataDAO implements ReferenceDataDAO {
     }
 
     delete(code: number | string): void {
-
+        console.log('Deleting');
     }
 }

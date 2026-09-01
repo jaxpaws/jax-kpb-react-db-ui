@@ -35,6 +35,6 @@ export class EducationEventDAO implements EventDAO {
     }
 
     delete(id: number): void {
-
+        console.log('Deleting');
     }
 }

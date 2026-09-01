@@ -14,7 +14,6 @@ export class EducationRecipientGroupDAO implements GroupDAO {
 
     async getAll(): Promise<GroupEntity[]> {
         const result: any = await getEducationRecipients();
-        console.log(result);
         let recipients: GroupEntity[] = [];
         if (result && result.length >= 1) {
             result.forEach((recipient: any) => recipients.push({ id: recipient.id, name: recipient.name }));
@@ -28,9 +27,10 @@ export class EducationRecipientGroupDAO implements GroupDAO {
             name: recipient.name
         };
         const result: number = await insertEducationRecipient(groupEntity);
-        console.log(result);
         return result;
     }
 
-    delete(id: number): void {}
+    delete(id: number): void {
+        console.log('Deleting');
+    }
 }

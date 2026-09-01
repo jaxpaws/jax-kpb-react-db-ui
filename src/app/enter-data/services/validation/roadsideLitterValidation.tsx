@@ -1,8 +1,8 @@
-import { RoadsideLitterEventModel } from '../../models/event';
-import { BulkyItemModel, DistrictModel, ErrorModel } from '../../models';
-import { ROADSIDE_LITTER_FORM_DATA_IDS } from './servicesJson';
-import { ReferenceDataModel } from '../../models';
-import { ReferenceDataDAO, DistrictReferenceDataDAO } from '../../dao/referenceData';
+import { RoadsideLitterEventModel } from '../../../models/event';
+import { BulkyItemModel, DistrictModel, ErrorModel } from '../../../models';
+import { ROADSIDE_LITTER_FORM_DATA_IDS } from '../servicesJson';
+import { ReferenceDataModel } from '../../../models';
+import { ReferenceDataDAO, DistrictReferenceDataDAO } from '../../../dao/referenceData';
 import { 
     isFormDataEntryValueNullOrBlank,
     isFormDataEntryValueArrayNullOrEmpty,
@@ -10,8 +10,8 @@ import {
     validatePounds,
     validateSimpleTextField,
     validateBulkyItems
-} from '../../utils/commonFormValidation';
-import { UNSIGNED_SMALL_INT_MAX } from '../../constValues';
+} from '../../../utils/commonFormValidation';
+import { UNSIGNED_SMALL_INT_MAX } from '../../../constValues';
 
 const MAX_ROADSIDE_LITTER_LOCATIONS_LENGTH: number = 300;
 

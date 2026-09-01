@@ -72,7 +72,8 @@ export function EducationFormFields(
                 inputId={EDUCATION_FORM_DATA_IDS.duration}
                 inputType="number"
                 labelText="Event Duration"
-                descriptionText="Please enter the number of hours that the event lasted. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
+                descriptionText="Please enter the number of hours that the event lasted.
+                    Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
                 step={0.25}
                 width="sm:w-24"
                 isRequired={true}
@@ -100,7 +101,8 @@ export function EducationFormFields(
                         inputId={EDUCATION_FORM_DATA_IDS.volunteerCount}
                         inputType="number"
                         labelText="Number of Volunteers"
-                        descriptionText="Please enter the number of volunteers present at the event, including any parents who acted as chaperones."
+                        descriptionText="Please enter the number of volunteers present at the event,
+                            including any parents who acted as chaperones."
                         width="sm:w-24"
                         isRequired={true}
                         errorText={ifErrorThenGetErrorText(errors, EDUCATION_FORM_DATA_IDS.volunteerCount)}>
@@ -109,7 +111,8 @@ export function EducationFormFields(
                         inputId={EDUCATION_FORM_DATA_IDS.volunteerHours}
                         inputType="number"
                         labelText="Volunteer Hours"
-                        descriptionText="Please enter the combined volunteer hours of all volunteers at the event. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
+                        descriptionText="Please enter the combined volunteer hours of all volunteers at the event.
+                            Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
                         step={0.25}
                         width="sm:w-24"
                         isRequired={true}
