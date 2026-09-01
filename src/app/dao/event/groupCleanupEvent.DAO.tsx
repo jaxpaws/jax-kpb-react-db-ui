@@ -25,7 +25,6 @@ export class GroupCleanupEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                // TODO: Implement UPDATE method
                 await updateGroupCleanupEvent(eventEntity);
             } else {
                 await insertGroupCleanupEvent(eventEntity);
@@ -36,6 +35,6 @@ export class GroupCleanupEventDAO implements EventDAO {
     }
 
     delete(id: number): void {
-
+        console.log('Deleting');
     }
 }

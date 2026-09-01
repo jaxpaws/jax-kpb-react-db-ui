@@ -21,7 +21,6 @@ export class CleanTeamEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                // TODO: Implement UPDATE method
                 await updateCleanTeamEvent(eventEntity);
             } else {
                 await insertCleanTeamEvent(eventEntity);
@@ -32,6 +31,6 @@ export class CleanTeamEventDAO implements EventDAO {
     }
 
     delete(id: number): void {
-
+        console.log('Deleting');
     }
 }

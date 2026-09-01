@@ -12,37 +12,75 @@ import {
     saveTrashRoutesData
 } from './actions';
 import { ErrorModel } from '../../models';
-import { ServicesFormByActivity } from './servicesFormByActivity';
+import {
+    CleanTeamFormFields,
+    CountyCleanupFormFields,
+    RoadsideLitterFormFields,
+    TrashRoutesFormFields
+} from './formsByActivity';
 import { isBlank } from '../../utils/isBlank';
 
 export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
     const [reportingDataType, setReportingDataType] = useState<string>(selectedDataType);
     const [errors, setErrors] = useState<Map<string, ErrorModel>>(new Map<string, ErrorModel>());
+    const [hasReferenceDataBeenRequested, setHasReferenceDataBeenRequested] = useState<boolean>(false);
     const [bulkyItemOptions, setBulkyItemOptions] = useState<string>('[]');
-    const [areBulkyItemsRetrieved, setAreBulkyItemsRetrieved] = useState<boolean>(false);
     const [districtOptions, setDistrictOptions] = useState<string>('[]');
-    const [areDistrictsRetrieved, setAreDistrictsRetrieved] = useState<boolean>(false);
     const [selectedBulkyItemValues, setSelectedBulkyItemValues] = useState<string[]>([]);
 
     useEffect(() => {
-        if (!areBulkyItemsRetrieved) {
-            setAreBulkyItemsRetrieved(true);
-            getBulkyItemRefData().then((items: string) => {
-                if (!isBlank(items)) {
-                    setBulkyItemOptions(items);
-                }
-            });
+        if (!hasReferenceDataBeenRequested) {
+            setHasReferenceDataBeenRequested(true);
+            getBulkyItems();
+            getDistricts();
         }
+    }, [hasReferenceDataBeenRequested]);
 
-        if (!areDistrictsRetrieved) {
-            setAreDistrictsRetrieved(true);
-            getDistrictRefData().then((districts: string) => {
-                if (!isBlank(districts)) {
-                    setDistrictOptions(districts);
-                }
-            });
+    const getBulkyItems = useCallback(() => {
+        getBulkyItemRefData().then((items: string) => {
+            if (!isBlank(items)) {
+                setBulkyItemOptions(items);
+            }
+        });
+    }, []);
+
+    const getDistricts = useCallback(() => {
+        getDistrictRefData().then((districts: string) => {
+            if (!isBlank(districts)) {
+                setDistrictOptions(districts);
+            }
+        });
+    }, []);
+
+    const getFormByActivity = (activity: string) => {
+        switch (activity) {
+            case (REPORTING_DATA_VALUES.cleanTeam):
+                return (
+                    <CleanTeamFormFields errors={errors}></CleanTeamFormFields>
+                );
+            case (REPORTING_DATA_VALUES.countyCleanup):
+                return (
+                    <CountyCleanupFormFields
+                        bulkyItemsReferenceString={bulkyItemOptions}
+                        errors={errors}
+                        handleBulkyItemChange={handleBulkyItemChange}>
+                    </CountyCleanupFormFields>
+                );
+            case (REPORTING_DATA_VALUES.roadsideLitter):
+                return (
+                    <RoadsideLitterFormFields
+                        bulkyItemsReferenceString={bulkyItemOptions}
+                        districtsReferenceString={districtOptions}
+                        errors={errors}
+                        handleBulkyItemChange={handleBulkyItemChange}>
+                    </RoadsideLitterFormFields>
+                );
+            case (REPORTING_DATA_VALUES.trashRoutes):
+                return (
+                    <TrashRoutesFormFields errors={errors}></TrashRoutesFormFields>
+                );
         }
-    }, [areBulkyItemsRetrieved, areDistrictsRetrieved]);
+    }
 
     async function handleSubmit(e: any) {
         e.preventDefault();
@@ -109,13 +147,7 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
                     handleChange={handleReportingDataTypeChange}>
                 </RadioList>
             }
-            <ServicesFormByActivity
-                activity={reportingDataType}
-                bulkyItemOptions={bulkyItemOptions}
-                districtOptions={districtOptions}
-                errors={errors}
-                handleBulkyItemChange={handleBulkyItemChange}>
-            </ServicesFormByActivity>
+            { getFormByActivity(reportingDataType) }
             {reportingDataType !== '' &&
                 <button className="border p-2 w-25 rounded-md bg-[var(--foreground)] text-[var(--background)] text-[1.06rem] mt-4 mb-4">
                     Submit

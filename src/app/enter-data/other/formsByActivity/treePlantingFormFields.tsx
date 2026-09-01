@@ -57,7 +57,8 @@ export function TreePlantingFormFields({ errors }: { errors: Map<string, ErrorMo
                         inputId={TREE_PLANTING_FORM_DATA_IDS.volunteerHours}
                         inputType="number"
                         labelText="Volunteer Hours"
-                        descriptionText="Please enter the combined volunteer hours of all volunteers at the event. Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
+                        descriptionText="Please enter the combined volunteer hours of all volunteers at the event.
+                            Please round to the nearest quarter number (0.00, 0.25, 0.50, or 0.75)."
                         step={0.25}
                         width="sm:w-24"
                         isRequired={true}

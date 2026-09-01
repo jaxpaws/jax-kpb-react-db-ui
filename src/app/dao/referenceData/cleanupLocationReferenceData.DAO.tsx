@@ -46,6 +46,6 @@ export class CleanupLocationReferenceDataDAO implements ReferenceDataDAO {
     }
 
     delete(code: number | string): void {
-
+        console.log('Deleting');
     }
 }

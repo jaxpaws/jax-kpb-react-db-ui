@@ -23,7 +23,6 @@ export class AdoptASpotEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                // TODO: Implement UPDATE method
                 await updateAdoptASpotEvent(eventEntity);
             } else {
                 await insertAdoptASpotEvent(eventEntity);
@@ -34,6 +33,6 @@ export class AdoptASpotEventDAO implements EventDAO {
     }
 
     delete(id: number): void {
-
+        console.log('Deleting');
     }
 }

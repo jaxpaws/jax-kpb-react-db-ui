@@ -16,7 +16,7 @@ export function ErrorSummary({ errors }: { errors: string }) {
                         JSON.parse(errors).map((error: ErrorModel) => {
                             return (
                                 <li key={`${error.inputId}-error-key`}>
-                                    <a href={`#${error.inputId}`} id={`${error.inputId}-error`} className="underline" onClick={(event: any) => handleErrorClick(error.inputId)}>
+                                    <a href={`#${error.inputId}`} id={`${error.inputId}-summary-error`} className="underline" onClick={(event: any) => handleErrorClick(error.inputId)}>
                                         { `${error.fieldName}: ${error.message}` }
                                     </a>
                                 </li>

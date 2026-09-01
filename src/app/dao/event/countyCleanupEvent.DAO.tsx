@@ -51,7 +51,6 @@ export class CountyCleanupEventDAO implements EventDAO {
             });
 
             if (isUpdate) {
-                // TODO: Implement UPDATE method
                 await updateCountyCleanupEvent(eventEntity, bulkyItemEntities);
             } else {
                 await insertCountyCleanupEvent(eventEntity, bulkyItemEntities);
@@ -62,6 +61,6 @@ export class CountyCleanupEventDAO implements EventDAO {
     }
 
     delete(id: number): void {
-
+        console.log('Deleting');
     }
 }

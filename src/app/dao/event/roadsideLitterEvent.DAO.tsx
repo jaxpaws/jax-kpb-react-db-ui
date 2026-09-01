@@ -42,7 +42,6 @@ export class RoadsideLitterEventDAO implements EventDAO {
             });
 
             if (isUpdate) {
-                // TODO: Implement UPDATE method
                 await updateRoadsideLitterEvent(eventEntity, districtEntities, bulkyItemEntities);
             } else {
                 await insertRoadsideLitterEvent(eventEntity, districtEntities, bulkyItemEntities);
@@ -53,6 +52,6 @@ export class RoadsideLitterEventDAO implements EventDAO {
     }
 
     delete(id: number): void {
-
+        console.log('Deleting');
     }
 }
