@@ -1,5 +1,7 @@
 import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
 import { QueryResult } from 'mysql2/promise';
+import { GroupEntity } from '../entities/group/group.entity';
+import { AdoptASpotGroupEntity } from '../entities/group/adoptASpotGroup.entity';
 
 export async function getAdoptASpotAssignmentById(id: number): Promise<QueryResult> {
     try {
@@ -103,5 +105,53 @@ export async function getEducationRecipients(): Promise<QueryResult> {
     } catch (err) {
         console.error(`Error while executing query: ${err}`);
         return [];
+    }
+}
+
+export async function insertEducationRecipient(recipient: GroupEntity): Promise<number> {
+    try {
+        const conn = await getConnection();
+        const [result]: any = await conn.query(
+            'INSERT INTO education_recipients (education_recipients.name) ' +
+            'VALUES (?)',
+            [ recipient.name ]
+        );
+        conn.release();
+        return result.insertId ? result.insertId : -1;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return -1;
+    }
+}
+
+export async function insertAdoptASpotAssignment(assignment: AdoptASpotGroupEntity): Promise<number> {
+    try {
+        const conn = await getConnection();
+        const [result]: any = await conn.query(
+            'INSERT INTO adopt_a_spot_assignments (group_name, location) ' +
+            'VALUES (?, ?)',
+            [ assignment.name, assignment.location ]
+        );
+        conn.release();
+        return result.insertId ? result.insertId : -1;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return -1;
+    }
+}
+
+export async function insertCleanupOrganization(organization: GroupEntity): Promise<number> {
+    try {
+        const conn = await getConnection();
+        const [result]: any = await conn.query(
+            'INSERT INTO organizations (organizations.name) ' +
+            'VALUES (?)',
+            [ organization.name ]
+        );
+        conn.release();
+        return result.insertId ? result.insertId : -1;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return -1;
     }
 }

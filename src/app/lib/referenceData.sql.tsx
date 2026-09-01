@@ -1,5 +1,6 @@
 import { getConnection, closeConnection } from '@/src/app/lib/database-connector';
 import { QueryResult } from 'mysql2/promise';
+import { ReferenceDataEntity } from '../entities/referenceData/referenceData.entity';
 
 export async function getBulkyItemsReference(): Promise<QueryResult> {
     try {
@@ -118,5 +119,37 @@ export async function getItemWeightReference(): Promise<QueryResult> {
     } catch (err) {
         console.error(`Error while executing query: ${err}`);
         return [];
+    }
+}
+
+export async function insertCleanupLocation(refDataEntity: ReferenceDataEntity): Promise<number> {
+    try {
+        const conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO cleanup_locations (location) ' +
+            'VALUES (?)',
+            [ refDataEntity.description ]
+        );
+        conn.release();
+        return result.insertId ? result.insertId : -1;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return -1;
+    }
+}
+
+export async function insertEducationTopic(refDataEntity: ReferenceDataEntity): Promise<number> {
+    try {
+        const conn = await getConnection();
+        const [result]: any = await conn.execute(
+            'INSERT INTO education_topics (topic) ' +
+            'VALUES (?)',
+            [refDataEntity.description]
+        );
+        conn.release();
+        return result.insertId ? result.insertId : -1;
+    } catch (err) {
+        console.error(`Error while executing query: ${err}`);
+        return -1;
     }
 }
