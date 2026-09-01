@@ -1,7 +1,7 @@
 import { ReferenceDataDAO } from '.';
 import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
 import { ReferenceDataModel } from '../../models/referenceData.model';
-import { getCleanupLocationById, getCleanupLocationReference } from '../../lib/referenceData.sql';
+import { getCleanupLocationById, getCleanupLocationReference, insertCleanupLocation } from '../../lib/referenceData.sql';
 
 export class CleanupLocationReferenceDataDAO implements ReferenceDataDAO {
     async getByCode(code: number | string): Promise<ReferenceDataEntity | null> {
@@ -27,8 +27,9 @@ export class CleanupLocationReferenceDataDAO implements ReferenceDataDAO {
         return locations;
     }
 
-    save(event: ReferenceDataModel): void {
-        
+    async save(refData: ReferenceDataModel): Promise<number> {
+        console.log('Saving...');
+        return -1;
     }
 
     delete(code: number | string): void {
