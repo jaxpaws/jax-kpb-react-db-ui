@@ -1,5 +1,6 @@
 export interface ComboBoxModel {
     label: string;
+    descriptionText?: string;
     searchInputId: string;
     listboxId: string;
     buttonId: string;
@@ -10,4 +11,5 @@ export interface ComboBoxModel {
     autocomplete?: 'none' | 'list' | 'both';
     errorText?: string;
     handleChange?: (value: string) => void;
+    addOptionBtn?: React.ReactNode;
 }

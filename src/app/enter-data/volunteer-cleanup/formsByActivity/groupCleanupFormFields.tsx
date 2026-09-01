@@ -27,50 +27,46 @@ export function GroupCleanupFormFields(
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, GROUP_CLEANUP_FORM_DATA_IDS.date)}>
             </Textbox>
-            <div className="flex flex-row gap-3 flex-wrap">
-                <ComboBox
-                    label="Organization"
-                    searchInputId={`${GROUP_CLEANUP_FORM_DATA_IDS.organization}-input`}
-                    listboxId={`${GROUP_CLEANUP_FORM_DATA_IDS.organization}-list`}
-                    buttonId={`${GROUP_CLEANUP_FORM_DATA_IDS.organization}-toggle`}
-                    value={selectedOrganization}
-                    listAriaLabel="Organizations"
-                    options={organizationOptions}
-                    isRequired={true}
-                    autocomplete="list"
-                    errorText={ifErrorThenGetErrorText(errors, `${GROUP_CLEANUP_FORM_DATA_IDS.organization}-input`)}
-                    handleChange={handleOrganizationChange}>
-                </ComboBox>
-                <button
-                    type="button"
-                    onClick={onAddOrganization}
-                    className="border-none cursor-pointer underline mb-2 self-end"
-                    >
-                    Add a New Organization
-                </button>
-            </div>
-            <div className="flex flex-row gap-3 flex-wrap">
-                <ComboBox
-                    label="Cleanup Location"
-                    searchInputId={`${GROUP_CLEANUP_FORM_DATA_IDS.location}-input`}
-                    listboxId={`${GROUP_CLEANUP_FORM_DATA_IDS.location}-list`}
-                    buttonId={`${GROUP_CLEANUP_FORM_DATA_IDS.location}-toggle`}
-                    value={selectedLocation}
-                    listAriaLabel="Locations"
-                    options={locationOptions}
-                    isRequired={true}
-                    autocomplete="list"
-                    errorText={ifErrorThenGetErrorText(errors, `${GROUP_CLEANUP_FORM_DATA_IDS.location}-input`)}
-                    handleChange={handleLocationChange}>
-                </ComboBox>
-                <button
-                    type="button"
-                    onClick={onAddLocation}
-                    className="border-none cursor-pointer underline mb-2 self-end"
-                    >
-                    Add a New Location
-                </button>
-            </div>
+            <ComboBox
+                label="Organization"
+                descriptionText="Please select the organization that did the cleanup.
+                    If the organization is not listed, please select 'Add a New Organization' below."
+                searchInputId={`${GROUP_CLEANUP_FORM_DATA_IDS.organization}-input`}
+                listboxId={`${GROUP_CLEANUP_FORM_DATA_IDS.organization}-list`}
+                buttonId={`${GROUP_CLEANUP_FORM_DATA_IDS.organization}-toggle`}
+                value={selectedOrganization}
+                listAriaLabel="Organizations"
+                options={organizationOptions}
+                isRequired={true}
+                autocomplete="list"
+                errorText={ifErrorThenGetErrorText(errors, `${GROUP_CLEANUP_FORM_DATA_IDS.organization}-input`)}
+                handleChange={handleOrganizationChange}
+                addOptionBtn={
+                    <button type="button" onClick={onAddOrganization} className="border-none cursor-pointer underline mb-2 self-end">
+                        Add a New Organization
+                    </button>
+                }>
+            </ComboBox>
+            <ComboBox
+                label="Cleanup Location"
+                descriptionText="Please select the location of the cleanup.
+                    If the location is not listed, please select 'Add a New Location' below."
+                searchInputId={`${GROUP_CLEANUP_FORM_DATA_IDS.location}-input`}
+                listboxId={`${GROUP_CLEANUP_FORM_DATA_IDS.location}-list`}
+                buttonId={`${GROUP_CLEANUP_FORM_DATA_IDS.location}-toggle`}
+                value={selectedLocation}
+                listAriaLabel="Locations"
+                options={locationOptions}
+                isRequired={true}
+                autocomplete="list"
+                errorText={ifErrorThenGetErrorText(errors, `${GROUP_CLEANUP_FORM_DATA_IDS.location}-input`)}
+                handleChange={handleLocationChange}
+                addOptionBtn={
+                    <button type="button" onClick={onAddLocation} className="border-none cursor-pointer underline mb-2 self-end">
+                        Add a New Location
+                    </button>
+                }>
+            </ComboBox>
             <Textbox
                 inputId={GROUP_CLEANUP_FORM_DATA_IDS.volunteerCount}
                 inputType="number"

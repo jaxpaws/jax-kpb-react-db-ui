@@ -6,9 +6,21 @@ import { ComboBoxListItemModel } from './comboBoxListItem.model';
 import { parseJsonStringOptions } from '../../utils/parseJsonStringOptions';
 import { isBlank } from '../../utils/isBlank';
 
-export function ComboBox(
-    { label, searchInputId, listboxId, buttonId, value, listAriaLabel, options, isRequired, autocomplete, errorText, handleChange }: ComboBoxModel
-) {
+export function ComboBox({
+    label,
+    descriptionText,
+    searchInputId,
+    listboxId,
+    buttonId,
+    value,
+    listAriaLabel,
+    options,
+    isRequired,
+    autocomplete,
+    errorText,
+    handleChange,
+    addOptionBtn
+}: ComboBoxModel) {
     const [comboBoxNodeActiveDescendant, setComboBoxNodeActiveDescendant] = useState<string>('');
     const [comboBoxNodeValue, setComboBoxNodeValue] = useState<string>('');
     const [comboBoxHasVisualFocus, setComboBoxHasVisualFocus] = useState<boolean>(false);
@@ -605,101 +617,107 @@ export function ComboBox(
                 `}
             </style>
             <label htmlFor={searchInputId} className="text-[1.06rem] font-semibold">{label}{isRequired ? ' (required)' : ''}</label>
-            <div className="relative combobox combobox-list">
-                <div className={`group inline-flex  cursor-pointer rounded-md ${comboBoxHasVisualFocus ? 'focus' : ''}`}>
-                    <input
-                        id={searchInputId}
-                        className={`cb_edit w-64 bg-white text-black box-border p-1 m-0
-                            align-bottom border-t-1 border-b-1 border-l-1 border-gray 
-                            border-solid relative cursor-pointer border-r-none
-                            rounded-l-md hover:bg-[#def] focus:bg-[#def]
-                            ${errorText && !isBlank(errorText) ? 'border-t-2 border-b-2 border-l-2 border-red-500' : ''}`}
-                        type="text"
-                        value={comboBoxNodeValue}
-                        onChange={(event) => setComboBoxNodeValue(event.target.value)}
-                        role="comboBox"
-                        autoComplete="off"
-                        aria-autocomplete="list"
-                        aria-expanded={isListboxExpanded}
-                        aria-controls={listboxId}
-                        onKeyDown={onComboBoxKeyDown}
-                        onKeyUp={onComboboxKeyUp}
-                        onClick={onComboboxClick}
-                        onFocus={onComboboxFocus}
-                        onBlur={onComboboxBlur}
-                        aria-activedescendant={comboBoxNodeActiveDescendant}
-                        ref={comboBoxNodeRef}>
-                    </input>
-                    <button
-                        id={buttonId}
-                        type="button"
-                        className={`bg-white text-black box-border p-1 m-0
-                            align-bottom border border-gray border-solid relative
-                            cursor-pointer w-[26px] border-l-0 text-[rgb(0 90 156)]
-                            rounded-r-md hover:bg-[#def] focus:bg-[#def]
-                            ${errorText && !isBlank(errorText) ? 'border-t-2 border-b-2 border-r-2 border-red-500' : ''}`}
-                        tabIndex={-1}
-                        aria-label={listAriaLabel}
-                        aria-expanded={isListboxExpanded}
-                        aria-controls={listboxId}
-                        onClick={onButtonClick}
-                        ref={buttonRef}
+            { !isBlank(descriptionText) &&
+                <div id={`${searchInputId}-description`}>{ descriptionText }</div>
+            }
+            <div className="flex flex-row gap-3 flex-wrap">
+                <div className="relative combobox combobox-list">
+                    <div className={`group inline-flex  cursor-pointer rounded-md ${comboBoxHasVisualFocus ? 'focus' : ''}`}>
+                        <input
+                            id={searchInputId}
+                            className={`cb_edit w-64 bg-white text-black box-border p-1 m-0
+                                align-bottom border-t-1 border-b-1 border-l-1 border-gray 
+                                border-solid relative cursor-pointer border-r-none
+                                rounded-l-md hover:bg-[#def] focus:bg-[#def]
+                                ${errorText && !isBlank(errorText) ? 'border-t-2 border-b-2 border-l-2 border-red-500' : ''}`}
+                            type="text"
+                            value={comboBoxNodeValue}
+                            onChange={(event) => setComboBoxNodeValue(event.target.value)}
+                            role="comboBox"
+                            autoComplete="off"
+                            aria-autocomplete="list"
+                            aria-expanded={isListboxExpanded}
+                            aria-controls={listboxId}
+                            onKeyDown={onComboBoxKeyDown}
+                            onKeyUp={onComboboxKeyUp}
+                            onClick={onComboboxClick}
+                            onFocus={onComboboxFocus}
+                            onBlur={onComboboxBlur}
+                            aria-activedescendant={comboBoxNodeActiveDescendant}
+                            ref={comboBoxNodeRef}>
+                        </input>
+                        <button
+                            id={buttonId}
+                            type="button"
+                            className={`bg-white text-black box-border p-1 m-0
+                                align-bottom border border-gray border-solid relative
+                                cursor-pointer w-[26px] border-l-0 text-[rgb(0 90 156)]
+                                rounded-r-md hover:bg-[#def] focus:bg-[#def]
+                                ${errorText && !isBlank(errorText) ? 'border-t-2 border-b-2 border-r-2 border-red-500' : ''}`}
+                            tabIndex={-1}
+                            aria-label={listAriaLabel}
+                            aria-expanded={isListboxExpanded}
+                            aria-controls={listboxId}
+                            onClick={onButtonClick}
+                            ref={buttonRef}
+                            >
+                            <svg width="18" height="16" aria-hidden="true" focusable="false" style={{ forcedColorAdjust: "auto" }}>
+                                <polygon className="arrow" strokeWidth="0" fillOpacity="0.75" fill="currentcolor" points="3,6 15,6 9,14"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+                    <ul
+                        id={listboxId}
+                        className={`m-0 p-0 absolute left-[2px] top-[38px] list-none bg-white z-10
+                            hidden box-border border-2 border-current border-solid max-h-[250px]
+                            w-64 overflow-scroll overflow-x-hidden text-[87.5%] cursor-pointer
+                            ${listboxHasVisualFocus ? 'focus' : ''}`}
+                        role="listbox"
+                        aria-label={listAriaLabel ? listAriaLabel : label}
+                        ref={listboxRef}
+                        onPointerOver={onListboxPointerover}
+                        onPointerOut={onListboxPointerout}
                         >
-                        <svg width="18" height="16" aria-hidden="true" focusable="false" style={{ forcedColorAdjust: "auto" }}>
-                            <polygon className="arrow" strokeWidth="0" fillOpacity="0.75" fill="currentcolor" points="3,6 15,6 9,14"></polygon>
-                        </svg>
-                    </button>
+                        {
+                            filteredOptions.map(option => {
+                                if (option.isSelected) {
+                                    return (
+                                        <li
+                                            key={`${option.listItemId}-key`}
+                                            id={option.listItemId}
+                                            role="option"
+                                            className="m-0 block pl-[3px] pt-[2px] pb-[2px] text-[1.06rem]"
+                                            aria-selected={option.isSelected}
+                                            onClick={onOptionClick}
+                                            onPointerOver={onOptionPointerOver}
+                                            onPointerOut={onOptionPointerOut}
+                                            >
+                                            {option.label}
+                                        </li>
+                                    );
+                                } else {
+                                    return (
+                                        <li
+                                            key={`${option.listItemId}-key`}
+                                            id={option.listItemId}
+                                            role="option"
+                                            className="m-0 block pl-[3px] pt-[2px] pb-[2px] text-[1.06rem]"
+                                            onClick={onOptionClick}
+                                            onPointerOver={onOptionPointerOver}
+                                            onPointerOut={onOptionPointerOut}
+                                            >
+                                            {option.label}
+                                        </li>
+                                    );
+                                }
+                            })
+                        }
+                    </ul>
                 </div>
-                <ul
-                    id={listboxId}
-                    className={`m-0 p-0 absolute left-[2px] top-[38px] list-none bg-white z-10
-                        hidden box-border border-2 border-current border-solid max-h-[250px]
-                        w-64 overflow-scroll overflow-x-hidden text-[87.5%] cursor-pointer
-                        ${listboxHasVisualFocus ? 'focus' : ''}`}
-                    role="listbox"
-                    aria-label={listAriaLabel ? listAriaLabel : label}
-                    ref={listboxRef}
-                    onPointerOver={onListboxPointerover}
-                    onPointerOut={onListboxPointerout}
-                    >
-                    {
-                        filteredOptions.map(option => {
-                            if (option.isSelected) {
-                                return (
-                                    <li
-                                        key={`${option.listItemId}-key`}
-                                        id={option.listItemId}
-                                        role="option"
-                                        className="m-0 block pl-[3px] pt-[2px] pb-[2px] text-[1.06rem]"
-                                        aria-selected={option.isSelected}
-                                        onClick={onOptionClick}
-                                        onPointerOver={onOptionPointerOver}
-                                        onPointerOut={onOptionPointerOut}
-                                        >
-                                        {option.label}
-                                    </li>
-                                );
-                            } else {
-                                return (
-                                    <li
-                                        key={`${option.listItemId}-key`}
-                                        id={option.listItemId}
-                                        role="option"
-                                        className="m-0 block pl-[3px] pt-[2px] pb-[2px] text-[1.06rem]"
-                                        onClick={onOptionClick}
-                                        onPointerOver={onOptionPointerOver}
-                                        onPointerOut={onOptionPointerOut}
-                                        >
-                                        {option.label}
-                                    </li>
-                                );
-                            }
-                        })
-                    }
-                </ul>
+                { addOptionBtn !== undefined && addOptionBtn }
             </div>
             { !isBlank(errorText) &&
-                <div id={`${listboxId}-error`} className="mt-1">
+                <div id={`${searchInputId}-error`} className="mt-1">
                     <span className="border-2 border-white-500 bg-red-500 text-white pl-[7px] pr-[7px] p-[3px] rounded-[100px] font-bold text-lg">X</span>
                     <span className="text-red-700 font-semibold ml-1">{ errorText }</span>
                 </div>
