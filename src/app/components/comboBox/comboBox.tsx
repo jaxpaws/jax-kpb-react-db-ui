@@ -39,6 +39,10 @@ export function ComboBox({
         document.body.addEventListener('pointerup', onBackgroundPointerUp, true);
         if (value) {
             setComboBoxNodeValue(value);
+        } else if (isBlank(options) || options === '[]') {
+            setComboBoxNodeValue('Loading...');
+        } else {
+            setComboBoxNodeValue('');
         }
         return () => {
             document.body.removeEventListener('pointerup', onBackgroundPointerUp, true);
@@ -263,7 +267,7 @@ export function ComboBox({
     }
 
     function open(): void {
-        if (listboxRef.current) {
+        if (listboxRef.current && !isBlank(options) && options !== '[]') {
             listboxRef.current.style.display = 'block';
             setIsListboxExpanded(true);
         }
