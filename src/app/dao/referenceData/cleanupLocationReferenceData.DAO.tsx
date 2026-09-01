@@ -28,8 +28,21 @@ export class CleanupLocationReferenceDataDAO implements ReferenceDataDAO {
     }
 
     async save(refData: ReferenceDataModel): Promise<number> {
-        console.log('Saving...');
-        return -1;
+        let id: number = -1;
+        if (refData.code) {
+            if (typeof refData?.code === 'number') {
+                id = refData.code;
+            } else if (refData.code && typeof refData.code !== 'number' && !Number.isNaN(Number(refData.code))) {
+                id = Number(refData.code);
+            }
+        }
+        const refDataEntity: ReferenceDataEntity = {
+            code: id,
+            description: refData.description
+        };
+        const result: number = await insertCleanupLocation(refDataEntity);
+        console.log(result);
+        return result;
     }
 
     delete(code: number | string): void {
