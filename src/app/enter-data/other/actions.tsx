@@ -1,10 +1,10 @@
 'use server'
 
 import { BagSwapEventModel, EducationEventModel, TreePlantingEventModel } from '../../models/event';
-import { ErrorModel } from '../../models';
+import { ErrorModel, ReferenceDataModel } from '../../models';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { validateBagSwapData } from './validation/bagSwapValidation';
-import { validateEducationData } from './validation/educationValidation';
+import { validateEducationData, validateEducationRecipient, validateEducationTopic } from './validation/educationValidation';
 import { validateTreePlantingData } from './validation/treePlantingValidation';
 import { BagSwapEventDAO, TreePlantingEventDAO } from '../../dao/event';
 import { EducationEventDAO } from '../../dao/event';
@@ -12,6 +12,7 @@ import { EducationRecipientGroupDAO } from '../../dao/group';
 import { EducationTopicReferenceDataDAO } from '../../dao/referenceData';
 import { GroupEntity } from '../../entities/group/group.entity';
 import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
+import { GroupModel } from '../../models/group';
 
 export async function getEducationRecipients(): Promise<string> {
     let recipientOptions: ComboBoxListItemModel[] = [];
@@ -41,7 +42,6 @@ export async function getEducationTopics(): Promise<string> {
     const topicDAO: EducationTopicReferenceDataDAO = new EducationTopicReferenceDataDAO();
     try {
         const topics: ReferenceDataEntity[] = await topicDAO.getAll();
-        console.log
         if (topics && topics.length >= 1) {
             for (let i = 0; i < topics.length; i++) {
                 topicOptions.push({
@@ -77,6 +77,38 @@ export async function saveEducationData(formData: FormData, recipientId: string,
         educationDAO.save(validation.data, isUpdate);
     }
     return validation.errors;
+}
+
+export async function saveEducationRecipient(
+    formData: FormData,
+    nameInputId: string,
+    nameInputLabel: string,
+    existingRecipients: Map<string, string>
+): Promise<{ addedId: number, data: GroupModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
+    let validation: { data: GroupModel | null, errors: Map<string, ErrorModel> } =
+        validateEducationRecipient(formData, nameInputId, nameInputLabel, existingRecipients);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        const recipientDAO: EducationRecipientGroupDAO = new EducationRecipientGroupDAO();
+        addedId = await recipientDAO.save(validation.data);
+    }
+    return { addedId: addedId, ...validation };
+}
+
+export async function saveEducationTopic(
+    formData: FormData,
+    topicInputId: string,
+    topicInputLabel: string,
+    existingTopics: Map<string, string>
+): Promise<{ addedId: number, data: ReferenceDataModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
+    let validation: { data: ReferenceDataModel | null, errors: Map<string, ErrorModel> } =
+        validateEducationTopic(formData, topicInputId, topicInputLabel, existingTopics);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        const topicDAO: EducationTopicReferenceDataDAO = new EducationTopicReferenceDataDAO();
+        addedId = await topicDAO.save(validation.data);    
+    }
+    return { addedId: addedId, ...validation };
 }
 
 export async function saveTreePlantingData(formData: FormData, isUpdate: boolean) {

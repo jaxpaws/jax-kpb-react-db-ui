@@ -1,12 +1,14 @@
-import { ErrorModel } from '../../models';
+import { ErrorModel, ReferenceDataModel } from '../../models';
 import { GroupCleanupEventModel } from '../../models/event';
+import { GroupModel } from '../../models/group';
 import { GroupEntity } from '../../entities/group/group.entity';
 import { ReferenceDataEntity } from '../../entities/referenceData/referenceData.entity';
 import {
     validateComboBox,
     validateDate,
     validatePounds,
-    validateCount
+    validateCount,
+    validateSimpleTextField
 } from '../../utils/commonFormValidation';
 import { GROUP_CLEANUP_FORM_DATA_IDS } from './volunteerCleanupJson';
 import { CleanupOrganizationGroupDAO } from '../../dao/group/cleanupOrganizationGroup.DAO';
@@ -110,6 +112,74 @@ export async function validateGroupCleanupData(
             litterCollected: litterValidation.pounds,
             recyclingCollected: recyclingValidation.pounds
         };
+    }
+    return { data: data, errors: errors };
+}
+
+export function validateGroupCleanupLocation(
+    formData: FormData,
+    locationInputId: string,
+    locationInputLabel: string,
+    existingLocations: Map<string, string>
+): { data: ReferenceDataModel | null, errors: Map<string, ErrorModel> } {
+    let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
+    const locationValidation = validateSimpleTextField(
+        errors,
+        formData.get(locationInputId),
+        locationInputId,
+        locationInputLabel,
+        50
+    );
+    errors = locationValidation.errors;
+
+    let data: ReferenceDataModel | null = null;
+    if ((!errors || errors.size === 0) && locationValidation.text) {
+        if (existingLocations && existingLocations.size > 0 &&
+            existingLocations.has(locationValidation.text.trim())) {
+            const locationError: ErrorModel = {
+                inputId: locationInputId,
+                fieldName: locationInputLabel,
+                message: `Location '${locationValidation.text.trim()}' already exists.`
+            };
+            errors.set(locationInputId, locationError);
+        } else {
+            data = { description: locationValidation.text.trim() }
+        }
+    }
+    return { data: data, errors: errors };
+}
+
+export function validateGroupCleanupOrganization(
+    formData: FormData,
+    orgInputId: string,
+    orgInputLabel: string,
+    existingOrganizations: Map<string, string>
+): { data: GroupModel | null, errors: Map<string, ErrorModel> } {
+    let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
+    const organizationValidation = validateSimpleTextField(
+        errors,
+        formData.get(orgInputId),
+        orgInputId,
+        orgInputLabel,
+        50
+    );
+    errors = organizationValidation.errors;
+
+    let data: GroupModel | null = null;
+    if ((!errors || errors.size === 0) && organizationValidation.text) {
+        if (existingOrganizations && existingOrganizations.size > 0 &&
+            existingOrganizations.has(organizationValidation.text.trim())) {
+            const nameError: ErrorModel = {
+                inputId: orgInputId,
+                fieldName: orgInputLabel,
+                message: `Organization '${organizationValidation.text.trim()}' already exists.`
+            };
+            errors.set(orgInputId, nameError);
+        } else {
+            data = {
+                name: organizationValidation.text.trim()
+            }
+        }
     }
     return { data: data, errors: errors };
 }

@@ -7,7 +7,8 @@ import {
     isFormDataEntryValueNullOrBlank,
     validateComboBox,
     validateCount,
-    validateDate
+    validateDate,
+    validateSimpleTextField
 } from '../../../utils/commonFormValidation';
 import { EDUCATION_FORM_DATA_IDS } from '../otherJson';
 import { DECIMAL_2_DOT_2_MAX, DECIMAL_3_DOT_2_MAX, UNSIGNED_SMALL_INT_MAX } from '../../../constValues';
@@ -106,9 +107,6 @@ export async function validateEducationData(formData: FormData, recipientId: str
         errors = volunteerHoursValidation.errors;
     }
 
-    console.log(recipientValidation);
-    console.log(topicValidation);
-
     let data: EducationEventModel | null = null;
     if (errors.size === 0 && dateValidation.date &&
         recipientValidation.selection &&
@@ -132,6 +130,70 @@ export async function validateEducationData(formData: FormData, recipientId: str
             volunteerCount: volunteerCountValidation.count ? volunteerCountValidation.count : 0,
             volunteerHours: volunteerHoursValidation.count ? volunteerHoursValidation.count : 0.00
         };
+    }
+    return { data: data, errors: errors };
+}
+
+export function validateEducationRecipient(
+    formData: FormData,
+    nameInputId: string,
+    nameInputLabel: string,
+    existingRecipients: Map<string, string>
+): { data: GroupModel | null, errors: Map<string, ErrorModel> } {
+    let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
+    const nameValidation = validateSimpleTextField(
+        errors,
+        formData.get(nameInputId),
+        nameInputId,
+        nameInputLabel,
+        50
+    );
+    errors = nameValidation.errors;
+    
+    let data: GroupModel | null = null;
+    if ((!errors || errors.size === 0) && nameValidation.text) {
+        if (existingRecipients && existingRecipients.size > 0 && existingRecipients.has(nameValidation.text.trim())) {
+            const nameError: ErrorModel = {
+                inputId: nameInputId,
+                fieldName: nameInputLabel,
+                message: `Recipient '${nameValidation.text.trim()}' already exists`
+            };
+            errors.set(nameInputId, nameError);
+        } else {
+            data = { name: nameValidation.text.trim() }
+        }
+    }
+    return { data: data, errors: errors };
+}
+
+export function validateEducationTopic(
+    formData: FormData,
+    topicInputId: string,
+    topicInputLabel: string,
+    existingTopics: Map<string, string>
+): { data: ReferenceDataModel | null, errors: Map<string, ErrorModel> } {
+    let errors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
+    const topicValidation = validateSimpleTextField(
+        errors,
+        formData.get(topicInputId),
+        topicInputId,
+        topicInputLabel,
+        50
+    );
+    errors = topicValidation.errors;
+    
+    let data: ReferenceDataModel | null = null;
+    if ((!errors || errors.size === 0) && topicValidation.text) {
+        if (existingTopics && existingTopics.size > 0 && existingTopics.has(topicValidation.text.trim())) {
+            const topicError: ErrorModel = {
+                inputId: topicInputId,
+                fieldName: topicInputLabel,
+                message: `Topic '${topicValidation.text}' already exists`
+            };
+            errors.set(topicInputId, topicError);
+        } else {
+            data = { description: topicValidation.text.trim() };
+        }
     }
     return { data: data, errors: errors };
 }

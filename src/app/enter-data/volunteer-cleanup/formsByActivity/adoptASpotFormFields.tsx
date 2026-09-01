@@ -3,9 +3,16 @@ import { ErrorModel } from '../../../models';
 import { ifErrorThenGetErrorText } from '../../../utils/ifErrorThenGetErrorText';
 import { ADOPT_A_SPOT_FORM_DATA_IDS } from '../volunteerCleanupJson';
 
-export function AdoptASpotFormFields({ assignmentOptions, errors, handleSpotChange }:
-    { assignmentOptions: string, errors: Map<string, ErrorModel>, handleSpotChange?: (value: string) => void }
-) {
+export function AdoptASpotFormFields(
+{
+    assignmentOptions, selectedAssignment, errors, handleSpotChange, onAddAssignment
+}: { 
+    assignmentOptions: string,
+    selectedAssignment: string,
+    errors: Map<string, ErrorModel>,
+    handleSpotChange?: (value: string) => void,
+    onAddAssignment?: (event: any) => void
+}) {
     return (
         <div className="flex flex-col gap-4 mt-3">
             <Textbox
@@ -16,18 +23,28 @@ export function AdoptASpotFormFields({ assignmentOptions, errors, handleSpotChan
                 isRequired={true}
                 errorText={ifErrorThenGetErrorText(errors, ADOPT_A_SPOT_FORM_DATA_IDS.date)}>
             </Textbox>
-            <ComboBox
-                label="Adopted Spot"
-                searchInputId={`${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-input`}
-                listboxId={`${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-list`}
-                buttonId={`${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-toggle`}
-                listAriaLabel="Spots"
-                options={assignmentOptions}
-                isRequired={true}
-                autocomplete="list"
-                errorText={ifErrorThenGetErrorText(errors, `${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-input`)}
-                handleChange={handleSpotChange}>
-            </ComboBox>
+            <div className="flex flex-row gap-3 flex-wrap">
+                <ComboBox
+                    label="Adopted Spot"
+                    searchInputId={`${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-input`}
+                    listboxId={`${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-list`}
+                    buttonId={`${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-toggle`}
+                    value={selectedAssignment}
+                    listAriaLabel="Spots"
+                    options={assignmentOptions}
+                    isRequired={true}
+                    autocomplete="list"
+                    errorText={ifErrorThenGetErrorText(errors, `${ADOPT_A_SPOT_FORM_DATA_IDS.spot}-input`)}
+                    handleChange={handleSpotChange}>
+                </ComboBox>
+                <button
+                    type="button"
+                    onClick={onAddAssignment}
+                    className="border-none cursor-pointer underline mb-2 self-end"
+                    >
+                    Assign an Unadopted Spot
+                </button>
+            </div>
             <Textbox
                 inputId={ADOPT_A_SPOT_FORM_DATA_IDS.volunteerCount}
                 inputType="number"

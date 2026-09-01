@@ -2,9 +2,9 @@
 
 import { AdoptASpotEventModel, GroupCleanupEventModel } from '../../models/event';
 import { ErrorModel, ReferenceDataModel } from '../../models';
-import { GroupModel } from '../../models/group';
-import { validateAdoptASpotData } from './adoptASpotValidation';
-import { validateGroupCleanupData } from './groupCleanupValidation';
+import { AdoptASpotGroupModel, GroupModel } from '../../models/group';
+import { validateAdoptASpotData, validateAdoptASpotAssignment } from './adoptASpotValidation';
+import { validateGroupCleanupData, validateGroupCleanupLocation, validateGroupCleanupOrganization} from './groupCleanupValidation';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { AdoptASpotGroupDAO } from '../../dao/group';
 import { AdoptASpotEventDAO } from '../../dao/event';
@@ -100,4 +100,54 @@ export async function saveGroupCleanupData(formData: FormData, orgId: string, lo
         await groupCleanupDAO.save(validation.data, isUpdate);
     }
     return validation.errors;
+}
+
+export async function saveAdoptASpotAssignment(
+    formData: FormData,
+    nameInputId: string,
+    nameInputLabel: string,
+    spotInputId: string,
+    spotInputLabel: string,
+    existingAssignments: Map<string, string>
+): Promise<{ addedId: number, data: AdoptASpotGroupModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
+    let validation: { data: AdoptASpotGroupModel | null, errors: Map<string, ErrorModel> } =
+        validateAdoptASpotAssignment(formData, nameInputId, nameInputLabel, spotInputId, spotInputLabel, existingAssignments);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        const adoptASpotDAO: AdoptASpotGroupDAO = new AdoptASpotGroupDAO();
+        addedId = await adoptASpotDAO.save(validation.data);
+    }
+    return { addedId: addedId, ...validation };
+}
+
+export async function saveCleanupLocation(
+    formData: FormData,
+    locationInputId: string,
+    locationInputLabel: string,
+    existingLocations: Map<string, string>
+): Promise<{ addedId: number, data: ReferenceDataModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
+    let validation: { data: ReferenceDataModel | null, errors: Map<string, ErrorModel> } =
+        validateGroupCleanupLocation(formData, locationInputId, locationInputLabel, existingLocations);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        const locationDAO: CleanupLocationReferenceDataDAO = new CleanupLocationReferenceDataDAO();
+        addedId = await locationDAO.save(validation.data);
+    }
+    return { addedId: addedId, ...validation };
+}
+
+export async function saveCleanupOrganization(
+    formData: FormData,
+    orgInputId: string,
+    orgInputLabel: string,
+    existingOrganizations: Map<string, string>
+): Promise<{ addedId: number, data: GroupModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
+    let validation: { data: GroupModel | null, errors: Map<string, ErrorModel> } =
+        validateGroupCleanupOrganization(formData, orgInputId, orgInputLabel, existingOrganizations);
+    if ((!validation.errors || validation.errors.size === 0) && validation.data) {
+        const organizationDAO: CleanupOrganizationGroupDAO = new CleanupOrganizationGroupDAO();
+        addedId = await organizationDAO.save(validation.data);
+    }
+    return { addedId: addedId, ...validation };
 }
