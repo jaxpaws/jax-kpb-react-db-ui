@@ -188,7 +188,7 @@ export function validateEducationTopic(
             const topicError: ErrorModel = {
                 inputId: topicInputId,
                 fieldName: topicInputLabel,
-                message: `Topic '${topicValidation.text}' already exists`
+                message: `Topic '${topicValidation.text.trim()}' already exists`
             };
             errors.set(topicInputId, topicError);
         } else {
