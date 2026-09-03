@@ -13,7 +13,7 @@ export class CleanupLocationReferenceDataDAO implements ReferenceDataDAO {
         }
         const result: any = await getCleanupLocationById(id);
         if (result && result.length >= 1) {
-            return { code: result[0].code, description: result[0].description };
+            return { code: result[0].id, description: result[0].location };
         }
         return null;
     }
