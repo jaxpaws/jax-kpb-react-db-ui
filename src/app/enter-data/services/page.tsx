@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { ServicesForm } from './servicesForm';
+import { ServicesFormHandler } from './servicesFormHandler';
 import { REPORTING_DATA_VALUES } from './servicesJson';
 
 export const metadata: Metadata = {
@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 export default async function EnterServicesData() {
   return (
     <main id="main-content" className="px-2 sm:px-4 md:px-8">
-      <ServicesForm
+      <ServicesFormHandler
         isUpdate={false}
-        selectedDataType={REPORTING_DATA_VALUES.cleanTeam}>
-      </ServicesForm>
+        reportingDataType={REPORTING_DATA_VALUES.cleanTeam.code}>
+      </ServicesFormHandler>
     </main>
   );
 }

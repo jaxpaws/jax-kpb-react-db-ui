@@ -82,24 +82,30 @@ export async function getCleanupOrganizationOptions() {
     }
 }
 
-export async function saveAdoptASpotData(formData: FormData, spotId: string, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
+export async function saveAdoptASpotData(
+    formData: FormData, spotId: string, isUpdate: boolean
+): Promise<{ isSuccessful: boolean, data: AdoptASpotEventModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
     let validation: { data: AdoptASpotEventModel | null, errors: Map<string, ErrorModel> } =
         await validateAdoptASpotData(formData, spotId);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
         const adoptASpotDAO: AdoptASpotEventDAO = new AdoptASpotEventDAO();
-        await adoptASpotDAO.save(validation.data, isUpdate);
+        addedId = await adoptASpotDAO.save(validation.data, isUpdate);
     }
-    return validation.errors;
+    return { isSuccessful: addedId > 0, ...validation };
 }
 
-export async function saveGroupCleanupData(formData: FormData, orgId: string, locationId: string, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
+export async function saveGroupCleanupData(
+    formData: FormData, orgId: string, locationId: string, isUpdate: boolean
+): Promise<{ isSuccessful: boolean, data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
     let validation: { data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } = 
         await validateGroupCleanupData(formData, orgId, locationId);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
         const groupCleanupDAO: GroupCleanupEventDAO = new GroupCleanupEventDAO();
-        await groupCleanupDAO.save(validation.data, isUpdate);
+        addedId = await groupCleanupDAO.save(validation.data, isUpdate);
     }
-    return validation.errors;
+    return { isSuccessful: addedId > 0, ...validation };
 }
 
 export async function saveAdoptASpotAssignment(

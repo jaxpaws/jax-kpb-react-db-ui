@@ -1,7 +1,16 @@
 export const REPORTING_DATA_VALUES = {
-    bagSwap: 'bag-swap',
-    education: 'education',
-    treePlanting: 'tree-planting'
+    bagSwap: {
+        code: 'bag-swap',
+        label: 'Bag Swap Event'
+    },
+    education: {
+        code: 'education',
+        label: 'Education Event'
+    },
+    treePlanting: {
+        code: 'tree-planting',
+        label: 'Tree Planting Event'
+    }
 };
 
 export const BAG_SWAP_CODE = 'bg-swp';
@@ -38,9 +47,9 @@ export const TREE_PLANTING_FORM_DATA_IDS = {
 
 export const REPORTING_DATA_TYPE_LIST_NAME = 'reporting-data-types';
 export const REPORTING_DATA_TYPE_OPTIONS = [
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option1`,label:'Bag Swap Event',inputId:REPORTING_DATA_VALUES.bagSwap,value:REPORTING_DATA_VALUES.bagSwap},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option2`,label:'Education Event',inputId:REPORTING_DATA_VALUES.education,value:REPORTING_DATA_VALUES.education},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option3`,label:'Tree Planting Event',inputId:REPORTING_DATA_VALUES.treePlanting,value:REPORTING_DATA_VALUES.treePlanting}
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option1`,label:REPORTING_DATA_VALUES.bagSwap.label,inputId:REPORTING_DATA_VALUES.bagSwap.code,value:REPORTING_DATA_VALUES.bagSwap.code},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option2`,label:REPORTING_DATA_VALUES.education.label,inputId:REPORTING_DATA_VALUES.education.code,value:REPORTING_DATA_VALUES.education.code},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option3`,label:REPORTING_DATA_VALUES.treePlanting.label,inputId:REPORTING_DATA_VALUES.treePlanting.code,value:REPORTING_DATA_VALUES.treePlanting.code}
 ];
 
 export const HAS_VOLUNTEERS_OPTIONS = [

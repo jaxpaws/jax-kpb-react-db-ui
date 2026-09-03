@@ -60,23 +60,33 @@ export async function getEducationTopics(): Promise<string> {
     }
 }
 
-export async function saveBagSwapData(formData: FormData, isUpdate: boolean): Promise<Map<string, ErrorModel>> {
+export async function saveBagSwapData(
+    formData: FormData,
+    isUpdate: boolean
+): Promise<{ isSuccessful: boolean, data: BagSwapEventModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
     let validation: { data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } = validateBagSwapData(formData);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
         const bagSwapDAO: BagSwapEventDAO = new BagSwapEventDAO();
-        bagSwapDAO.save(validation.data, isUpdate);
+        addedId = await bagSwapDAO.save(validation.data, isUpdate);
     }
-    return validation.errors;
+    return { isSuccessful: addedId > 0, ...validation };
 }
 
-export async function saveEducationData(formData: FormData, recipientId: string, topicId: string, isUpdate: boolean) {
+export async function saveEducationData(
+    formData: FormData,
+    recipientId: string,
+    topicId: string,
+    isUpdate: boolean
+): Promise<{ isSuccessful: boolean, data: EducationEventModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1;
     let validation: { data: EducationEventModel | null, errors: Map<string, ErrorModel> } =
         await validateEducationData(formData, recipientId, topicId);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
         const educationDAO: EducationEventDAO = new EducationEventDAO();
-        educationDAO.save(validation.data, isUpdate);
+        addedId = await educationDAO.save(validation.data, isUpdate);
     }
-    return validation.errors;
+    return { isSuccessful: addedId > 0, ...validation };
 }
 
 export async function saveEducationRecipient(
@@ -111,11 +121,15 @@ export async function saveEducationTopic(
     return { addedId: addedId, ...validation };
 }
 
-export async function saveTreePlantingData(formData: FormData, isUpdate: boolean) {
+export async function saveTreePlantingData(
+    formData: FormData,
+    isUpdate: boolean
+): Promise<{ isSuccessful: boolean, data: TreePlantingEventModel | null, errors: Map<string, ErrorModel> }> {
+    let addedId: number = -1
     let validation: { data: TreePlantingEventModel | null, errors: Map<string, ErrorModel> } = validateTreePlantingData(formData);
     if ((!validation.errors || validation.errors.size === 0) && validation.data) {
         const treePlantingDAO: TreePlantingEventDAO = new TreePlantingEventDAO();
-        treePlantingDAO.save(validation.data, isUpdate);
+        addedId = await treePlantingDAO.save(validation.data, isUpdate);
     }
-    return validation.errors;
+    return { isSuccessful: addedId > 0, ...validation };
 }

@@ -12,11 +12,16 @@ export class EducationEventDAO implements EventDAO {
 
     async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isEducationEvent(event)) {
-            const recipientId: number = Number.isNaN(Number(event.topic.code)) ? -1 : Number(event.topic.code);
+            const topicId: number = Number.isNaN(Number(event.topic.code)) ? -1 : Number(event.topic.code);
+            const recipientId: number = event.recipient.id ? event.recipient.id : -1;
+            if (topicId === -1 || recipientId === -1) {
+                console.error(`Error in save(): no valid topic or recipient in Education Event.`);
+                return -1;
+            }
             const eventEntity: EducationEventEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
-                topicId: event.recipient.id ? event.recipient.id : -1,
+                topicId: topicId,
                 recipientId: recipientId,
                 eventLength: event.duration,
                 studentCount: event.studentCount,

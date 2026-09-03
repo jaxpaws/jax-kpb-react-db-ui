@@ -12,10 +12,15 @@ export class AdoptASpotEventDAO implements EventDAO {
 
     async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isAdoptASpotEvent(event)) {
+            const assignmentId: number = event.spot.id ? event.spot.id : -1;
+            if (assignmentId === -1) {
+                console.error(`Error in save(): no valid assignment for Adopt-a-Spot Cleanup.`);
+                return -1;
+            }
             const eventEntity: AdoptASpotEventEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
-                assignmentId: event.spot.id ? event.spot.id : -1,
+                assignmentId: assignmentId,
                 volunteerCount: event.volunteerCount,
                 volunteerHours: event.volunteerHours,
                 litterLbs: event.litterCollected,

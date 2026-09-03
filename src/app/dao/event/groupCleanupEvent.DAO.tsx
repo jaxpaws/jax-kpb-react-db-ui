@@ -13,10 +13,15 @@ export class GroupCleanupEventDAO implements EventDAO {
     async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isGroupCleanupEvent(event)) {
             const locationId: number = Number.isNaN(Number(event.location.code)) ? -1 : Number(event.location.code);
+            const organizationId: number = event.organization.id ? event.organization.id : -1;
+            if (locationId === -1 || organizationId === -1) {
+                console.error(`Error in save(): no valid location or organization for Group Cleanup.`);
+                return -1;
+            }
             const eventEntity: GroupCleanupEventEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
-                organizationId: event.organization.id ? event.organization.id : -1,
+                organizationId: organizationId,
                 locationId: locationId,
                 volunteerCount: event.volunteerCount,
                 volunteerHours: event.volunteerHours,

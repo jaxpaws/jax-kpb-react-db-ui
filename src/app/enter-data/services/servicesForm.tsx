@@ -13,6 +13,13 @@ import {
 } from './actions';
 import { ErrorModel } from '../../models';
 import {
+    CleanTeamEventModel,
+    CountyCleanupEventModel,
+    EventModel,
+    RoadsideLitterEventModel,
+    TrashRoutesEventModel
+} from '../../models/event';
+import {
     CleanTeamFormFields,
     CountyCleanupFormFields,
     RoadsideLitterFormFields,
@@ -20,7 +27,13 @@ import {
 } from './formsByActivity';
 import { isBlank } from '../../utils/isBlank';
 
-export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
+export function ServicesForm({
+    isUpdate, selectedDataType, onSuccessfulSubmit
+}: {
+    isUpdate: boolean,
+    selectedDataType: string,
+    onSuccessfulSubmit: (event: EventModel, reportingDataType: { code: string, label: string }) => void
+}) {
     const [reportingDataType, setReportingDataType] = useState<string>(selectedDataType);
     const [errors, setErrors] = useState<Map<string, ErrorModel>>(new Map<string, ErrorModel>());
     const [hasReferenceDataBeenRequested, setHasReferenceDataBeenRequested] = useState<boolean>(false);
@@ -54,11 +67,11 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
 
     const getFormByActivity = (activity: string) => {
         switch (activity) {
-            case (REPORTING_DATA_VALUES.cleanTeam):
+            case (REPORTING_DATA_VALUES.cleanTeam.code):
                 return (
                     <CleanTeamFormFields errors={errors}></CleanTeamFormFields>
                 );
-            case (REPORTING_DATA_VALUES.countyCleanup):
+            case (REPORTING_DATA_VALUES.countyCleanup.code):
                 return (
                     <CountyCleanupFormFields
                         bulkyItemsReferenceString={bulkyItemOptions}
@@ -66,7 +79,7 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
                         handleBulkyItemChange={handleBulkyItemChange}>
                     </CountyCleanupFormFields>
                 );
-            case (REPORTING_DATA_VALUES.roadsideLitter):
+            case (REPORTING_DATA_VALUES.roadsideLitter.code):
                 return (
                     <RoadsideLitterFormFields
                         bulkyItemsReferenceString={bulkyItemOptions}
@@ -75,7 +88,7 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
                         handleBulkyItemChange={handleBulkyItemChange}>
                     </RoadsideLitterFormFields>
                 );
-            case (REPORTING_DATA_VALUES.trashRoutes):
+            case (REPORTING_DATA_VALUES.trashRoutes.code):
                 return (
                     <TrashRoutesFormFields errors={errors}></TrashRoutesFormFields>
                 );
@@ -84,40 +97,58 @@ export function ServicesForm({ isUpdate, selectedDataType }: { isUpdate: boolean
 
     async function handleSubmit(e: any) {
         e.preventDefault();
-        let errors: Map<string, ErrorModel> | null = null;
-
         switch (reportingDataType) {
-            case (REPORTING_DATA_VALUES.cleanTeam):
-                errors = await saveCleanTeamData(new FormData(e.target), isUpdate);
-                console.log(errors);
-                setErrors(errors);
-                break;
-            case (REPORTING_DATA_VALUES.countyCleanup):
-                errors = await saveCountyCleanupData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
-                console.log(errors);
-                setErrors(errors);
-                break;
-            case (REPORTING_DATA_VALUES.roadsideLitter):
-                errors = await saveRoadsideLitterData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
-                console.log(errors);
-                setErrors(errors);
-                break;
-            case (REPORTING_DATA_VALUES.trashRoutes):
-                errors = await saveTrashRoutesData(new FormData(e.target), isUpdate);
-                console.log(errors);
-                setErrors(errors);
-                break;
-        }
-
-        if (errors !== null && errors.size > 0) {
-            setTimeout(() => {
-                const errorHeader = document.getElementById('error-header');
-                if (errorHeader) {
-                    errorHeader.focus();
-                    window.scroll(0, 0);
+            case (REPORTING_DATA_VALUES.cleanTeam.code):
+                const cleanResult: { isSuccessful: boolean, data: CleanTeamEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveCleanTeamData(new FormData(e.target), isUpdate);
+                setErrors(cleanResult.errors);
+                if (cleanResult.isSuccessful && cleanResult.data) {
+                    onSuccessfulSubmit(cleanResult.data, REPORTING_DATA_VALUES.cleanTeam);
+                } else if (cleanResult.errors !== null && cleanResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
                 }
-            }, 100);
+                break;
+            case (REPORTING_DATA_VALUES.countyCleanup.code):
+                const countyResult: { isSuccessful: boolean, data: CountyCleanupEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveCountyCleanupData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
+                setErrors(countyResult.errors);
+                if (countyResult.isSuccessful && countyResult.data) {
+                    onSuccessfulSubmit(countyResult.data, REPORTING_DATA_VALUES.countyCleanup);
+                } else if (countyResult.errors !== null && countyResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
+                }
+                break;
+            case (REPORTING_DATA_VALUES.roadsideLitter.code):
+                const roadsideResult: { isSuccessful: boolean, data: RoadsideLitterEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveRoadsideLitterData(new FormData(e.target), selectedBulkyItemValues, isUpdate);
+                setErrors(roadsideResult.errors);
+                if (roadsideResult.isSuccessful && roadsideResult.data) {
+                    onSuccessfulSubmit(roadsideResult.data, REPORTING_DATA_VALUES.roadsideLitter);
+                } else if (roadsideResult.errors !== null && roadsideResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
+                }
+                break;
+            case (REPORTING_DATA_VALUES.trashRoutes.code):
+                const routesResult: { isSuccessful: boolean, data: TrashRoutesEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveTrashRoutesData(new FormData(e.target), isUpdate);
+                setErrors(routesResult.errors);
+                if (routesResult.isSuccessful && routesResult.data) {
+                    onSuccessfulSubmit(routesResult.data, REPORTING_DATA_VALUES.trashRoutes);
+                } else if (routesResult.errors !== null && routesResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
+                }
+                break;
         }
+    }
+
+    function scrollToAndFocusErrorSummary(): void {
+        setTimeout(() => {
+            const errorHeader = document.getElementById('error-header');
+            if (errorHeader) {
+                errorHeader.focus();
+                window.scroll(0, 0);
+            }
+        }, 100);
     }
 
     const handleReportingDataTypeChange: any = useCallback((event: any) => {
