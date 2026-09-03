@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { ErrorModel } from '../../models';
+import { AdoptASpotEventModel, EventModel, GroupCleanupEventModel } from '../../models/event';
 import { ErrorSummary, RadioList } from '../../components';
 import { AdoptASpotFormFields, GroupCleanupFormFields } from './formsByActivity';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './volunteerCleanupJson';
@@ -16,7 +17,13 @@ import { isBlank } from '../../utils/isBlank';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { VolunteerCleanupDialogs } from './volunteerCleanupDialogs';
 
-export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
+export function VolunteerCleanupForm({
+    isUpdate, selectedDataType, onSuccessfulSubmit
+}: {
+    isUpdate: boolean,
+    selectedDataType: string,
+    onSuccessfulSubmit: (event: EventModel, reportingDataType: { code: string, label: string }) => void
+}) {
     const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState<boolean>(false);
     const [isLocationDialogOpen, setIsLocationDialogOpen] = useState<boolean>(false);
     const [isOrganizationDialogOpen, setIsOrganizationDialogOpen] = useState<boolean>(false);
@@ -105,7 +112,7 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
 
     const getFormByActivity = (activity: string) => {
         switch (activity) {
-            case(REPORTING_DATA_VALUES.adoptASpot):
+            case(REPORTING_DATA_VALUES.adoptASpot.code):
                 return (
                     <div>
                         <AdoptASpotFormFields
@@ -117,7 +124,7 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
                         </AdoptASpotFormFields>
                     </div>
                 );
-            case(REPORTING_DATA_VALUES.groupCleanup):
+            case(REPORTING_DATA_VALUES.groupCleanup.code):
                 return (
                     <div>
                         <GroupCleanupFormFields
@@ -146,45 +153,50 @@ export function VolunteerCleanupForm({ isUpdate, selectedDataType }: { isUpdate:
 
     async function handleSubmit(e: any) {
         e.preventDefault();
-        let errors: Map<string, ErrorModel> | null = null;
-
         switch (reportingDataType) {
-            case (REPORTING_DATA_VALUES.adoptASpot):
+            case (REPORTING_DATA_VALUES.adoptASpot.code):
                 const selectedSpotId: string | undefined = adoptASpotAssignmentValueToIdMap.has(selectedAdoptASpot)
                     ? adoptASpotAssignmentValueToIdMap.get(selectedAdoptASpot) : '';
-                errors = await saveAdoptASpotData(
-                    new FormData(e.target),
-                    selectedSpotId ? selectedSpotId : '',
-                    isUpdate
-                );
-                console.log(errors);
-                setErrors(errors);
+                const adoptResult: { isSuccessful: boolean, data: AdoptASpotEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveAdoptASpotData(new FormData(e.target), selectedSpotId ? selectedSpotId : '', isUpdate);
+                setErrors(adoptResult.errors);
+                if (adoptResult.isSuccessful && adoptResult.data) {
+                    onSuccessfulSubmit(adoptResult.data, REPORTING_DATA_VALUES.adoptASpot);
+                } else if (adoptResult.errors !== null && adoptResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
+                }
                 break;
-            case (REPORTING_DATA_VALUES.groupCleanup):
+            case (REPORTING_DATA_VALUES.groupCleanup.code):
                 const selectedOrgId: string | undefined = cleanupOrganizationValueToIdMap.has(selectedCleanupOrg)
                     ? cleanupOrganizationValueToIdMap.get(selectedCleanupOrg) : '';
                 const selectedLocationId: string | undefined = cleanupLocationValueToIdMap.has(selectedCleanupLoc)
                     ? cleanupLocationValueToIdMap.get(selectedCleanupLoc) : '';
-                errors = await saveGroupCleanupData(
-                    new FormData(e.target),
-                    selectedOrgId ? selectedOrgId : '',
-                    selectedLocationId ? selectedLocationId : '',
-                    isUpdate
-                );
-                console.log(errors);
-                setErrors(errors);
+                const groupResult: { isSuccessful: boolean, data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveGroupCleanupData(
+                        new FormData(e.target),
+                        selectedOrgId ? selectedOrgId : '',
+                        selectedLocationId ? selectedLocationId : '',
+                        isUpdate
+                    );
+                setErrors(groupResult.errors);
+                if (groupResult.isSuccessful && groupResult.data) {
+                    onSuccessfulSubmit(groupResult.data, REPORTING_DATA_VALUES.groupCleanup);
+                } else if (groupResult.errors !== null && groupResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
+                }
                 break;
         }
-            
-        if (errors !== null && errors.size > 0) {
-            setTimeout(() => {
-                const errorHeader = document.getElementById('error-header');
-                if (errorHeader) {
-                    errorHeader.focus();
-                    window.scroll(0, 0);
-                }
-            }, 100);
-        }
+
+    }
+
+    function scrollToAndFocusErrorSummary(): void {
+        setTimeout(() => {
+            const errorHeader = document.getElementById('error-header');
+            if (errorHeader) {
+                errorHeader.focus();
+                window.scroll(0, 0);
+            }
+        }, 100);
     }
 
     function handleAddAssignment(newAssignment: string) {

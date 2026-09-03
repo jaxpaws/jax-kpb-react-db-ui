@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { VolunteerCleanupForm } from './volunteerCleanupForm';
+import { VolunteerCleanupFormHandler } from './volunteerCleanupFormHandler';
 import { REPORTING_DATA_VALUES } from './volunteerCleanupJson';
 
 export const metadata: Metadata = {
@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 export default async function EnterVolunteerCleanupData() {
   return (
     <main id="main-content" className="px-2 sm:px-4 md:px-8">
-      <VolunteerCleanupForm
+      <VolunteerCleanupFormHandler
         isUpdate={false}
-        selectedDataType={REPORTING_DATA_VALUES.adoptASpot}>
-      </VolunteerCleanupForm>
+        reportingDataType={REPORTING_DATA_VALUES.adoptASpot.code}>
+      </VolunteerCleanupFormHandler>
     </main>
   );
 }

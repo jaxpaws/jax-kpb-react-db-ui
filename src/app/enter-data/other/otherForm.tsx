@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { ErrorSummary, RadioList } from '../../components';
 import { ErrorModel } from '../../models';
+import { BagSwapEventModel, EducationEventModel, EventModel, TreePlantingEventModel } from '../../models/event';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import {
     getEducationRecipients,
@@ -16,7 +17,13 @@ import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_D
 import { isBlank } from '../../utils/isBlank';
 import { OtherDialogs } from './otherDialogs';
 
-export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, selectedDataType: string }) {
+export function OtherForm({
+    isUpdate, selectedDataType, onSuccessfulSubmit
+}: {
+    isUpdate: boolean,
+    selectedDataType: string,
+    onSuccessfulSubmit: (event: EventModel, reportingDataType: { code: string, label: string }) => void
+}) {
     const [isRecipientDialogOpen, setIsRecipientDialogOpen] = useState<boolean>(false);
     const [isTopicDialogOpen, setIsTopicDialogOpen] = useState<boolean>(false);
     const [reportingDataType, setReportingDataType] = useState<string>(selectedDataType);
@@ -88,9 +95,9 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
 
     const getFormByActivity: any = (activity: string) => {
         switch (activity) {
-            case REPORTING_DATA_VALUES.bagSwap:
+            case REPORTING_DATA_VALUES.bagSwap.code:
                 return (<BagSwapFormFields errors={errors}></BagSwapFormFields>);
-            case REPORTING_DATA_VALUES.education:
+            case REPORTING_DATA_VALUES.education.code:
                 return (
                     <EducationFormFields
                         recipientOptions={edRecipientOptions}
@@ -104,57 +111,64 @@ export function OtherForm({ isUpdate, selectedDataType }: { isUpdate: boolean, s
                         onAddTopic={() => setIsTopicDialogOpen(true)}>
                     </EducationFormFields>
                 );
-            case REPORTING_DATA_VALUES.treePlanting:
+            case REPORTING_DATA_VALUES.treePlanting.code:
                 return (<TreePlantingFormFields errors={errors}></TreePlantingFormFields>);
         }
     }
 
     async function handleSubmit(e: any) {
         e.preventDefault();
-        let newErrors: Map<string, ErrorModel> = new Map<string, ErrorModel>();
-
         switch (reportingDataType) {
-            case REPORTING_DATA_VALUES.bagSwap:
-                newErrors = await saveBagSwapData(
-                    new FormData(e.target),
-                    isUpdate
-                );
-                console.log(newErrors);
-                setErrors(newErrors);
+            case REPORTING_DATA_VALUES.bagSwap.code:
+                const bagResult: { isSuccessful: boolean, data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveBagSwapData(new FormData(e.target), isUpdate);
+                setErrors(bagResult.errors);
+                if (bagResult.isSuccessful && bagResult.data) {
+                    onSuccessfulSubmit(bagResult.data, REPORTING_DATA_VALUES.bagSwap);
+                } else if (bagResult.errors !== null && bagResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
+                }
                 break;
-            case REPORTING_DATA_VALUES.education:
+            case REPORTING_DATA_VALUES.education.code:
                 const selectedRecipientId: string | undefined = edRecipientValueToIdMap.has(selectedEdRecipient)
                     ? edRecipientValueToIdMap.get(selectedEdRecipient) : '';
                 const selectedTopicId: string | undefined = edTopicValueToIdMap.has(selectedEdTopic)
                     ? edTopicValueToIdMap.get(selectedEdTopic) : '';
-                newErrors = await saveEducationData(
-                    new FormData(e.target),
-                    selectedRecipientId ? selectedRecipientId : '',
-                    selectedTopicId ? selectedTopicId : '',
-                    isUpdate
-                );
-                console.log(newErrors);
-                setErrors(newErrors);
-                break;
-            case REPORTING_DATA_VALUES.treePlanting:
-                newErrors = await saveTreePlantingData(
-                    new FormData(e.target),
-                    isUpdate
-                );
-                console.log(newErrors);
-                setErrors(newErrors);
-                break;
-        }
-
-        if (newErrors !== null && newErrors.size > 0) {
-            setTimeout(() => {
-                const errorHeader = document.getElementById('error-header');
-                if (errorHeader) {
-                    errorHeader.focus();
-                    window.scroll(0, 0);
+                const edResult: { isSuccessful: boolean, data: EducationEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveEducationData(
+                        new FormData(e.target),
+                        selectedRecipientId ? selectedRecipientId : '',
+                        selectedTopicId ? selectedTopicId : '',
+                        isUpdate
+                    );
+                setErrors(edResult.errors);
+                if (edResult.isSuccessful && edResult.data) {
+                    onSuccessfulSubmit(edResult.data, REPORTING_DATA_VALUES.education);
+                } else if (edResult.errors !== null && edResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
                 }
-            }, 100);
+                break;
+            case REPORTING_DATA_VALUES.treePlanting.code:
+                const treeResult: { isSuccessful: boolean, data: TreePlantingEventModel | null, errors: Map<string, ErrorModel> } =
+                    await saveTreePlantingData(new FormData(e.target), isUpdate);
+                setErrors(treeResult.errors);
+                if (treeResult.isSuccessful && treeResult.data) {
+                    onSuccessfulSubmit(treeResult.data, REPORTING_DATA_VALUES.treePlanting);
+                } else if (treeResult.errors !== null && treeResult.errors.size > 0) {
+                    scrollToAndFocusErrorSummary();
+                }
+                break;
         }
+    }
+
+    function scrollToAndFocusErrorSummary(): void {
+        setTimeout(() => {
+            const errorHeader = document.getElementById('error-header');
+            if (errorHeader) {
+                errorHeader.focus();
+                window.scroll(0, 0);
+            }
+        }, 100);
     }
 
     function handleAddRecipient(newRecipient: string) {

@@ -10,12 +10,17 @@ export class AdoptASpotEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isAdoptASpotEvent(event)) {
+            const assignmentId: number = event.spot.id ? event.spot.id : -1;
+            if (assignmentId === -1) {
+                console.error(`Error in save(): no valid assignment for Adopt-a-Spot Cleanup.`);
+                return -1;
+            }
             const eventEntity: AdoptASpotEventEntity = {
                 id: event.id ? event.id : -1,
                 date: event.date,
-                assignmentId: event.spot.id ? event.spot.id : -1,
+                assignmentId: assignmentId,
                 volunteerCount: event.volunteerCount,
                 volunteerHours: event.volunteerHours,
                 litterLbs: event.litterCollected,
@@ -23,13 +28,14 @@ export class AdoptASpotEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                await updateAdoptASpotEvent(eventEntity);
+                return await updateAdoptASpotEvent(eventEntity);
             } else {
-                await insertAdoptASpotEvent(eventEntity);
+                return await insertAdoptASpotEvent(eventEntity);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to AdoptASpotModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {

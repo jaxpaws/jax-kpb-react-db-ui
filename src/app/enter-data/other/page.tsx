@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { OtherForm } from './otherForm';
+import { OtherFormHandler } from './otherFormHandler';
 import { REPORTING_DATA_VALUES } from './otherJson';
 
 export const metadata: Metadata = {
@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 };
 
 export default function EnterOtherData() {
-    return (
-        <main id="main-content" className="px-2 sm:px-4 md:px-8">
-          <OtherForm
-            isUpdate={false}
-            selectedDataType={REPORTING_DATA_VALUES.bagSwap}>
-          </OtherForm>
-        </main>
-      );
+  return (
+    <main id="main-content" className="px-2 sm:px-4 md:px-8">
+      <OtherFormHandler
+        isUpdate={false}
+        reportingDataType={REPORTING_DATA_VALUES.bagSwap.code}>
+      </OtherFormHandler>
+    </main>
+  );
 }

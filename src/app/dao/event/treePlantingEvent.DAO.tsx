@@ -10,7 +10,7 @@ export class TreePlantingEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isTreePlantingEvent(event)) {
             const eventEntity: TreePlantingEventEntity = {
                 id: event.id ? event.id : -1,
@@ -22,13 +22,14 @@ export class TreePlantingEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                await updateTreePlantingEvent(eventEntity);
+                return await updateTreePlantingEvent(eventEntity);
             } else {
-                await insertTreePlantingEvent(eventEntity);
+                return await insertTreePlantingEvent(eventEntity);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to TreePlantingEventModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {

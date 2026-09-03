@@ -10,7 +10,7 @@ export class CleanTeamEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isCleanTeamEvent(event)) {
             const eventEntity: CleanTeamEventEntity = {
                 id: event.id ? event.id : -1,
@@ -21,13 +21,14 @@ export class CleanTeamEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                await updateCleanTeamEvent(eventEntity);
+                return await updateCleanTeamEvent(eventEntity);
             } else {
-                await insertCleanTeamEvent(eventEntity);
+                return await insertCleanTeamEvent(eventEntity);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to CleanTeamModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {

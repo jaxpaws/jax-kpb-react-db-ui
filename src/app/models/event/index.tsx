@@ -1,3 +1,4 @@
+export type { EventModel } from './event.model';
 export type { AdoptASpotEventModel } from './adoptASpotEvent.model';
 export type { BagSwapEventModel } from './bagSwapEvent.model';
 export type { CleanTeamEventModel } from './cleanTeamEvent.model';

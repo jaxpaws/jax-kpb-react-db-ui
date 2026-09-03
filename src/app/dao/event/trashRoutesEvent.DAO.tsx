@@ -10,7 +10,7 @@ export class TrashRoutesEventDAO implements EventDAO {
         return null;
     }
 
-    async save(event: EventModel, isUpdate: boolean): Promise<void> {
+    async save(event: EventModel, isUpdate: boolean): Promise<number> {
         if (isTrashRoutesEvent(event)) {
             const eventEntity: TrashRoutesEventEntity = {
                 id: event.id ? event.id : -1,
@@ -20,13 +20,14 @@ export class TrashRoutesEventDAO implements EventDAO {
             };
 
             if (isUpdate) {
-                await updateTrashRoutesEvent(eventEntity);
+                return await updateTrashRoutesEvent(eventEntity);
             } else {
-                await insertTrashRoutesEvent(eventEntity);
+                return await insertTrashRoutesEvent(eventEntity);
             }
         } else {
             console.error(`Error in save(): invalid data did not adhere to TrashRoutesModel.`);
         }
+        return -1;
     }
 
     delete(id: number): void {

@@ -1,8 +1,20 @@
 export const REPORTING_DATA_VALUES = {
-    roadsideLitter: 'roadside',
-    cleanTeam: 'clean-team',
-    trashRoutes: 'routes',
-    countyCleanup: 'county-cleanup'
+    roadsideLitter: {
+        code: 'roadside',
+        label: 'Roadside Litter'
+    },
+    cleanTeam: {
+        code: 'clean-team',
+        label: 'Clean Team Event'
+    },
+    trashRoutes: {
+        code: 'routes',
+        label: 'Trash Can Routes'
+    },
+    countyCleanup: {
+        code: 'county-cleanup',
+        label: 'County Neighborhood Cleanup'
+    }
 };
 
 const ROADSIDE_LITTER_CODE: string = 'rd-ltr';
@@ -47,10 +59,10 @@ export const COUNTY_CLEANUP_FORM_DATA_IDS = {
 export const REPORTING_DATA_TYPE_LIST_NAME = 'reporting-data-types';
 
 export const REPORTING_DATA_TYPE_OPTIONS = [
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option1`,label:'Clean Team Event',inputId:'clean-team',value:REPORTING_DATA_VALUES.cleanTeam},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option2`,label:'County Neighborhood Cleanups',inputId:'county-cleanup',value:REPORTING_DATA_VALUES.countyCleanup},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option3`,label:'Roadside Litter',inputId:'roadside',value:REPORTING_DATA_VALUES.roadsideLitter},
-    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option4`,label:'Trash Can Routes',inputId:'routes',value:REPORTING_DATA_VALUES.trashRoutes},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option1`,label:REPORTING_DATA_VALUES.cleanTeam.label,inputId:REPORTING_DATA_VALUES.cleanTeam.code,value:REPORTING_DATA_VALUES.cleanTeam.code},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option2`,label:REPORTING_DATA_VALUES.countyCleanup.label,inputId:REPORTING_DATA_VALUES.countyCleanup.code,value:REPORTING_DATA_VALUES.countyCleanup.code},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option3`,label:REPORTING_DATA_VALUES.roadsideLitter.label,inputId:REPORTING_DATA_VALUES.roadsideLitter.code,value:REPORTING_DATA_VALUES.roadsideLitter.code},
+    {key:`${REPORTING_DATA_TYPE_LIST_NAME}-option4`,label:REPORTING_DATA_VALUES.trashRoutes.label,inputId:REPORTING_DATA_VALUES.trashRoutes.code,value:REPORTING_DATA_VALUES.trashRoutes.code},
 ];
 
 export const HAS_BULKY_ITEMS_OPTIONS = [

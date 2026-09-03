@@ -46,7 +46,7 @@ export function validateDate(
     errors: Map<string, ErrorModel>,
     value: FormDataEntryValue | null,
     inputId: string
-): { date: Date | null, errors: Map<string, ErrorModel> } {
+): { date: string | null, errors: Map<string, ErrorModel> } {
     if (isFormDataEntryValueNullOrBlank(value)) {
         const error: ErrorModel = {
             inputId: inputId,
@@ -73,7 +73,7 @@ export function validateDate(
                 };
                 errors.set(inputId, error);
             } else {
-                return { date: new Date(dateAsTimestamp), errors: errors };
+                return { date: value ? value.toString() : null, errors: errors };
             }
         }
     }
