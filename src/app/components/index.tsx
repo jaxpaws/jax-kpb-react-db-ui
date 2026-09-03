@@ -1,3 +1,4 @@
+export { Alert } from './alert/alert';
 export { ComboBox } from './comboBox/comboBox';
 export { Dialog } from './dialog/dialog';
 export { AddOptionDialog } from './dialog/addOptionDialog';
