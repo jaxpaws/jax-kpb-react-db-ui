@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { ErrorModel } from '../../models';
 import { AdoptASpotEventModel, EventModel, GroupCleanupEventModel } from '../../models/event';
-import { ErrorSummary, RadioList } from '../../components';
+import { Alert, ErrorSummary, RadioList } from '../../components';
 import { AdoptASpotFormFields, GroupCleanupFormFields } from './formsByActivity';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './volunteerCleanupJson';
 import {
@@ -14,6 +14,7 @@ import {
     saveGroupCleanupData
 } from './actions';
 import { isBlank } from '../../utils/isBlank';
+import { scrollToTopAndFocusAnElementById } from '../../utils/scrollToTopAndFocusHeader';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
 import { VolunteerCleanupDialogs } from './volunteerCleanupDialogs';
 
@@ -43,7 +44,10 @@ export function VolunteerCleanupForm({
     const [selectedAdoptASpot, setSelectedAdoptASpot] = useState<string>('');
     const [selectedCleanupLoc, setSelectedCleanupLoc] = useState<string>('');
     const [selectedCleanupOrg, setSelectedCleanupOrg] = useState<string>('');
+
+    const [alertHeader, setAlertHeader] = useState<string>('');
     const formRef = useRef<HTMLFormElement>(null);
+    const MS_DELAY_100: number = 100;
 
     useEffect(() => {
         if (!hasReferenceDataBeenRequested) {
@@ -110,6 +114,15 @@ export function VolunteerCleanupForm({
         });
     }, []);
 
+    const handleReportingDataTypeChange: any = useCallback((event: any) => {
+        setReportingDataType(event.target.value);
+        setSelectedAdoptASpot('');
+        setSelectedCleanupLoc('');
+        setSelectedCleanupOrg('');
+        setErrors(new Map<string, ErrorModel>());
+        setAlertHeader('');
+    }, []);
+
     const getFormByActivity = (activity: string) => {
         switch (activity) {
             case(REPORTING_DATA_VALUES.adoptASpot.code):
@@ -143,60 +156,55 @@ export function VolunteerCleanupForm({
         }
     }
 
-    const handleReportingDataTypeChange: any = useCallback((event: any) => {
-        setReportingDataType(event.target.value);
-        setSelectedAdoptASpot('');
-        setSelectedCleanupLoc('');
-        setSelectedCleanupOrg('');
-        setErrors(new Map<string, ErrorModel>());
-    }, []);
-
     async function handleSubmit(e: any) {
         e.preventDefault();
         switch (reportingDataType) {
             case (REPORTING_DATA_VALUES.adoptASpot.code):
-                const selectedSpotId: string | undefined = adoptASpotAssignmentValueToIdMap.has(selectedAdoptASpot)
-                    ? adoptASpotAssignmentValueToIdMap.get(selectedAdoptASpot) : '';
-                const adoptResult: { isSuccessful: boolean, data: AdoptASpotEventModel | null, errors: Map<string, ErrorModel> } =
-                    await saveAdoptASpotData(new FormData(e.target), selectedSpotId ? selectedSpotId : '', isUpdate);
-                setErrors(adoptResult.errors);
-                if (adoptResult.isSuccessful && adoptResult.data) {
-                    onSuccessfulSubmit(adoptResult.data, REPORTING_DATA_VALUES.adoptASpot);
-                } else if (adoptResult.errors !== null && adoptResult.errors.size > 0) {
-                    scrollToAndFocusErrorSummary();
-                }
+                handleAdoptASpotEventSubmit(new FormData(e.target));
                 break;
             case (REPORTING_DATA_VALUES.groupCleanup.code):
-                const selectedOrgId: string | undefined = cleanupOrganizationValueToIdMap.has(selectedCleanupOrg)
-                    ? cleanupOrganizationValueToIdMap.get(selectedCleanupOrg) : '';
-                const selectedLocationId: string | undefined = cleanupLocationValueToIdMap.has(selectedCleanupLoc)
-                    ? cleanupLocationValueToIdMap.get(selectedCleanupLoc) : '';
-                const groupResult: { isSuccessful: boolean, data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } =
-                    await saveGroupCleanupData(
-                        new FormData(e.target),
-                        selectedOrgId ? selectedOrgId : '',
-                        selectedLocationId ? selectedLocationId : '',
-                        isUpdate
-                    );
-                setErrors(groupResult.errors);
-                if (groupResult.isSuccessful && groupResult.data) {
-                    onSuccessfulSubmit(groupResult.data, REPORTING_DATA_VALUES.groupCleanup);
-                } else if (groupResult.errors !== null && groupResult.errors.size > 0) {
-                    scrollToAndFocusErrorSummary();
-                }
+                handleGroupCleanupEventSubmit(new FormData(e.target));
                 break;
         }
-
     }
 
-    function scrollToAndFocusErrorSummary(): void {
-        setTimeout(() => {
-            const errorHeader = document.getElementById('error-header');
-            if (errorHeader) {
-                errorHeader.focus();
-                window.scroll(0, 0);
-            }
-        }, 100);
+    async function handleAdoptASpotEventSubmit(formData: FormData): Promise<void> {
+        const selectedSpotId: string | undefined = adoptASpotAssignmentValueToIdMap.has(selectedAdoptASpot)
+            ? adoptASpotAssignmentValueToIdMap.get(selectedAdoptASpot) : '';
+        const adoptResult: { isSuccessful: boolean, data: AdoptASpotEventModel | null, errors: Map<string, ErrorModel> } =
+            await saveAdoptASpotData(formData, selectedSpotId ? selectedSpotId : '', isUpdate);
+        setErrors(adoptResult.errors);
+        if (adoptResult.isSuccessful && adoptResult.data) {
+            onSuccessfulSubmit(adoptResult.data, REPORTING_DATA_VALUES.adoptASpot);
+        } else if (adoptResult.errors !== null && adoptResult.errors.size > 0) {
+            scrollToTopAndFocusAnElementById('error-header', MS_DELAY_100);
+        } else if (!adoptResult.isSuccessful) {
+            setAlertHeader(`Unable to Save ${REPORTING_DATA_VALUES.adoptASpot.label}`);
+            scrollToTopAndFocusAnElementById('save-failure-alert-header', MS_DELAY_100);
+        }
+    }
+
+    async function handleGroupCleanupEventSubmit(formData: FormData): Promise<void> {
+        const selectedOrgId: string | undefined = cleanupOrganizationValueToIdMap.has(selectedCleanupOrg)
+            ? cleanupOrganizationValueToIdMap.get(selectedCleanupOrg) : '';
+        const selectedLocationId: string | undefined = cleanupLocationValueToIdMap.has(selectedCleanupLoc)
+            ? cleanupLocationValueToIdMap.get(selectedCleanupLoc) : '';
+        const groupResult: { isSuccessful: boolean, data: GroupCleanupEventModel | null, errors: Map<string, ErrorModel> } =
+            await saveGroupCleanupData(
+                formData,
+                selectedOrgId ? selectedOrgId : '',
+                selectedLocationId ? selectedLocationId : '',
+                isUpdate
+            );
+        setErrors(groupResult.errors);
+        if (groupResult.isSuccessful && groupResult.data) {
+            onSuccessfulSubmit(groupResult.data, REPORTING_DATA_VALUES.groupCleanup);
+        } else if (groupResult.errors !== null && groupResult.errors.size > 0) {
+            scrollToTopAndFocusAnElementById('error-header', MS_DELAY_100);
+        } else if (!groupResult.isSuccessful) {
+            setAlertHeader(`Unable to Save ${REPORTING_DATA_VALUES.groupCleanup.label}`);
+            scrollToTopAndFocusAnElementById('save-failure-alert-header', MS_DELAY_100);
+        }
     }
 
     function handleAddAssignment(newAssignment: string) {
@@ -242,6 +250,17 @@ export function VolunteerCleanupForm({
                 onAddOrganization={handleAddOrganization}
                 currentOrganizationValues={cleanupOrganizationValueToIdMap}>
             </VolunteerCleanupDialogs>
+            { alertHeader !== '' &&
+                <Alert
+                    id="save-failure-alert"
+                    type="error"
+                    header={alertHeader}
+                    body="If it is outside of normal business hours, the database may be off.
+                        Please copy the values you entered and try again later."
+                    onClose={() => setAlertHeader('')}>
+                </Alert>
+            }
+
             <form ref={formRef} className="flex flex-col gap-2" onSubmit={handleSubmit}>
                 {(errors && errors.size >= 1) &&
                     <ErrorSummary errors={JSON.stringify(Array.from(errors.values()))}></ErrorSummary>}
