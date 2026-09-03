@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { ErrorSummary, RadioList } from '../../components';
+import { Alert, ErrorSummary, RadioList } from '../../components';
 import { ErrorModel } from '../../models';
 import { BagSwapEventModel, EducationEventModel, EventModel, TreePlantingEventModel } from '../../models/event';
 import { ComboBoxListItemModel } from '../../components/comboBox/comboBoxListItem.model';
@@ -15,6 +15,7 @@ import {
 import { BagSwapFormFields, EducationFormFields, TreePlantingFormFields } from './formsByActivity';
 import { REPORTING_DATA_TYPE_LIST_NAME, REPORTING_DATA_TYPE_OPTIONS, REPORTING_DATA_VALUES } from './otherJson';
 import { isBlank } from '../../utils/isBlank';
+import { scrollToTopAndFocusAnElementById } from '../../utils/scrollToTopAndFocusHeader';
 import { OtherDialogs } from './otherDialogs';
 
 export function OtherForm({
@@ -38,7 +39,10 @@ export function OtherForm({
 
     const [selectedEdRecipient, setSelectedEdRecipient] = useState<string>('');
     const [selectedEdTopic, setSelectedEdTopic] = useState<string>('');
+
+    const [alertHeader, setAlertHeader] = useState<string>('');
     const formRef = useRef<HTMLFormElement>(null);
+    const MS_DELAY_100: number = 100;
 
     useEffect(() => {
         if (!hasReferenceDataBeenRequested) {
@@ -91,6 +95,7 @@ export function OtherForm({
     const handleReportingDataTypeChange: any = useCallback((event: any) => {
         setReportingDataType(event.target.value);
         setErrors(new Map<string, ErrorModel>());
+        setAlertHeader('');
     }, []);
 
     const getFormByActivity: any = (activity: string) => {
@@ -120,55 +125,66 @@ export function OtherForm({
         e.preventDefault();
         switch (reportingDataType) {
             case REPORTING_DATA_VALUES.bagSwap.code:
-                const bagResult: { isSuccessful: boolean, data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } =
-                    await saveBagSwapData(new FormData(e.target), isUpdate);
-                setErrors(bagResult.errors);
-                if (bagResult.isSuccessful && bagResult.data) {
-                    onSuccessfulSubmit(bagResult.data, REPORTING_DATA_VALUES.bagSwap);
-                } else if (bagResult.errors !== null && bagResult.errors.size > 0) {
-                    scrollToAndFocusErrorSummary();
-                }
+                handleBagSwapEventSubmit(new FormData(e.target));
                 break;
             case REPORTING_DATA_VALUES.education.code:
-                const selectedRecipientId: string | undefined = edRecipientValueToIdMap.has(selectedEdRecipient)
-                    ? edRecipientValueToIdMap.get(selectedEdRecipient) : '';
-                const selectedTopicId: string | undefined = edTopicValueToIdMap.has(selectedEdTopic)
-                    ? edTopicValueToIdMap.get(selectedEdTopic) : '';
-                const edResult: { isSuccessful: boolean, data: EducationEventModel | null, errors: Map<string, ErrorModel> } =
-                    await saveEducationData(
-                        new FormData(e.target),
-                        selectedRecipientId ? selectedRecipientId : '',
-                        selectedTopicId ? selectedTopicId : '',
-                        isUpdate
-                    );
-                setErrors(edResult.errors);
-                if (edResult.isSuccessful && edResult.data) {
-                    onSuccessfulSubmit(edResult.data, REPORTING_DATA_VALUES.education);
-                } else if (edResult.errors !== null && edResult.errors.size > 0) {
-                    scrollToAndFocusErrorSummary();
-                }
+                handleEducationEventSubmit(new FormData(e.target))
                 break;
             case REPORTING_DATA_VALUES.treePlanting.code:
-                const treeResult: { isSuccessful: boolean, data: TreePlantingEventModel | null, errors: Map<string, ErrorModel> } =
-                    await saveTreePlantingData(new FormData(e.target), isUpdate);
-                setErrors(treeResult.errors);
-                if (treeResult.isSuccessful && treeResult.data) {
-                    onSuccessfulSubmit(treeResult.data, REPORTING_DATA_VALUES.treePlanting);
-                } else if (treeResult.errors !== null && treeResult.errors.size > 0) {
-                    scrollToAndFocusErrorSummary();
-                }
+                handleTreePlantingEventSubmit(new FormData(e.target));
                 break;
         }
     }
 
-    function scrollToAndFocusErrorSummary(): void {
-        setTimeout(() => {
-            const errorHeader = document.getElementById('error-header');
-            if (errorHeader) {
-                errorHeader.focus();
-                window.scroll(0, 0);
-            }
-        }, 100);
+    async function handleBagSwapEventSubmit(formData: FormData): Promise<void> {
+        const bagResult: { isSuccessful: boolean, data: BagSwapEventModel | null, errors: Map<string, ErrorModel> } =
+            await saveBagSwapData(formData, isUpdate);
+        setErrors(bagResult.errors);
+        if (bagResult.isSuccessful && bagResult.data) {
+            onSuccessfulSubmit(bagResult.data, REPORTING_DATA_VALUES.bagSwap);
+        } else if (bagResult.errors !== null && bagResult.errors.size > 0) {
+            scrollToTopAndFocusAnElementById('error-header', MS_DELAY_100);
+        } else if (!bagResult.isSuccessful) {
+            setAlertHeader(`Unable to Save ${REPORTING_DATA_VALUES.bagSwap.label}`);
+            scrollToTopAndFocusAnElementById('save-failure-alert-header', MS_DELAY_100);
+        }
+    }
+
+    async function handleEducationEventSubmit(formData: FormData): Promise<void> {
+        const selectedRecipientId: string | undefined = edRecipientValueToIdMap.has(selectedEdRecipient)
+            ? edRecipientValueToIdMap.get(selectedEdRecipient) : '';
+        const selectedTopicId: string | undefined = edTopicValueToIdMap.has(selectedEdTopic)
+            ? edTopicValueToIdMap.get(selectedEdTopic) : '';
+        const edResult: { isSuccessful: boolean, data: EducationEventModel | null, errors: Map<string, ErrorModel> } =
+            await saveEducationData(
+                formData,
+                selectedRecipientId ? selectedRecipientId : '',
+                selectedTopicId ? selectedTopicId : '',
+                isUpdate
+            );
+        setErrors(edResult.errors);
+        if (edResult.isSuccessful && edResult.data) {
+            onSuccessfulSubmit(edResult.data, REPORTING_DATA_VALUES.education);
+        } else if (edResult.errors !== null && edResult.errors.size > 0) {
+            scrollToTopAndFocusAnElementById('error-header', MS_DELAY_100);
+        } else if (!edResult.isSuccessful) {
+            setAlertHeader(`Unable to Save ${REPORTING_DATA_VALUES.education.label}`);
+            scrollToTopAndFocusAnElementById('save-failure-alert-header', MS_DELAY_100);
+        }
+    }
+
+    async function handleTreePlantingEventSubmit(formData: FormData): Promise<void> {
+        const treeResult: { isSuccessful: boolean, data: TreePlantingEventModel | null, errors: Map<string, ErrorModel> } =
+            await saveTreePlantingData(formData, isUpdate);
+        setErrors(treeResult.errors);
+        if (treeResult.isSuccessful && treeResult.data) {
+            onSuccessfulSubmit(treeResult.data, REPORTING_DATA_VALUES.treePlanting);
+        } else if (treeResult.errors !== null && treeResult.errors.size > 0) {
+            scrollToTopAndFocusAnElementById('error-header', MS_DELAY_100);
+        } else if (!treeResult.isSuccessful) {
+            setAlertHeader(`Unable to Save ${REPORTING_DATA_VALUES.treePlanting.label}`);
+            scrollToTopAndFocusAnElementById('save-failure-alert-header', MS_DELAY_100);
+        }
     }
 
     function handleAddRecipient(newRecipient: string) {
@@ -201,8 +217,18 @@ export function OtherForm({
                 onAddTopic={handleAddTopic}
                 currentTopicValues={edTopicValueToIdMap}>
             </OtherDialogs>
+            { alertHeader !== '' &&
+                <Alert
+                    id="save-failure-alert"
+                    type="error"
+                    header={alertHeader}
+                    body="If it is outside of normal business hours, the database may be off.
+                        Please copy the values you entered and try again later."
+                    onClose={() => setAlertHeader('')}>
+                </Alert>
+            }
             
-            <form ref={formRef} className="flex flex-col gap-2" onSubmit={handleSubmit}>
+            <form ref={formRef} className="flex flex-col gap-2 mt-2" onSubmit={handleSubmit}>
                 {(errors && errors.size >= 1) &&
                     <ErrorSummary errors={JSON.stringify(Array.from(errors.values()))}></ErrorSummary>}
                 <h1 id="main-content-header" className="text-xl md:text-2xl" tabIndex={-1}>
