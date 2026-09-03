@@ -63,7 +63,8 @@ export function Header() {
                         <ul className={`${isEnterDataSubNavOpen ? 'block' : 'hidden'}
                             absolute bg-[#092E6E] text-[#F4E2A3] px-2 pb-2 ml-[-10px]
                             mt-1 md:mt-2 lg:mt-3
-                            text-sm sm:text-lg md:text-xl`}>
+                            text-sm sm:text-lg md:text-xl
+                            z-[10]`}>
                             <li>
                                 <Link
                                     href="/enter-data/services"
